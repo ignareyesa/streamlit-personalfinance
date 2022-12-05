@@ -131,3 +131,6 @@ dmypy.json
 
 # Security
 .streamlit/
+
+#Web text
+webtext.md
