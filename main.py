@@ -4,21 +4,37 @@ import mysql.connector
 import streamlit_authenticator as stauth  
 import yaml
 from streamlit_extras.switch_page_button import switch_page
+from streamlit_extras.badges import badge
+from streamlit_extras.mention import mention
+from markdownlit import mdlit
 from st_pages import Page, show_pages
 from yaml import CLoader as Loader
 
 
+st.set_page_config(page_title="Tus finanzas", page_icon="🐍", layout="wide")
 
-
-# emojis: https://www.webfx.com/tools/emoji-cheat-sheet/
-st.set_page_config(page_title="streamlit Dashboard", page_icon=":bar_chart:", layout="wide")
 # Initialize connection.
-# Uses st.experimental_singleton to only run once.
-@st.experimental_singleton
 def init_connection():
     return mysql.connector.connect(**st.secrets["mysql"])
 
 conn = init_connection()
+
+show_pages(
+    [
+        Page("main.py", "Inicio", ""),
+        Page("pages/login.py","Comienza a explorar",""),  
+        Page("pages/forgot_pass.py", "", ""),
+        Page("pages/forgot_user.py", " ", ""),
+        Page("pages/sign_up.py", "  ", ""),    
+        Page("pages/reset_details.py","   ",""),
+        Page("pages/reset_pass.py", "    ", ""),    
+    ]
+)
+
+# determine is user is logged_in or nor
+def logged_in(session_state = st.session_state):
+    if session_state["authentication_status"]:
+        return True
 
 # Perform query.
 def run_query(query):
@@ -28,74 +44,102 @@ def run_query(query):
         cur.close()
         return all
         
-# Uses st.experimental_memo to only rerun when the query changes or after 10 min.
 def commit_query(query):
     with conn.cursor() as cur:
         cur.execute(query)
         conn.commit()
         cur.close()
 
-show_pages(
-    [
-        Page("main.py", "Home", ""),
-        Page("pages/forgot_pass.py", "", ""),
-        Page("pages/sign_up.py", "   ", ""),        
-    ]
-)
-
-# hashed_passwords = stauth.Hasher(['123', '456']).generate()
-# print(hashed_passwords)
-
 with open('config.yaml') as file:
     config = yaml.load(file, Loader=Loader)
-try:
-    from pages.sign_up import credentials
-    credentials = credentials
-except:
-    users = run_query("SELECT * from users;")
-    credentials = {"usernames": {i[2]:{"email":i[1],"name":i[3],"password":i[4]} for i in users}}
+   
+
+
+users = run_query("SELECT * from users;")
+credentials = {"usernames": {i[2]:{"email":i[1],"name":i[3],"password":i[4]} for i in users}}
 authenticator = stauth.Authenticate(
     credentials,
     config['cookie']['name'],
     config['cookie']['key'],
     config['cookie']['expiry_days'],
-    config['preauthorized']
+     config['preauthorized']
 )
 
 
-name, authentication_status, username = authenticator.login('Welcome!', 'main')
+if logged_in():
+    authenticator.logout('Cerrar sesión', 'sidebar')
 
-print(credentials)
-if st.session_state["authentication_status"]:
-    
-    authenticator.logout('Logout', 'sidebar')
-    st.write(f'Welcome *{st.session_state["name"]}*')
-    st.title('Some content')
-    rows = run_query("SELECT * from users;")
-    print(rows)
+ig_mention = mention(
+    label="[violet]por Ignacio Reyes Arboledas[/violet] 👨‍💻",
+    icon="",
+    url="https://ignacioreyesarboledas.tech/",
+    write=False,
+)
+stream_mention = mention(
+    label="`streamlit`",
+    icon="streamlit",  # Twitter is also featured!
+    url="https://www.twitter.com/streamlit",
+    write=False,
+)
 
-    # Print results.
-    for row in rows:
-        st.write(f"{row[0]} has a :{row[1]}:")
-elif st.session_state["authentication_status"] == False:
-    st.error('Username/password is incorrect')
-    forgot_pass = st.button("Forgot password?")
-    signup = st.button("New user? Sign up")
-    if forgot_pass:
-        switch_page("")
-    if signup:
-        switch_page("   ")
-elif st.session_state["authentication_status"] == None:
-    forgot_pass = st.button("Forgot password?")
-    signup = st.button("New user? Sign up")
-    if forgot_pass:
-        switch_page("")
-    if signup:
-        switch_page("   ")
+st.title("Finanzas Personales con Streamlit")
+mdlit(f"{ig_mention}"
+)
+badge(type="github", name="ignareyesa/streamlit-personalfinance")
+
+mdlit(f"""Esta app te permite **controlar tu ingresos, gastos e inversiones** de una forma rápida e intuitiva mediante el uso de **dashboards interactivos** con unos simples clicks.
+
+Esta aplicación forma parte de una serie de proyectos mensuales publicados en la newsletter de Ignacio. Todos [violet]**los proyectos tratan sobre
+análitica avanzada de datos y la programación**[/violet]. La aplicación presente se ha realizado únicamente haciendo uso de Python🐍 y, en concreto de la librería
+`streamlit`.
+
+Concretamente, este proyecto se ha divido en 4 entregas:
+
+1. @(⚙️)(**Inicio app, configuración BBDD y portal entrada de usuarios**)(https://extras.streamlit.app) <- Estas aquí
+2.  @(📊)(Recogida de datos por usuario y creación de dashboard)(https://extras.streamlit.app)
+3. @(🌍)(Despliegue en la web)(https://extras.streamlit.app)
+4. @(🟢)(Expandir funcionalidades)(https://extras.streamlit.app)
+
+Si te gusta lo que lees, **te animo a probar la app**, pulsando en el siquiente enlace (no hace falta registro).""")
+
+login = st.button("Comienza ya!")
+if login:
+    switch_page("Comienza a explorar")
+
+mdlit(f"""No te vayas! Si crees que este u otros proyectos te pueden parecer interesantes, te dejo por aquí unos enlaces.
+
+\ŧ @(📰)(Newsletter)(https://extras.streamlit.app)
+
+    @(🧮)(Entregas newsletter dedicados a este proyecto)(https://extras.streamlit.app)
+
+    * @(⌨)(Código del proyecto)(https://github.com/ignareyesa/streamlit-personalfinance)
+""")
+
+mention(
+    label="Código del proyecto",
+    icon="github",  # GitHub is also featured!
+    url="https://github.com/ignareyesa/streamlit-personalfinance",
+)
+
+mdlit("""
+
+Y... algún enlace más por si quieres ponerte en contacto conmigo. 
+""")
+mention(
+    label="Mi Web",
+    icon="👨‍💻",
+    url="https://ignacioreyesarboledas.tech/",
+)
+mention(
+    label="Github",
+    icon="github",  # GitHub is also featured!
+    url="https://github.com/ignareyesa",
+)
+mention(
+    label="LinkedIn",
+    icon="🟦",  # GitHub is also featured!
+    url="https://github.com/ignareyesa",
+)
 
 
 
-
-def logged_in(session_state = st.session_state):
-    if session_state["authentication_status"]:
-        return True
