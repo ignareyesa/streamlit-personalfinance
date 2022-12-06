@@ -93,10 +93,10 @@ análitica avanzada de datos y la programación**[/violet]. La aplicación prese
 
 Concretamente, este proyecto se ha divido en 4 entregas:
 
-1. @(⚙️)([violet]**Inicio app, configuración BBDD y portal entrada de usuarios**[/violet])(https://extras.streamlit.app) <- Estas aquí
-2. @(📊)(Recogida de datos por usuario y creación de dashboard)(https://extras.streamlit.app)
-3. @(🌍)(Despliegue en la web)(https://extras.streamlit.app)
-4. @(🟢)(Expandir funcionalidades)(https://extras.streamlit.app)
+1. @(⚙️)([violet]**Inicio app, configuración BBDD y portal entrada de usuarios**[/violet])(/) <- Estas aquí
+2. @(📊)(Recogida de datos por usuario y creación de dashboard)(/)
+3. @(🌍)(Despliegue en la web)(/)
+4. @(🟢)(Expandir funcionalidades)(/)
 
 Si te gusta lo que lees, [violet]**te animo a probar la app**[/violet], pulsando en el siquiente enlace (no hace falta registro).""")
 
@@ -106,8 +106,8 @@ if login:
 
 mdlit(f"""No te vayas! Si crees que este u otros proyectos te pueden parecer interesantes, te dejo por aquí unos enlaces.
 
-- @(📰)(Newsletter)(https://extras.streamlit.app)
-- @(🧮)(Entregas newsletter dedicados a este proyecto)(https://extras.streamlit.app)
+- @(📰)(Newsletter)(/)
+- @(🧮)(Entregas newsletter dedicados a este proyecto)(/)
 - @(💻)(Código del proyecto)(https://github.com/ignareyesa/streamlit-personalfinance)
 
 Y... algún enlace más por si quieres ponerte en contacto conmigo. 
