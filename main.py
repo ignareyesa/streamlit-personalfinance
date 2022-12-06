@@ -128,7 +128,7 @@ foot_mention_2 = mention(
 foot_mention_3 = mention(
     label="**[violet]LinkedIn[/violet]**",
     icon="🟦",
-    url="https://github.com/ignareyesa/",
+    url="https://www.linkedin.com/in/ignacioreyesarboledas/",
     write=False)
 
 with col1:
