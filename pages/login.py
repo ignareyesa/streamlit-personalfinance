@@ -31,7 +31,7 @@ if st.session_state["authentication_status"]:
                 continue
 
 elif st.session_state["authentication_status"] == False:
-    st.error('Usuario/contraseña incorrecto')
+    st.error('La combinación usuario/contraseña no coinciden.')
     forgot_pass = st.button("¿Has olvidado tu contraseña?")
     forgot_user = st.button("¿Has olvidado tu nombre de usuario?")
     signup = st.button("¿Eres nuevo? Registrate")

@@ -22,6 +22,6 @@ else:
             st.success(f'Tu nombre de usuario es: **{username}**. No lo olvides!😜')
             # Username to be transferred to user securely
         elif username_forgot_username == False:
-            st.error('Correo eléctronico no coincide con ninguno existente')
+            st.error('El correo eléctronico proporcionado no coincide con ninguno registrado.')
     except Exception as e:
         st.error(e)

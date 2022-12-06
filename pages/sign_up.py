@@ -15,11 +15,10 @@ try:
                 {form_input["email"],key,form_input["name"], form_input["password"]}
                 """
         commit_query(query)
-        st.success(f'Usuario registrado correctamente')
-        st.info(f'⬇️ Ya puedes iniciar sesión')
+        st.success(f'⬇️ Usuario registrado correctamente.')
 except Exception as e:
     if "1062 (23000)" in str(e):
-        st.error("Correo electrónico ya en uso")
+        st.error("Ya existe un usuario con el correo eléctronico proporcionado.")
     else:
         st.error(e)
 signin = st.button("¿Ya estás registrado? Inicia sesión")
