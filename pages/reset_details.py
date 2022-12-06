@@ -8,7 +8,8 @@ if not logged_in():
     signin = st.button("Volver al inicio")
     if signin:
             switch_page("Comienza a explorar")
-    st.stop() 
+    st.stop()
+    
 
 else:
     authenticator.logout('Cerrar sesión', 'sidebar')
@@ -21,7 +22,7 @@ else:
             new_email = credentials['usernames'][username]['email']
             query = f"UPDATE users SET email='{new_email}', name='{new_name}' WHERE id={user_id}"
             commit_query(query)
-            st.success('Datos modificados existosamente')
+            st.success('Datos modificados exitósamente.')
     except Exception as e:
         st.error(e)
 signin = st.button("Volver al inicio")

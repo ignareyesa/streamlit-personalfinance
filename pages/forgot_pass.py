@@ -1,4 +1,4 @@
-from main import logged_in, authenticator, credentials, run_query, commit_query
+from main import logged_in, authenticator, credentials, run_query
 import streamlit as st  
 from streamlit_extras.switch_page_button import switch_page
 

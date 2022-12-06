@@ -1,7 +1,7 @@
 import pandas as pd  
 import streamlit as st  
 import mysql.connector
-import streamlit_authenticator as stauth  
+import authenticator as stauth  
 import yaml
 from streamlit_extras.switch_page_button import switch_page
 from streamlit_extras.badges import badge
@@ -28,6 +28,7 @@ show_pages(
         Page("pages/sign_up.py", "  ", ""),    
         Page("pages/reset_details.py","   ",""),
         Page("pages/reset_pass.py", "    ", ""),    
+        Page("pages/reset_user.py", "     ", ""), 
     ]
 )
 

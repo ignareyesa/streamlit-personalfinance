@@ -7,11 +7,14 @@ from st_btn_select import st_btn_select
 section1 = "Modifica tu perfil"
 section1_but1 = "Cambiar contraseña"
 section1_link1 = "    "
-section1_but2 = "Modificar tus datos"
-section1_link2 = "   "
-section1_but3='Solo soy un botón'
+section1_but2 = "Cambiar nombre de usuario"
+section1_link2 = "     "
+section1_but3 = "Modificar tus datos"
+section1_link3 = "   "
+section1_but4='Solo soy un botón'
 
-sections = [{section1:{"buttons":[section1_but1,section1_but2, section1_but3],"links":[section1_link1,section1_link2]}}]
+sections = [{section1:{"buttons":[section1_but1,section1_but2, section1_but3,section1_but4],
+                       "links":[section1_link1, section1_link2, section1_link3]}}]
 
 selection = None
 
@@ -23,9 +26,9 @@ if st.session_state["authentication_status"]:
         st.subheader(list(section.keys())[0])
         selection = st_btn_select(list(section.values())[0]["buttons"], index = -1)
         for i,but in enumerate(list(section.values())[0]["buttons"]):
-            if selection == section1_but3:
+            if selection == section1_but4:
                 break
-            elif selection==but and selection!=section1_but3:
+            elif selection==but and selection!=section1_but4:
                 switch_page(list(section.values())[0]["links"][i])
             else:
                 continue
