@@ -53,8 +53,6 @@ def commit_query(query):
 with open('config.yaml') as file:
     config = yaml.load(file, Loader=Loader)
    
-
-
 users = run_query("SELECT * from users;")
 credentials = {"usernames": {i[2]:{"email":i[1],"name":i[3],"password":i[4]} for i in users}}
 authenticator = stauth.Authenticate(
@@ -64,7 +62,6 @@ authenticator = stauth.Authenticate(
     config['cookie']['expiry_days'],
      config['preauthorized']
 )
-
 
 if logged_in():
     authenticator.logout('Cerrar sesión', 'sidebar')
@@ -83,11 +80,12 @@ stream_mention = mention(
 )
 
 st.title("Finanzas Personales con Streamlit")
-mdlit(f"{ig_mention}"
-)
+
+mdlit(f"{ig_mention}")
+
 badge(type="github", name="ignareyesa/streamlit-personalfinance")
 
-mdlit(f"""Esta app te permite **controlar tu ingresos, gastos e inversiones** de una forma rápida e intuitiva mediante el uso de **dashboards interactivos** con unos simples clicks.
+mdlit(f"""Esta app te permite [violet]**controlar tu ingresos, gastos e inversiones**[/violet] de una forma rápida e intuitiva mediante el uso de [violet]**dashboards interactivos**[/violet] con unos simples clicks.
 
 Esta aplicación forma parte de una serie de proyectos mensuales publicados en la newsletter de Ignacio. Todos [violet]**los proyectos tratan sobre
 análitica avanzada de datos y la programación**[/violet]. La aplicación presente se ha realizado únicamente haciendo uso de Python🐍 y, en concreto de la librería
@@ -95,12 +93,12 @@ análitica avanzada de datos y la programación**[/violet]. La aplicación prese
 
 Concretamente, este proyecto se ha divido en 4 entregas:
 
-1. @(⚙️)(**Inicio app, configuración BBDD y portal entrada de usuarios**)(https://extras.streamlit.app) <- Estas aquí
-2.  @(📊)(Recogida de datos por usuario y creación de dashboard)(https://extras.streamlit.app)
+1. @(⚙️)([violet]**Inicio app, configuración BBDD y portal entrada de usuarios**[/violet])(https://extras.streamlit.app) <- Estas aquí
+2. @(📊)(Recogida de datos por usuario y creación de dashboard)(https://extras.streamlit.app)
 3. @(🌍)(Despliegue en la web)(https://extras.streamlit.app)
 4. @(🟢)(Expandir funcionalidades)(https://extras.streamlit.app)
 
-Si te gusta lo que lees, **te animo a probar la app**, pulsando en el siquiente enlace (no hace falta registro).""")
+Si te gusta lo que lees, [violet]**te animo a probar la app**[/violet], pulsando en el siquiente enlace (no hace falta registro).""")
 
 login = st.button("Comienza ya!")
 if login:
@@ -108,38 +106,36 @@ if login:
 
 mdlit(f"""No te vayas! Si crees que este u otros proyectos te pueden parecer interesantes, te dejo por aquí unos enlaces.
 
-\ŧ @(📰)(Newsletter)(https://extras.streamlit.app)
-
-    @(🧮)(Entregas newsletter dedicados a este proyecto)(https://extras.streamlit.app)
-
-    * @(⌨)(Código del proyecto)(https://github.com/ignareyesa/streamlit-personalfinance)
-""")
-
-mention(
-    label="Código del proyecto",
-    icon="github",  # GitHub is also featured!
-    url="https://github.com/ignareyesa/streamlit-personalfinance",
-)
-
-mdlit("""
+- @(📰)(Newsletter)(https://extras.streamlit.app)
+- @(🧮)(Entregas newsletter dedicados a este proyecto)(https://extras.streamlit.app)
+- @(💻)(Código del proyecto)(https://github.com/ignareyesa/streamlit-personalfinance)
 
 Y... algún enlace más por si quieres ponerte en contacto conmigo. 
 """)
-mention(
-    label="Mi Web",
+
+col1, col2, col3 = st.columns(3)
+
+foot_mention_1 = mention(
+    label="**[violet]Mi Web[/violet]**",
     icon="👨‍💻",
     url="https://ignacioreyesarboledas.tech/",
-)
-mention(
-    label="Github",
-    icon="github",  # GitHub is also featured!
-    url="https://github.com/ignareyesa",
-)
-mention(
-    label="LinkedIn",
-    icon="🟦",  # GitHub is also featured!
-    url="https://github.com/ignareyesa",
-)
+    write=False)
+foot_mention_2 = mention(
+    label="**[violet]Github[/violet]**",
+    icon="github",
+    url="https://github.com/ignareyesa/",
+    write=False)
+foot_mention_3 = mention(
+    label="**[violet]LinkedIn[/violet]**",
+    icon="🟦",
+    url="https://github.com/ignareyesa/",
+    write=False)
 
+with col1:
+    mdlit(f"{foot_mention_1}")
 
+with col2:
+   mdlit(f"{foot_mention_2}")
 
+with col3:
+    mdlit(f"{foot_mention_3}")
