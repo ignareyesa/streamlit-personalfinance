@@ -1,11 +1,13 @@
-from main import logged_in, authenticator, run_query
+from init_db import authenticator, run_query
+from gen_functions import logged_in, load_css_file
 import streamlit as st  
 from streamlit_extras.switch_page_button import switch_page
 
+load_css_file("styles/forms.css")
 
 if logged_in():
-    st.warning("You are already log-in.")
-    signin = st.button("Back to log in")
+    st.warning("Sesión ya iniciada")
+    signin = st.button("Volver al inicio")
     if signin:
             switch_page("Comienza a explorar")
     st.stop() 

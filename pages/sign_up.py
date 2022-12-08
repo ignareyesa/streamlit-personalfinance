@@ -1,8 +1,9 @@
-from main import logged_in, authenticator, credentials, commit_query
+from init_db import credentials, authenticator, commit_query
+from gen_functions import logged_in, load_css_file
 import streamlit as st  
 from streamlit_extras.switch_page_button import switch_page
 
-
+load_css_file("styles/forms.css")
 
 if logged_in():
     st.warning("Sesión ya iniciada")

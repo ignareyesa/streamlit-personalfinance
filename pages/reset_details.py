@@ -1,4 +1,5 @@
-from main import logged_in, authenticator, commit_query, credentials, run_query
+from init_db import credentials, authenticator, commit_query, run_query
+from gen_functions import logged_in
 import streamlit as st  
 from streamlit_extras.switch_page_button import switch_page
 
