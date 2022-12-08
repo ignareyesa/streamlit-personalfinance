@@ -175,7 +175,7 @@ class Authenticate:
         """
         if location not in ['main', 'sidebar']:
             raise ValueError("Location must be one of 'main' or 'sidebar'")
-        if not st.session_state['authentication_status']:
+        if (not st.session_state['authentication_status']) or (not "authentication_status" in st.session_state):
             self._check_cookie()
             if st.session_state['authentication_status'] != True:
                 if location == 'main':
@@ -526,10 +526,10 @@ class Authenticate:
                     if field == 'name':
                         self._update_entry(self.username, field, new_value)
                         st.session_state['name'] = new_value
-                        self.exp_date = self._set_exp_date()
-                        self.token = self._token_encode()
-                        self.cookie_manager.set(self.cookie_name, self.token,
-                        expires_at=datetime.now() + timedelta(days=self.cookie_expiry_days))
+                        # self.exp_date = self._set_exp_date()
+                        # self.token = self._token_encode()
+                        # self.cookie_manager.set(self.cookie_name, self.token,
+                        # expires_at=datetime.now() + timedelta(days=self.cookie_expiry_days))
                     return True
                 else:
                     raise UpdateError('El valor nuevo y el antiguo son el mismo')
@@ -582,9 +582,13 @@ class Authenticate:
         if reset_username_form.form_submit_button('Cambiar nombre de usuario'):
             if self._check_credentials(inplace=False):
                 if len(new_username) > 0:
-                    
                     if self.username != new_username: 
                         self._update_username(self.username, new_username)
+                        st.session_state['username'] = new_username
+                        # self.exp_date = self._set_exp_date()
+                        # self.token = self._token_encode()
+                        # self.cookie_manager.set(self.cookie_name, self.token,
+                        # expires_at=datetime.now() + timedelta(days=self.cookie_expiry_days))
                         return new_username
                     else:
                         raise ResetError('El nombre de usuario actual y el nuevo son el mismo')

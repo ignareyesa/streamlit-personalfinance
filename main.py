@@ -1,23 +1,14 @@
-import pandas as pd  
 import streamlit as st  
-import mysql.connector
-import authenticator as stauth  
-import yaml
-from streamlit_extras.switch_page_button import switch_page
+from init_db import authenticator
 from streamlit_extras.badges import badge
 from streamlit_extras.mention import mention
 from markdownlit import mdlit
 from st_pages import Page, show_pages
-from yaml import CLoader as Loader
+from streamlit_extras.switch_page_button import switch_page
+from gen_functions import logged_in, load_css_file
 
 
-st.set_page_config(page_title="Tus finanzas", page_icon="🐍", layout="wide")
-
-# Initialize connection.
-def init_connection():
-    return mysql.connector.connect(**st.secrets["mysql"])
-
-conn = init_connection()
+load_css_file("styles/main.css")
 
 show_pages(
     [
@@ -30,38 +21,6 @@ show_pages(
         Page("pages/reset_pass.py", "    ", ""),    
         Page("pages/reset_user.py", "     ", ""), 
     ]
-)
-
-# determine is user is logged_in or nor
-def logged_in(session_state = st.session_state):
-    if session_state["authentication_status"]:
-        return True
-
-# Perform query.
-def run_query(query):
-    with conn.cursor() as cur:
-        cur.execute(query)
-        all = cur.fetchall()
-        cur.close()
-        return all
-        
-def commit_query(query):
-    with conn.cursor() as cur:
-        cur.execute(query)
-        conn.commit()
-        cur.close()
-
-with open('config.yaml') as file:
-    config = yaml.load(file, Loader=Loader)
-   
-users = run_query("SELECT * from users;")
-credentials = {"usernames": {i[2]:{"email":i[1],"name":i[3],"password":i[4]} for i in users}}
-authenticator = stauth.Authenticate(
-    credentials,
-    config['cookie']['name'],
-    config['cookie']['key'],
-    config['cookie']['expiry_days'],
-     config['preauthorized']
 )
 
 if logged_in():
@@ -101,11 +60,11 @@ Concretamente, este proyecto se ha divido en 4 entregas:
 
 Si te gusta lo que lees, [violet]**te animo a probar la app**[/violet], pulsando en el siquiente enlace (no hace falta registro).""")
 
-login = st.button("Comienza ya!")
-if login:
+start_now = st.button("👉 Comienza ya! ")
+if start_now:
     switch_page("Comienza a explorar")
 
-mdlit(f"""No te vayas! Si crees que este u otros proyectos te pueden parecer interesantes, te dejo por aquí unos enlaces.
+mdlit("""No te vayas! Si crees que este u otros proyectos te pueden parecer interesantes, te dejo por aquí unos enlaces.
 
 - @(📰)(Newsletter)(/)
 - @(🧮)(Entregas newsletter dedicados a este proyecto)(/)
