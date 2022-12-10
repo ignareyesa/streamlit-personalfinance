@@ -5,6 +5,13 @@ class CredentialsError(Exception):
     def __init__(self):
         super().__init__('Usuario/contraseña incorrecto')
 
+class UsernameError(Exception):
+    """
+    Exception raised for non existing username.
+    """
+    def __init__(self):
+        super().__init__('Usuario no registrado')
+
 class ResetError(Exception):
     """
     Exceptions raised for the password reset widget.
