@@ -2,6 +2,7 @@ import streamlit as st
 from init_db import authenticator
 from gen_functions import logged_in, multiple_buttons, load_css_file
 
+st.experimental_set_query_params()
 load_css_file("styles/forms.css")
 
 section1 = "Modifica tu perfil"
