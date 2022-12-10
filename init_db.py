@@ -4,6 +4,11 @@ import streamlit as st
 import yaml
 from yaml import CLoader as Loader
 import authenticator as stauth
+import os
+from dotenv import load_dotenv
+from email_module import Email
+
+load_dotenv()
 
 st.set_page_config(page_title="Tus finanzas", page_icon="🐍", layout="wide")
 
@@ -58,3 +63,15 @@ authenticator = stauth.Authenticate(
     config['preauthorized']
 )
 
+
+
+smtp_server = os.getenv("SMTP_SERVER")
+smtp_port = os.getenv("SMTP_PORT")
+smtp_username = os.getenv("SMTP_API_NAME")
+smtp_password = os.getenv("SMTP_API_KEY")
+smtp_from_addr = os.getenv("SMTP_FROM_ADDRESS")
+smtp_from_name = os.getenv("SMTP_FROM_NAME")
+
+email_class = Email(smtp_server=smtp_server, smtp_port=smtp_port,
+                    username=smtp_username,password=smtp_password,
+                    from_addr=smtp_from_addr, from_name=smtp_from_name)
