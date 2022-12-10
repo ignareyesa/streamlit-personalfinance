@@ -7,7 +7,7 @@ import extra_streamlit_components as stx
 from .hasher import Hasher
 from .utils import generate_random_pw, check_email
 
-from .exceptions import CredentialsError, ResetError, RegisterError, ForgotError, UpdateError
+from .exceptions import CredentialsError, ResetError, RegisterError, ForgotError, UpdateError, UsernameError
 
 class Authenticate:
     """
@@ -152,6 +152,23 @@ class Authenticate:
                 st.session_state['authentication_status'] = False
             else:
                 return False
+    
+    def _check_username(self) -> bool :
+        """
+        Checks the validity of the entered username.
+
+        Parameters
+        ----------
+        Returns
+        -------
+        bool
+            Validity of entered credentials.
+        """
+        if self.username in self.credentials['usernames']:
+            return True
+        else:
+            return False
+
 
     def login(self, form_name: str, location: str='main') -> tuple:
         """
@@ -220,6 +237,40 @@ class Authenticate:
                 st.session_state['name'] = None
                 st.session_state['username'] = None
                 st.session_state['authentication_status'] = None
+
+    def username_form(self, form_name: str, location: str='main') -> str:
+        """
+        Create a username checker widget
+        
+        Parameters
+        ----------
+        form_name: str
+            The rendered name of the password reset form.
+        location: str
+            The location of the password reset form i.e. main or sidebar.
+        Returns
+        -------
+        str
+            username if it is valid.
+        """
+        if location not in ['main', 'sidebar']:
+            raise ValueError("Location must be one of 'main' or 'sidebar'")
+        if location == 'main':
+            check_username_form = st.form('Reset password')
+        elif location == 'sidebar':
+            check_username_form = st.sidebar.form('Reset password')
+        
+        check_username_form.subheader(form_name)
+        self.username = check_username_form.text_input('Nombre de usuario').lower()
+
+        if check_username_form.form_submit_button('Enviar'):
+            if len(self.username) > 0:
+                if self._check_username():
+                    return self.username
+                else:
+                    raise UsernameError
+            else: raise ResetError("No se ha proporcionado un nombre de usuario")
+
 
     def _update_password(self, username: str, password: str):
         """
@@ -377,44 +428,50 @@ class Authenticate:
         self.credentials['usernames'][username]['password'] = Hasher([self.random_password]).generate()[0]
         return self.random_password
 
-    def forgot_password(self, form_name: str, location: str='main') -> tuple:
+    def forgot_password(self, username: str, form_name: str, location: str='main') -> bool:
         """
         Creates a forgot password widget.
 
         Parameters
         ----------
+        username:str
+            The username of the user who has forgot the password
         form_name: str
-            The rendered name of the forgot password form.
+            The rendered name of the forgot username form.
         location: str
-            The location of the forgot password form i.e. main or sidebar.
+            The location of the forgot username form i.e. main or sidebar.
         Returns
         -------
-        str
-            Username associated with forgotten password.
-        str
-            Email associated with forgotten password.
-        str
-            New plain text password that should be transferred to user securely.
+        bool
+            The status of registering the new password, True: new password updated successfully.
         """
         if location not in ['main', 'sidebar']:
             raise ValueError("Location must be one of 'main' or 'sidebar'")
         if location == 'main':
-            forgot_password_form = st.form('Forgot password')
+            reset_password_form = st.form('Reset password Link')
         elif location == 'sidebar':
-            forgot_password_form = st.sidebar.form('Forgot password')
+            reset_password_form = st.sidebar.form('Reset password Link')
+        
+        reset_password_form.subheader(form_name)
+        self.username = username.lower()
+        new_password = reset_password_form.text_input('Nueva contraseña', type='password')
+        new_password_repeat = reset_password_form.text_input('Repetir contreseña', type='password')
 
-        forgot_password_form.subheader(form_name)
-        username = forgot_password_form.text_input('Nombre de usuario').lower()
-
-        if forgot_password_form.form_submit_button('Enviar'):
-            if len(username) > 0:
-                if username in self.credentials['usernames']:
-                    return username, self.credentials['usernames'][username]['email'], self._set_random_password(username)
+        if reset_password_form.form_submit_button('Cambiar contreseña'):
+            if self._check_username():
+                if len(new_password) > 0:
+                    if new_password == new_password_repeat:
+                        if self.password != new_password: 
+                            self._update_password(self.username, new_password)
+                            return True
+                        else:
+                            raise ResetError('La contraseña actual y la nueva son las mismas')
+                    else:
+                        raise ResetError('Las contraseñas no coinciden')
                 else:
-                    return False, None, None
+                    raise ResetError('No se ha proporcionado una contraseña')
             else:
-                raise ForgotError('Nombre de usuario incompleto')
-        return None, None, None
+                raise UsernameError
 
     def _get_username(self, key: str, value: str) -> str:
         """
