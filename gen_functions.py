@@ -1,6 +1,9 @@
 import streamlit as st  
+import datetime
+import secrets
 from st_click_detector import click_detector
 from streamlit_extras.switch_page_button import switch_page
+from init_db import commit_query, run_query
 
 def load_css_file(css_file_path, as_markdown = True):
     with open(css_file_path) as f:
@@ -35,3 +38,25 @@ def multiple_buttons(labels:list, links, html_class:str="css-1x8cf1d edgvbvh10",
         return content
     else:
         raise Exception("labels and links length must have the same lenght")
+
+
+def create_temporary_token(table:str):
+    token = secrets.token_hex(16)
+    now = datetime.datetime.now()
+    expiration_date = now + datetime.timedelta(hours=1)
+
+    query = f"""INSERT INTO {table} (token, expiration_date) 
+                VALUES ('{token}', '{expiration_date}')"""
+    commit_query(query)
+    return token
+
+def check_temporary_token(table:str, token:str):
+    now = datetime.datetime.now()
+
+    query = f"""SELECT * FROM {table} 
+                WHERE token = '{token}' AND expiration_date > '{now}'"""
+    results = run_query(query)
+    if results:
+        return True
+    else:
+        raise Exception("El enlace proporcionado no es válido")
