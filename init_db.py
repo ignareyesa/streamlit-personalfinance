@@ -6,7 +6,7 @@ from yaml import CLoader as Loader
 import authenticator as stauth
 import os
 from dotenv import load_dotenv
-from email_module import Email
+from smtp_connection.email_client import EmailClient
 
 load_dotenv()
 
@@ -72,6 +72,6 @@ smtp_password = os.getenv("SMTP_API_KEY")
 smtp_from_addr = os.getenv("SMTP_FROM_ADDRESS")
 smtp_from_name = os.getenv("SMTP_FROM_NAME")
 
-email_class = Email(smtp_server=smtp_server, smtp_port=smtp_port,
+email_client = EmailClient(smtp_server=smtp_server, smtp_port=smtp_port,
                     username=smtp_username,password=smtp_password,
                     from_addr=smtp_from_addr, from_name=smtp_from_name)
