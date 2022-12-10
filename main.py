@@ -7,6 +7,7 @@ from st_pages import Page, show_pages
 from streamlit_extras.switch_page_button import switch_page
 from gen_functions import logged_in, load_css_file
 
+st.experimental_set_query_params()
 
 load_css_file("styles/main.css")
 
@@ -20,6 +21,7 @@ show_pages(
         Page("pages/reset_details.py","   ",""),
         Page("pages/reset_pass.py", "    ", ""),    
         Page("pages/reset_user.py", "     ", ""), 
+        Page("pages/profile_settings.py","Configuración",""),
     ]
 )
 
