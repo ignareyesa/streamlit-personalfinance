@@ -1,2 +1,2 @@
-{"query_users_table":"create table if not exists users (id integer AUTO_INCREMENT PRIMARY KEY,email varchar(50) UNIQUE,username varchar(50) UNIQUE,name varchar(100),pass char(60))"
-}
+{"query_users_table":"create table if not exists users (id integer AUTO_INCREMENT PRIMARY KEY,email varchar(50) UNIQUE,username varchar(50) UNIQUE,name varchar(100),pass char(60))",
+"passwords_reset_token":"CREATE TABLE if not exists password_reset_tokens (token VARCHAR(128) NOT NULL, expiration_date TIMESTAMP NOT NULL);"}
