@@ -1,0 +1,29 @@
+.css-1x8cf1d.edgvbvh10, .css-1x8cf1d.edgvbvh10:link, .css-1x8cf1d.edgvbvh10:visited {
+    font-size: 1rem;
+    background-color: rgb(128, 61, 245);
+    color: white;
+    padding: 10px 18px;
+    text-decoration: none;
+    border: none;
+    border-radius: 2px;
+    -webkit-animation: bounce .6s infinite alternate;
+    -moz-animation: bounce .6s infinite alternate;
+    animation: bounce .6s infinite alternate;
+  }
+
+  .css-1x8cf1d.edgvbvh10:hover, .css-1x8cf1d.edgvbvh10:active {
+    color: salid white;
+    font-size: 1.2rem;
+  }
+  
+  
+  @-webkit-keyframes bounce {
+    to { -webkit-transform: scale(1.03); }
+  }
+  @-moz-keyframes bounce {
+    to { -moz-transform: scale(1.03); }
+  }
+  @keyframes bounce {
+    to { transform: scale(1.03); }
+  }
+  
