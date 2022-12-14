@@ -8,14 +8,29 @@ css_style = "styles/buttons.css"
 
 
 # define section and buttons for the navigation menu
-section1 = "Modifica tu perfil"
+section1 = "¿Qué quieres hacer?"
 section1_buttons = [
+    "Añadir movimientos",
+    "Modificar movimientos",
+    "Consultar dashboards"]
+section1_links = ["add_movements", "   ", "   "]
+
+
+section2 = "Modifica tu perfil"
+section2_buttons = [
     "Cambiar contraseña",
     "Cambiar nombre de usuario",
     "Modificar tus datos",
 ]
-section1_links = ["    ", "     ", "   "]
-sections = [{section1: {"buttons": section1_buttons, "links": section1_links}}]
+section2_links = ["    ", "     ", "   "]
+
+
+sections = [
+    {
+        section1:{"buttons":section1_buttons, "links":section1_links},
+        section2: {"buttons": section2_buttons, "links": section2_links}
+    }
+    ]
 
 # define labels and links for the buttons at the bottom of the page
 labels_forgot = ["¿Has olvidado tu contraseña?", "¿Has olvidado tu nombre de usuario?"]
