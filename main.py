@@ -22,6 +22,7 @@ show_pages(
         Page("pages/reset_pass.py", "    ", ""),
         Page("pages/reset_user.py", "     ", ""),
         Page("pages/profile_settings.py", "Configuración", ""),
+        Page("pages/add_movements.py","add_movements","")
     ]
 )
 
