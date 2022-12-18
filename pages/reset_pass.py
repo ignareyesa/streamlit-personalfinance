@@ -16,9 +16,7 @@ else:
     authenticator.logout("Cerrar sesión", "sidebar")
     try:
         username = st.session_state["username"]
-        print(username)
         query_id = "SELECT id from users where username=%s"
-        print(query_id)
         # Get id from database
         user_id = run_query(query_id, (username,))[0][0]
         # If the user entered a new password, commit the change to the database
