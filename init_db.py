@@ -4,9 +4,8 @@ import streamlit as st
 import yaml
 from yaml import CLoader as Loader
 import authenticator as stauth
-import os
 from dotenv import load_dotenv
-from smtp_connection.email_client import EmailClient
+# from smtp_connection.email_client import EmailClient
 
 load_dotenv()
 
@@ -39,7 +38,7 @@ def run_query(query: str, params=None) -> list:
     Returns:
         list: The results of the query.
     """
-    with conn.cursor() as cur:
+    with conn.cursor(buffered=True) as cur:
         cur.execute(query, params)
         all = cur.fetchall()
         cur.close()
@@ -60,6 +59,28 @@ def commit_query(query: str, params=None):
         cur.execute(query, params)
         conn.commit()
         cur.close()
+
+# Get columns
+def get_query_columns(query: str, params=None) -> list:
+    """
+    Takes a SQL query as input and executes it using the `cur` cursor.
+    If the query contains placeholders for parameters, the `params` argument
+    should be provided to supply the values for the placeholders.
+    Returns all columns from the query
+
+    Args:
+        query (str): The query to be executed.
+        params (Optional[tuple]): A tuple containing the values for the placeholders in the query.
+
+    Returns:
+        list: Column names
+    """
+    with conn.cursor(buffered=True) as cur:
+        cur.execute(query, params)
+        column_names = list([col[0] for col in cur.description])
+        cur.fetchone()
+        cur.close()
+        return column_names
 
 
 def commit_predefine_queries(queries: list) -> None:
@@ -98,18 +119,18 @@ authenticator = stauth.Authenticate(
 )
 
 
-smtp_server = os.getenv("SMTP_SERVER")
-smtp_port = os.getenv("SMTP_PORT")
-smtp_username = os.getenv("SMTP_API_NAME")
-smtp_password = os.getenv("SMTP_API_KEY")
-smtp_from_addr = os.getenv("SMTP_FROM_ADDRESS")
-smtp_from_name = os.getenv("SMTP_FROM_NAME")
+# smtp_server = os.getenv("SMTP_SERVER")
+# smtp_port = os.getenv("SMTP_PORT")
+# smtp_username = os.getenv("SMTP_API_NAME")
+# smtp_password = os.getenv("SMTP_API_KEY")
+# smtp_from_addr = os.getenv("SMTP_FROM_ADDRESS")
+# smtp_from_name = os.getenv("SMTP_FROM_NAME")
 
-email_client = EmailClient(
-    smtp_server=smtp_server,
-    smtp_port=smtp_port,
-    username=smtp_username,
-    password=smtp_password,
-    from_addr=smtp_from_addr,
-    from_name=smtp_from_name,
-)
+# email_client = EmailClient(
+#     smtp_server=smtp_server,
+#     smtp_port=smtp_port,
+#     username=smtp_username,
+#     password=smtp_password,
+#     from_addr=smtp_from_addr,
+#     from_name=smtp_from_name,
+# )
