@@ -56,7 +56,7 @@ if option == "Ingresos":
     concept = st.text_input("Concepto")
     quantity = st.number_input("Cantidad")
     
-    movement_form = st.form("add-movement", clear_on_submit=True)
+    movement_form = st.form("add-movement")
     form_response = movement_form.form_submit_button("Añadir ingreso")
 
 # Expenses Form
@@ -70,7 +70,7 @@ if option == "Gastos":
     subcategory = st.selectbox("Subcategoría", expenses_subcategories[category])
     concept = st.text_input("Concepto")
     quantity = st.number_input("Cantidad")
-    movement_form = st.form("add-movement", clear_on_submit=True)
+    movement_form = st.form("add-movement")
     form_response = movement_form.form_submit_button("Añadir gasto")
 
 try:
