@@ -11,9 +11,9 @@ css_style = "styles/buttons.css"
 section1 = "¿Qué quieres hacer?"
 section1_buttons = [
     "Añadir movimientos",
-    "Modificar movimientos",
+    "Consultar o modificar movimientos",
     "Consultar dashboards"]
-section1_links = ["add_movements", "   ", "   "]
+section1_links = ["Añadir movimientos", "Consultar movimientos", "   "]
 
 
 section2 = "Modifica tu perfil"
