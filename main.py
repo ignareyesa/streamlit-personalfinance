@@ -21,8 +21,9 @@ show_pages(
         Page("pages/reset_details.py", "   ", ""),
         Page("pages/reset_pass.py", "    ", ""),
         Page("pages/reset_user.py", "     ", ""),
-        Page("pages/profile_settings.py", "Configuración", ""),
-        Page("pages/add_movements.py","add_movements","")
+        Page("pages/add_movements.py","Añadir movimientos",""),
+        Page("pages/consult_movements.py","Consultar movimientos",""),
+        Page("pages/profile_settings.py", "Configuración", "")
     ]
 )
 
