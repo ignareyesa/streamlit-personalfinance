@@ -6,7 +6,6 @@ st.experimental_set_query_params()
 load_css_file("styles/forms.css")
 css_style = "styles/buttons.css"
 
-
 # define section and buttons for the navigation menu
 section1 = "¿Qué quieres hacer?"
 section1_buttons = [
