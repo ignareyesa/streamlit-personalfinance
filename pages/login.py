@@ -1,6 +1,6 @@
 import streamlit as st
-from init_db import authenticator
-from gen_functions import logged_in, switch_page_button, load_css_file
+from init_app import authenticator
+from gen_functions import logged_in, multile_button_inline, load_css_file
 
 st.experimental_set_query_params()
 load_css_file("styles/forms.css")
@@ -52,18 +52,18 @@ if st.session_state["authentication_status"]:
         st.subheader(list(section.keys())[0])
         labels_login = list(section.values())[0]["buttons"]
         links_login = list(section.values())[0]["links"]
-        switch_page_button(labels_login, links_login)
+        multile_button_inline(labels_login, links_login)
 elif st.session_state["authentication_status"] == False:
     # show error message if login failed
     st.error("La combinación usuario/contraseña no coinciden.")
     # show buttons for forgot password and sign up
-    switch_page_button(labels_forgot, links_forgot, css=css_style)
-    switch_page_button(labels_sign, links_sign, css=css_style)
+    multile_button_inline(labels_forgot, links_forgot, css=css_style)
+    multile_button_inline(labels_sign, links_sign, css=css_style)
     st.session_state["authentication_status"] = None
 
 elif (st.session_state["authentication_status"] == None) or (
     not "authentication_status" in st.session_state
 ):
     # show buttons for forgot password and sign up if user is not logged in and has not tried to login
-    switch_page_button(labels_forgot, links_forgot, css=css_style)
-    switch_page_button(labels_sign, links_sign, css=css_style)
+    multile_button_inline(labels_forgot, links_forgot, css=css_style)
+    multile_button_inline(labels_sign, links_sign, css=css_style)

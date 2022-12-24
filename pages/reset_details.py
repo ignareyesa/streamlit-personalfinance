@@ -1,5 +1,5 @@
-from init_db import credentials, authenticator, commit_query, run_query
-from gen_functions import logged_in, load_css_file, switch_page_button
+from init_app import credentials, authenticator, commit_query, run_query
+from gen_functions import logged_in, load_css_file, multile_button_inline
 import streamlit as st
 
 load_css_file("styles/forms.css")
@@ -8,7 +8,7 @@ load_css_file("styles/forms.css")
 if not logged_in():
     st.warning("Para poder cambiar tu contraseña tienes que haber iniciado sesión.")
     # Show a button to go back to the login page
-    switch_page_button(["Volver a iniciar sesión"],["Comienza a explorar"])
+    multile_button_inline(["Volver a iniciar sesión"],["Comienza a explorar"])
     st.stop()
 
 else:
@@ -32,4 +32,4 @@ else:
         st.error(e)
 
     # Show a button to go back to the login page
-    switch_page_button(["Volver a iniciar sesión"],["Comienza a explorar"])
+    multile_button_inline(["Volver a iniciar sesión"],["Comienza a explorar"])

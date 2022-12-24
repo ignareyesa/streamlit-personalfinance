@@ -1,5 +1,5 @@
-from init_db import credentials, authenticator, commit_query
-from gen_functions import logged_in, load_css_file, switch_page_button
+from init_app import credentials, authenticator, db
+from gen_functions import logged_in, load_css_file, multile_button_inline
 import streamlit as st
 
 load_css_file("styles/forms.css")
@@ -19,10 +19,8 @@ else:
             form_input = credentials["usernames"][
                 key
             ]  # Get the user's information from the form
-            print(key)
-            print(form_input)
             # Create the INSERT query
-            commit_query(
+            db.commit(
                 "INSERT INTO users (email, username, name, pass) VALUES (%s,%s,%s,%s)",(
                 form_input["email"],
                 key,
@@ -38,4 +36,4 @@ else:
             st.error(e)
 
     # Show a button to go back to the login page
-    switch_page_button(["Volver a iniciar sesión"],["Comienza a explorar"])
+    multile_button_inline(["Volver a iniciar sesión"],["Comienza a explorar"])
