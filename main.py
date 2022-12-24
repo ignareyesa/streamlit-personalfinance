@@ -1,5 +1,5 @@
 import streamlit as st
-from init_db import authenticator
+from init_app import authenticator
 from streamlit_extras.badges import badge
 from streamlit_extras.mention import mention
 from markdownlit import mdlit
@@ -24,6 +24,7 @@ show_pages(
         Page("pages/add_movements.py","Añadir movimientos",""),
         Page("pages/consult_movements.py","Consultar movimientos",""),
         Page("pages/profile_settings.py", "Configuración", "")
+        # Page("pages/upload_movements.py", "Subir movimientos", "")
     ]
 )
 
