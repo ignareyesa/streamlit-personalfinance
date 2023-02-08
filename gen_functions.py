@@ -2,6 +2,7 @@ import streamlit as st
 import pandas as pd
 import datetime
 import secrets
+from time import sleep
 from st_click_detector import click_detector
 from streamlit_extras.switch_page_button import switch_page
 from init_app import db
@@ -165,7 +166,22 @@ def check_columns(df : pd.DataFrame, expected_columns : list):
     missing_columns = set(expected_columns) - set(df.columns)
     if missing_columns:
         raise ValueError(f"""Al archivo le faltan los siguientes campos : {', '.join(missing_columns)}""")
-        #raise ValueError(f"""The dataframe is missing the followings columns : {', '.join(missing_columns)}""")
+
+def verify_column_values(df: pd.DataFrame, column:str, predefined_values:list):
+    """
+    Verify if all values in a column in a pandas dataframe belong to a predefined list.
+    
+    Args:
+    df (pandas.DataFrame): The dataframe to verify
+    column (str): The name of the column to verify
+    predefined_list (list): The list of values that the column values should belong to
+    
+    Raises:
+    ValueError: If any value in the column is not in the predefined list
+
+    """
+    if not df[column].isin(predefined_values).all():
+        raise ValueError("Values in column '{}' are not in the predefined list".format(column))
 
 def check_data_types(df : pd.DataFrame, expected_columns : list, expected_types : list):
     """Check if the data types of the columns in a DataFrame are as expected.
@@ -200,3 +216,88 @@ def check_schema(df : pd.DataFrame, expected_columns : list, expected_types : li
     """
     check_columns(df, expected_columns)
     check_data_types(df, expected_columns, expected_types)
+
+
+def abbreviate_number(number, decimals_small_numbers=2, small_number=50000):
+    """Abbreviate a number according to its size.
+
+    Parameters:
+    number (float): The number to abbreviate.
+    decimals_small_numbers (int, optional): The number of decimal places to show for numbers less than 50000 (default is 2).
+
+    Returns:
+    str: The abbreviated number as a string.
+    """
+    # If the number is less than small_number, return it as is
+    if number < small_number:
+        return f"{number:,.{decimals_small_numbers}f}".replace(".","*").replace(",",".").replace("*",",")
+
+    # If the number is less than 1 million
+    elif number < 1000000:
+        # Divide the number by 1000 and round to 2 decimal places
+        abbreviated = round(number/1000, 2)
+        # Convert the number to a string and add "k" at the end
+        return f"{abbreviated:,.2f}k".replace(".","*").replace(",",".").replace("*",",")
+
+    # If the number is less than 1 billion
+    elif number < 1000000000:
+        # Divide the number by 1 million and round to 2 decimal places
+        abbreviated = round(number/1000000, 2)
+        # Convert the number to a string and add "m" at the end
+        return f"{abbreviated:,.2f}m".replace(".","*").replace(",",".").replace("*",",")
+
+    # If the number is more than 1 billion
+    else:
+        # Divide the number by 1 billion and round to 2 decimal places
+        abbreviated = round(number/1000000000, 2)
+        # Convert the number to a string and add "b" at the end
+        return f"{abbreviated:,.2f}b".replace(".","*").replace(",",".").replace("*",",")
+
+def df_with_all_dates_given_period(query_result, date_column=["date"], periods=12, other_columns = [], include_actual = False):
+    dates = pd.date_range(end=pd.datetime.today(), periods=periods, freq="M")
+    if include_actual:
+        dates = dates.shift(1, freq="M")
+        dates = dates.date
+    else:
+        dates = dates.date
+    df_period = pd.DataFrame(dates, columns=date_column)
+    df = pd.DataFrame(query_result, columns=date_column+other_columns)
+    df["date"] = pd.to_datetime(df["date"], format = "%Y-%m-%d")
+    df_period["date"] = pd.to_datetime(df_period["date"], format = "%Y-%m-%d")
+    df_period = df_period.merge(df, on="date",how="left").fillna(0)
+    return df_period
+
+def spanish_month_num(month_name):
+    months = {"enero": 1, "febrero": 2, "marzo": 3, "abril": 4, "mayo": 5, "junio": 6,
+    "julio": 7, "agosto": 8, "septiembre": 9, "octubre": 10, "noviembre": 11, "diciembre": 12,
+    "ene": 1, "feb": 2, "mar": 3, "abr": 4, "may": 5, "jun": 6, "jul": 7, "ago": 8, "sep": 9, "oct": 10, "nov": 11, "dic": 12
+    }
+    return months.get(month_name.lower())
+
+def spanish_month_name(month_number, abbreviate=False):
+    full_months = {1: "enero", 2: "febrero", 3: "marzo", 4: "abril", 5: "mayo", 6: "junio",
+                  7: "julio", 8: "agosto", 9: "septiembre", 10: "octubre", 11: "noviembre", 12: "diciembre"
+                 }
+    abr_months = {1: "ene", 2: "feb", 3: "mar", 4: "abr", 5: "may", 6: "jun",
+                  7: "jul", 8: "ago", 9: "sep", 10: "oct", 11: "nov", 12: "dic"
+                 }
+    if abbreviate:
+        return abr_months.get(month_number)
+    else:
+        return full_months.get(month_number)
+
+def prev_date(month, year, abbreviate = False):
+    if month == 1:
+        month = 12
+        year = year-1
+    else:
+        month = month-1
+        year = year
+    return spanish_month_name(month_number=month, abbreviate=abbreviate).capitalize() + " " + str(year)
+
+
+def progressbar():
+    my_bar = st.progress(0)
+    for percent_complete in range(100):
+        sleep(0.01)
+        my_bar.progress(percent_complete + 1)
