@@ -1,15 +1,15 @@
-from init_app import credentials, authenticator, db
-from gen_functions import logged_in, load_css_file, check_temporary_token, multile_button_inline
+from init_app import authenticator, db, credentials
 import streamlit as st
 from streamlit_extras.switch_page_button import switch_page
-
+from gen_functions import logged_in, load_css_file, multile_button_inline, check_temporary_token
 load_css_file("styles/forms.css")
+load_css_file("styles/sidebar.css")
+from st_pages import add_indentation
 
-# check if user is logged in, if not show warning and stop
+add_indentation()
+
 if not logged_in():
-    st.warning("Para poder ver tu perfil tiene que haber iniciado sesión.")
-    multile_button_inline(["Volver a iniciar sesión"],["Comienza a explorar"])
-    st.stop()
+    switch_page("Comienza a explorar")
 
 # check if page query parameter is given, if not show warning and stop
 try:

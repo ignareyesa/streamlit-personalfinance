@@ -3,5 +3,8 @@
     "passwords_reset_token": "CREATE TABLE if not exists password_reset_tokens (token VARCHAR(128) NOT NULL, expiration_date TIMESTAMP NOT NULL);",
     "modify_movement_tokens": "CREATE TABLE if not exists modify_movement_tokens (token VARCHAR(128) NOT NULL, expiration_date TIMESTAMP NOT NULL);",
     "expenses_movements_table":"CREATE TABLE if not exists expenses_movements (id integer AUTO_INCREMENT PRIMARY KEY,user_id INT NOT NULL,date DATE NOT NULL,category VARCHAR(255) NOT NULL,subcategory VARCHAR(255),concept VARCHAR(255) NOT NULL,quantity DECIMAL(10,2) NOT NULL);",
-    "incomes_movements_table":"CREATE TABLE if not exists incomes_movements (id integer AUTO_INCREMENT PRIMARY KEY,user_id INT NOT NULL,date DATE NOT NULL,category VARCHAR(255) NOT NULL,subcategory VARCHAR(255),concept VARCHAR(255) NOT NULL,quantity DECIMAL(10,2) NOT NULL);"
+    "active_movements_table":"CREATE TABLE if not exists actives_movements (id integer AUTO_INCREMENT PRIMARY KEY,user_id INT NOT NULL,date DATE NOT NULL,category VARCHAR(255) NOT NULL,concept VARCHAR(255) NOT NULL,quantity DECIMAL(10,2) NOT NULL);",
+    "pasive_movements_table":"CREATE TABLE if not exists pasives_movements(id integer AUTO_INCREMENT PRIMARY KEY,user_id INT NOT NULL,date DATE NOT NULL,category VARCHAR(255) NOT NULL,concept VARCHAR(255) NOT NULL,quantity DECIMAL(10,2) NOT NULL);",
+    "incomes_movements_table":"CREATE TABLE if not exists incomes_movements (id integer AUTO_INCREMENT PRIMARY KEY,user_id INT NOT NULL,date DATE NOT NULL,category VARCHAR(255) NOT NULL,subcategory VARCHAR(255),concept VARCHAR(255) NOT NULL,quantity DECIMAL(10,2) NOT NULL);",
+    "safes_distribution": "CREATE TABLE if not exists safes_distribution (id integer AUTO_INCREMENT PRIMARY KEY, user_id INT NOT NULL, month INT NOT NULL, year INT NOT NULL, cash DECIMAL(10,2) NOT NULL, investment DECIMAL(10,2) NOT NULL, donation DECIMAL(10,2) NOT NULL)"
 }

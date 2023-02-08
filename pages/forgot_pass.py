@@ -1,9 +1,15 @@
-from init_app import authenticator, email_client, db
-from gen_functions import logged_in, load_css_file, create_temporary_token, multile_button_inline
-import streamlit as st
-
-# Load the CSS file for the form
+from gen_functions import load_css_file
 load_css_file("styles/forms.css")
+load_css_file("styles/sidebar.css")
+
+
+from init_app import authenticator, email_client, db
+from gen_functions import logged_in, create_temporary_token, multile_button_inline
+import streamlit as st
+from streamlit_extras.switch_page_button import switch_page
+from st_pages import add_indentation
+
+add_indentation()
 
 # The body of the email to be sent to the user
 email_body = """
@@ -30,7 +36,7 @@ email_subject = "Recuperación de Contraseña"
 # Check if user is logged in, if is, show warning message and stop execution of code
 if logged_in():
     st.warning("Sesión ya iniciada")
-    multile_button_inline(["Volver a iniciar sesión"],["Comienza a explorar"])
+    multile_button_inline(["Volver a tu perfil"],["Comienza a explorar"])
 
     st.stop()
 

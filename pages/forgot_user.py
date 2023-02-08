@@ -1,16 +1,18 @@
-from init_app import authenticator, db
 from gen_functions import logged_in, load_css_file, multile_button_inline
-import streamlit as st
-
 load_css_file("styles/forms.css")
+load_css_file("styles/sidebar.css")
 
-# Check if user is logged in, if is, show warning message and stop execution of code
+
+from init_app import authenticator, db
+import streamlit as st
+from streamlit_extras.switch_page_button import switch_page
+from st_pages import add_indentation
+
+add_indentation()
+
 if logged_in():
-    st.warning("Sesión ya iniciada")
-    # Add a button to go back to the login page
-    multile_button_inline(["Volver a iniciar sesión"],["Comienza a explorar"])
+    switch_page("Comienza a explorar")
 
-    st.stop()
 
 else:
     try:
