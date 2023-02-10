@@ -43,6 +43,17 @@
   text-decoration: none;
 }
 
+.css-1x8cf1d.edgvbvh5:hover{
+  color: rgb(0, 0, 0);
+  border: 1px solid  rgba(128, 61, 245);
+  background-color: rgb(128, 61, 245);
+}
+
+.css-1x8cf1d:focus {
+  border-color: rgb(128, 61, 245);
+  color: rgb(0, 0, 0);
+}
+
 body{
   background-color: rgba(255, 255, 255, 0);
 }
