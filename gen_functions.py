@@ -301,3 +301,63 @@ def progressbar():
     for percent_complete in range(100):
         sleep(0.01)
         my_bar.progress(percent_complete + 1)
+
+def calculate_ytd_data(df, year, month):
+    try:
+        df_yearly = (
+            df[df["month"]<=month].groupby("year")["quantity"]
+            .sum()
+            .reset_index()
+            .sort_values(["year"], ascending=True)
+        )
+        try:
+            ytd = df_yearly[(df_yearly["year"] == year)]["quantity"].values[0]
+        except:
+            ytd = None
+        try:
+            yoy = df_yearly[(df_yearly["year"] == (year - 1))]["quantity"].values[0]
+        except:
+            yoy = None
+        return ytd, yoy
+    except:
+        return None, None
+
+
+def calculate_monthly_data(df, year, month):
+    try:
+        df_monthly = (
+            df.groupby(["year", "month"])["quantity"]
+            .sum()
+            .reset_index()
+            .sort_values(["year", "month"], ascending=True)
+        )
+        try:
+            mtd = df_monthly[
+                (df_monthly["year"] == year) & (df_monthly["month"] == month)
+            ]["quantity"].values[0]
+        except:
+            mtd = None
+        try:
+            yoy = df_monthly[
+                (df_monthly["year"] == (year - 1)) & (df_monthly["month"] == month)
+            ]["quantity"].values[0]
+        except:
+            yoy = None
+        if month == 1:
+            try:
+                mom = df_monthly[
+                    (df_monthly["year"] == (year - 1)) & (df_monthly["month"] == 12)
+                ]["quantity"].values[0]
+            except:
+                mom = None
+        else:
+            try:
+                mom = df_monthly[
+                    (df_monthly["year"] == (year)) & (df_monthly["month"] == month-1)
+                ]["quantity"].values[0]
+            except:
+                mom = None
+
+        return mtd, mom, yoy
+    except:
+        return None, None, None
