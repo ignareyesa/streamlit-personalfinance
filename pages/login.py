@@ -1,4 +1,6 @@
 import streamlit as st
+st.set_page_config(page_title="Finanzas Personales", page_icon="🐍", layout="wide")
+
 from init_app import authenticator, db
 from gen_functions import logged_in, multile_button_inline, load_css_file, switch_page, progressbar
 from streamlit_extras.add_vertical_space import add_vertical_space
@@ -6,8 +8,6 @@ from authenticator.utils import check_email
 
 from st_pages import add_indentation
 from PIL import Image
-
-st.set_page_config(layout="wide")
 
 st.markdown("<style>div[class='row-widget stButton']{margin-top:7px; margin-bottom:34px}</style>", unsafe_allow_html=True)
 load_css_file("styles/forms.css")

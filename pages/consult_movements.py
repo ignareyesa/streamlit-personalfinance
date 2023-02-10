@@ -3,12 +3,17 @@ from gen_functions import (load_css_file, multile_button_inline, logged_in, crea
                            progressbar)
 from styles.aggrid_styles import posneg_cellstyle, euro_cellstyle, date_cellstyle
 from mappers import incomes_subcategories, expenses_subcategories
+import streamlit as st
+
+st.set_page_config(page_title="Finanzas Personales", page_icon="🐍", layout="wide")
+
 load_css_file("styles/add_movements.css")
 load_css_file("styles/sidebar.css")
+load_css_file("styles/buttons.css")
+
 css_style = "styles/buttons.css"
 
 import pandas as pd
-import streamlit as st
 import datetime
 
 from st_aggrid import AgGrid, GridOptionsBuilder, JsCode
@@ -31,7 +36,7 @@ except:
 
 if page!="modify_movement":
     if not logged_in():
-        switch_page("Comienza a explorar")
+        switch_page("Mi perfil")
 
     authenticator.logout("Salir", "sidebar")
 
@@ -228,7 +233,7 @@ if page!="modify_movement":
                 expenses_query = f"DELETE FROM expenses_movements where id in {expenses_ids}"
 
             if delete:
-                if incomes_ids and expenses:
+                if incomes_ids and expenses_ids:
                     db.commit(incomes_query)
                     db.commit(expenses_query)
                     st.success(
@@ -448,7 +453,7 @@ else:
         user_id, user_name = db.fetchone("SELECT id, name from users where username=%s", (username,))
     except:
         st.warning("El enlace proporcionado no es válido.")
-        multile_button_inline(["Volver a iniciar sesión"],["Comienza a explorar"], css=css_style)
+        multile_button_inline(["Volver a iniciar sesión"],["Mi perfil"], css=css_style)
         st.stop()
 
     # check if token is valid, if not show error and stop
@@ -460,10 +465,10 @@ else:
         st.session_state["name"] = user_name
     except Exception as e:
         st.warning("El enlace proporcionado no es válido.")
-        multile_button_inline(["Volver a iniciar sesión"],["Comienza a explorar"], css=css_style)
+        multile_button_inline(["Ir a mi perfil"],["Mi perfil"], css=css_style)
         st.stop()
 
-    authenticator.logout("Cerrar sesión", "sidebar")
+    authenticator.logout("Salir", "sidebar")
     st.subheader(f"Rellene el formulario para modificar el {movement_type[:-1].lower()} seleccionado")
     # Disable the submit button after it is clicked
     def disable():

@@ -1,4 +1,7 @@
 from gen_functions import logged_in, load_css_file, multile_button_inline
+import streamlit as st
+
+st.set_page_config(page_title="Finanzas Personales", page_icon="🐍", layout="wide")
 load_css_file("styles/forms.css")
 load_css_file("styles/sidebar.css")
 
@@ -11,9 +14,9 @@ from st_pages import add_indentation
 add_indentation()
 
 if not logged_in():
-    switch_page("Comienza a explorar")
+    switch_page("Mi perfil")
 
-authenticator.logout("Cerrar sesión", "sidebar")
+authenticator.logout("Salir", "sidebar")
 try:
     username = st.session_state["username"]
     query_id = "SELECT id from users where username=%s"
@@ -30,4 +33,4 @@ try:
 except Exception as e:
     st.error(e)
 # Show a button to go back to the login page
-multile_button_inline(["Volver a iniciar sesión"],["Comienza a explorar"])
+multile_button_inline(["Volver"],["Mi perfil"])

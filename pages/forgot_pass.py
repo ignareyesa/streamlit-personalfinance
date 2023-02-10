@@ -1,4 +1,6 @@
 from gen_functions import load_css_file
+import streamlit as st
+st.set_page_config(page_title="Finanzas Personales", page_icon="🐍", layout="wide")
 load_css_file("styles/forms.css")
 load_css_file("styles/sidebar.css")
 
@@ -35,10 +37,7 @@ email_subject = "Recuperación de Contraseña"
 
 # Check if user is logged in, if is, show warning message and stop execution of code
 if logged_in():
-    st.warning("Sesión ya iniciada")
-    multile_button_inline(["Volver a tu perfil"],["Comienza a explorar"])
-
-    st.stop()
+    switch_page("Mi perfil")
 
 else:
     try:
@@ -72,4 +71,4 @@ else:
         st.error(e)
 
     # Show a button to go back to the login page
-    multile_button_inline(["Volver a iniciar sesión"],["Comienza a explorar"])
+    multile_button_inline(["Iniciar sesión"],["Mi perfil"])

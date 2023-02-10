@@ -1,8 +1,10 @@
-from gen_functions import load_css_file, logged_in, progressbar
+import streamlit as st
+from gen_functions import load_css_file, logged_in, progressbar, multile_button_inline
 from styles.aggrid_styles import posneg_cellstyle, euro_cellstyle, date_cellstyle
+
 load_css_file("styles/add_movements.css")
 load_css_file("styles/sidebar.css")
-
+load_css_file("styles/buttons.css")
 
 import pandas as pd
 import streamlit as st
@@ -23,7 +25,7 @@ st.experimental_set_query_params()
 css_style = "styles/buttons.css"
 
 if not logged_in():
-    switch_page("Comienza a explorar")
+    switch_page("Mi perfil")
 
 authenticator.logout("Salir", "sidebar")
 
@@ -152,7 +154,7 @@ if selected == "Consultar":
         allow_unsafe_jscode=True)
 
     # Delete or Modify register buttons
-    delete = st.button("Eliminar registro(s)", key="heritage_del")
+    delete = st.button("Eliminar registro", key="heritage_del")
 
     # If there is no register selected and click button, show a warning
     if len(grid_response["selected_rows"]) == 0:
@@ -182,6 +184,57 @@ if selected == "Consultar":
             )
             progressbar()
             st.experimental_rerun()
+    
+    else:
+        response = dict(grid_response)["selected_rows"]
+        actives = []
+        pasives = []
+        for selection in response:
+            if selection["quantity"] >= 0:
+                actives.append(selection["_selectedRowNodeInfo"]["nodeId"]) 
+            else:
+                pasives.append(selection["_selectedRowNodeInfo"]["nodeId"])
+        
+        actives_ids = tuple(df.iloc[actives]["id"].values)
+        pasives_ids = tuple(df.iloc[pasives]["id"].values)
+        if len(actives_ids) == 1:
+            incomes_query = f"DELETE FROM actives_movements where id ={actives_ids[0]}"
+        else:
+            incomes_query = f"DELETE FROM actives_movements where id in {actives_ids}"
+        
+        if len(pasives_ids) == 1:
+            expenses_query = f"DELETE FROM pasives_movements where id = {pasives_ids[0]}"
+        else:
+            expenses_query = f"DELETE FROM pasives_movements where id in {pasives_ids}"
+
+        if delete:
+            if actives_ids and pasives_ids:
+                db.commit(incomes_query)
+                db.commit(expenses_query)
+                st.success(
+                "Registros eliminados correctamente, la página se volvera a cargar automáticamente en un instante."
+                )
+                progressbar()
+                st.experimental_rerun()
+            
+            elif actives_ids and not pasives_ids:
+                db.commit(incomes_query)
+                st.success(
+                "Registros eliminados correctamente, la página se volvera a cargar automáticamente en un instante."
+                )
+                progressbar()
+                st.experimental_rerun()
+            
+            elif actives_ids and not pasives_ids:
+                db.commit(expenses_query)
+                st.success(
+                "Registros eliminados correctamente, la página se volvera a cargar automáticamente en un instante."
+                )
+                progressbar()
+                st.experimental_rerun()
+            else:
+                pass
+
 
 if selected == "Añadir":
     # List of possible pasive and active

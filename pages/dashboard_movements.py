@@ -1,8 +1,10 @@
 from gen_functions import load_css_file
+import streamlit as st
+
+st.set_page_config(page_title="Finanzas Personales", page_icon="🐍", layout="wide")
 load_css_file("styles/sidebar.css")
 
 import pandas as pd
-import streamlit as st
 import datetime
 
 from gen_functions import (
@@ -11,7 +13,9 @@ from gen_functions import (
     df_with_all_dates_given_period,
     spanish_month_num,
     spanish_month_name,
-    prev_date
+    prev_date,
+    calculate_monthly_data,
+    calculate_ytd_data
 )
 from init_app import db, authenticator
 import plotly.express as px
@@ -31,68 +35,8 @@ from st_pages import add_indentation
 
 add_indentation()
 
-def calculate_ytd_data(df, year, month):
-    try:
-        df_yearly = (
-            df[df["month"]<=month].groupby("year")["quantity"]
-            .sum()
-            .reset_index()
-            .sort_values(["year"], ascending=True)
-        )
-        try:
-            ytd = df_yearly[(df_yearly["year"] == year)]["quantity"].values[0]
-        except:
-            ytd = None
-        try:
-            yoy = df_yearly[(df_yearly["year"] == (year - 1))]["quantity"].values[0]
-        except:
-            yoy = None
-        return ytd, yoy
-    except:
-        return None, None
-
-
-def calculate_monthly_data(df, year, month):
-    try:
-        df_monthly = (
-            df.groupby(["year", "month"])["quantity"]
-            .sum()
-            .reset_index()
-            .sort_values(["year", "month"], ascending=True)
-        )
-        try:
-            mtd = df_monthly[
-                (df_monthly["year"] == year) & (df_monthly["month"] == month)
-            ]["quantity"].values[0]
-        except:
-            mtd = None
-        try:
-            yoy = df_monthly[
-                (df_monthly["year"] == (year - 1)) & (df_monthly["month"] == month)
-            ]["quantity"].values[0]
-        except:
-            yoy = None
-        if month == 1:
-            try:
-                mom = df_monthly[
-                    (df_monthly["year"] == (year - 1)) & (df_monthly["month"] == 12)
-                ]["quantity"].values[0]
-            except:
-                mom = None
-        else:
-            try:
-                mom = df_monthly[
-                    (df_monthly["year"] == (year)) & (df_monthly["month"] == month-1)
-                ]["quantity"].values[0]
-            except:
-                mom = None
-
-        return mtd, mom, yoy
-    except:
-        return None, None, None
-
 if not logged_in():
-    switch_page("Comienza a explorar")
+    switch_page("Mi perfil")
 
 authenticator.logout("Salir", "sidebar")
 
@@ -103,7 +47,7 @@ user_id = db.fetchone(query_id, (username,))[0]
 
 with st.container():
     st.write(
-        "<h1 style='text-align: left;'>Panel de Control</h1>", unsafe_allow_html=True
+        "<h1 style='text-align: left;'>Seguimiento General</h1>", unsafe_allow_html=True
     )
 
 # Get the user's income movements from the database

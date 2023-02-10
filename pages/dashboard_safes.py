@@ -1,5 +1,8 @@
 from gen_functions import multile_button_inline, logged_in, df_with_all_dates_given_period, spanish_month_name, spanish_month_num, load_css_file
 import streamlit as st
+
+st.set_page_config(page_title="Finanzas Personales", page_icon="🐍", layout="wide")
+
 from streamlit_toggle import st_toggle_switch
 import numpy as np
 from streamlit_extras.stoggle import stoggle
@@ -16,9 +19,9 @@ load_css_file("styles/sidebar.css")
 
 
 if not logged_in():
-    switch_page("Comienza a explorar")
+    switch_page("Mi perfil")
 
-authenticator.logout("Cerrar sesión", "sidebar")
+authenticator.logout("Salir", "sidebar")
 
 # Get the user's ID from the database
 username = st.session_state["username"]
@@ -26,7 +29,19 @@ query_id = "SELECT id from users where username=%s"
 user_id = db.fetchone(query_id, (username,))[0]
 
 with st.container():
-        st.write("<h1 style='text-align: left;'>Mis ahorros</h1>", unsafe_allow_html=True)
+    st.markdown("""<style>
+                .search-button {width: 25px;height: 25px;background-color: transparent;background-repeat: no-repeat;
+                border: none;cursor: pointer;overflow: hidden;outline: none;}
+                .search-button svg {width: 16px;height: 16px;}
+                </style>""", unsafe_allow_html=True)
+    col1, col2 = st.columns([1.5,7])
+    with col1:
+        st.write("""<h1 style='text-align: left;'>Mis ahorros</h1>""", unsafe_allow_html=True)
+    with col2:
+        st.markdown("""
+                <button class="search-button" title="La información mostrada es para los meses ya terminados.">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon"><circle cx="12" cy="12" r="10"></circle><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"></path><line x1="12" y1="17" x2="12.01" y2="17"></line></svg>
+                </button>""", unsafe_allow_html=True)
 
 with st.container():
     query = """SELECT LAST_DAY(CONCAT(year,"-",month,"-01")) as date, safes FROM ( 
@@ -115,8 +130,10 @@ with st.container():
 
     dates = (df_aux["month"] + " " + df_aux["year"].astype(str)).unique()
     mask = df_aux['date']<=datetime.datetime.now()
-    most_race_date = df_aux[mask]["month"].values[0] + " " + df_aux[mask]["year"].values[0].astype(str)
-
+    try:
+        most_race_date = df_aux[mask]["month"].values[0] + " " + df_aux[mask]["year"].values[0].astype(str)
+    except:
+        most_race_date = df_aux["month"].values[0] + " " + df_aux["year"].values[0].astype(str)
     with col2:
         month_name, year = st.selectbox("Fecha", dates, index=list(dates).index(most_race_date)).split(" ")
         month = int(spanish_month_num(month_name))

@@ -10,13 +10,14 @@ from gen_functions import  logged_in, df_with_all_dates_given_period, spanish_mo
 from st_pages import add_indentation
 
 add_indentation()
+# st.set_page_config(page_title="Finanzas Personales", page_icon="🐍", layout="wide")
 load_css_file("styles/sidebar.css")
 
 
 if not logged_in():
-    switch_page("Comienza a explorar")
+    switch_page("Mi perfil")
 
-authenticator.logout("Cerrar sesión", "sidebar")
+authenticator.logout("Salir", "sidebar")
 username = st.session_state["username"]
 query_id = "SELECT id from users where username=%s"
 # Get id from database
@@ -27,7 +28,19 @@ activos = ['Propiedad', 'Cuenta bancaria', 'Inversiones', 'Vehículo', 'Ahorros'
 pasivos = ['Deuda', 'Préstamo', 'Tarjeta de crédito', 'Hipoteca']
 
 with st.container():
-        st.write("<h1 style='text-align: left;'>Mi patrimonio</h1>", unsafe_allow_html=True)
+    st.markdown("""<style>
+                .search-button {width: 25px;height: 25px;background-color: transparent;background-repeat: no-repeat;
+                border: none;cursor: pointer;overflow: hidden;outline: none;}
+                .search-button svg {width: 16px;height: 16px;}
+                </style>""", unsafe_allow_html=True)
+    col1, col2 = st.columns([1.7,7])
+    with col1:
+        st.write("""<h1 style='text-align: left;'>Mi patrimonio</h1>""", unsafe_allow_html=True)
+    with col2:
+        st.markdown("""
+                <button class="search-button" title="La información mostrada es para los meses ya terminados.">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon"><circle cx="12" cy="12" r="10"></circle><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"></path><line x1="12" y1="17" x2="12.01" y2="17"></line></svg>
+                </button>""", unsafe_allow_html=True)
 
 # Radio button to choose between active or pasive
 

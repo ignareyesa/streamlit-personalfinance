@@ -11,7 +11,7 @@ from smtp_connection.email_client import EmailClient
 
 load_dotenv()
 
-st.set_page_config(page_title="Tus finanzas", page_icon="🐍", layout="wide")
+st.set_page_config(page_title="Finanzas Personales", page_icon="🐍", layout="wide")
 
 with open("config.yaml") as file:
     config = yaml.load(file, Loader=Loader)

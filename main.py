@@ -9,25 +9,25 @@ from streamlit_extras.switch_page_button import switch_page
 from PIL import Image
 
 st.experimental_set_query_params()
-st.set_page_config(layout="wide")
+st.set_page_config(page_title="Finanzas Personales", page_icon="🐍", layout="wide")
 load_css_file("styles/sidebar.css")
 load_css_file("styles/main.css")
 
 show_pages(
     [
         Page("main.py", "Inicio", ":house:"),
-        Page("pages/login.py", "Comienza a explorar", ":bust_in_silhouette:"),
+        Page("pages/login.py", "Mi perfil", ":bust_in_silhouette:"),
         Page("pages/forgot_pass.py", "", ""),
         Page("pages/forgot_user.py", " ", ""),
         Page("pages/sign_up.py", "  ", ""),
         Page("pages/reset_pass.py", "    ", ""),
         Section("Gastos e Ingresos", ":coin:"),
+            Page("pages/dashboard_movements.py", "Seguimiento", ":bar_chart:"),
             Page("pages/consult_movements.py","Movimientos",":currency_exchange:"),
-            Page("pages/dashboard_movements.py", "Panel de control", ":bar_chart:"),
             Page("pages/dashboard_safes.py", "Ahorros", "💹"),
         Section("Patrimonio", ":bank:"),
-            Page("pages/consult_heritage.py","Activos y pasivos",":mag:"),
-            Page("pages/dashboard_heritage.py","Seguimiento patrimonio",":herb:"),
+            Page("pages/dashboard_heritage.py","Seguimiento patrimonio",":bar_chart:"),
+            Page("pages/consult_heritage.py","Activos y pasivos",":currency_exchange:"),
         Section("Administración", ":card_file_box:"),
             Page("pages/profile_settings.py", "Configuración", ":gear:"),
 
@@ -38,7 +38,7 @@ add_indentation()
 
 
 if logged_in():
-    authenticator.logout("Cerrar sesión", "sidebar")
+    authenticator.logout("Salir", "sidebar")
 
 col1, col2, col3 = st.columns([1,0.2,0.9])
 with col1:
@@ -80,7 +80,7 @@ Si te gusta lo que lees, [violet]**te animo a probar la app**[/violet], pulsando
 
     start_now = st.button("👉 Comienza ya! ")
     if start_now:
-        switch_page("Comienza a explorar")
+        switch_page("Mi perfil")
 
     mdlit("""
 No te vayas! Si crees que este u otros proyectos te pueden parecer interesantes, te dejo por aquí unos enlaces.

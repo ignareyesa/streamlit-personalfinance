@@ -1,20 +1,19 @@
 from gen_functions import logged_in, load_css_file, multile_button_inline
+import streamlit as st
+
+st.set_page_config(page_title="Finanzas Personales", page_icon="🐍", layout="wide")
 load_css_file("styles/forms.css")
 load_css_file("styles/sidebar.css")
 
 
 from init_app import credentials, authenticator, db
-import streamlit as st
 from streamlit_extras.switch_page_button import switch_page
 from st_pages import add_indentation
 
 add_indentation()
 
 if logged_in():
-    switch_page("Comienza a explorar")
-
-    
-
+    switch_page("Mi perfil")
 
 try:
     if authenticator.register_user("¡Únete!", preauthorization=False):
@@ -41,4 +40,4 @@ except Exception as e:
         st.error(e)
 
 # Show a button to go back to the login page
-multile_button_inline(["Volver a iniciar sesión"],["Comienza a explorar"])
+multile_button_inline(["Iniciar sesión"],["Mi perfil"])
