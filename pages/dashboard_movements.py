@@ -31,6 +31,7 @@ from plots import (
 from mappers import expenses_subcategories_colors, income_subcategories_colors
 from streamlit_option_menu import option_menu
 from streamlit_extras.switch_page_button import switch_page
+from streamlit_extras.mandatory_date_range import date_range_picker
 from st_pages import add_indentation
 
 add_indentation()
@@ -89,7 +90,7 @@ if len(df_all)==0:
     multile_button_inline(["Añadir movimiento"], ["Movimientos"])
     st.stop()
 
-tab1, tab2, tab3 = st.tabs(["General", "Detalle", "Sankey"])
+tab1, tab2, tab3 = st.tabs(["General", "Detalle", "Extra: Flujo de gastos e ingresos"])
 
 with tab1:
     df_all["month"] = df_all["month"].apply(spanish_month_name, abbreviate=False)
@@ -1123,35 +1124,25 @@ with tab2:
 
 
 with tab3:
-    df_sankey_incomes = (
-        df_incomes.groupby(["year", "month", "category"]).sum().reset_index()
-    )
-    incomes_sankey = list(
-        df_sankey_incomes[
-            (df_sankey_incomes["month"] == month) & (df_sankey_incomes["year"] == year)
-        ]["category"].values
-    )
-    incomes_values_sankey = list(
-        df_sankey_incomes[
-            (df_sankey_incomes["month"] == month) & (df_sankey_incomes["year"] == year)
-        ]["quantity"].values
-    )
+    start, end = date_range_picker("Selecciona un rango de fechas", error_message="Porfavor, seleccione fecha de inicio y final",
+                key="sankey_date", default_start=datetime.date.today() - datetime.timedelta(days=30))
+    
+    if end > datetime.datetime.now().date():
+        st.warning("El rango de fechas seleccionado no ha terminado a día de hoy, la gráfica se puede ver influenciada.")
 
-    df_sankey_expenses = (
-        df_expenses.groupby(["year", "month", "category"]).sum().reset_index()
-    )
-    expenses_sankey = list(
-        df_sankey_expenses[
-            (df_sankey_expenses["month"] == month)
-            & (df_sankey_expenses["year"] == year)
-        ]["category"].values
-    )
-    expenses_values_sankey = list(
-        df_sankey_expenses[
-            (df_sankey_expenses["month"] == month)
-            & (df_sankey_expenses["year"] == year)
-        ]["quantity"].values
-    )
+    df_incomes["date"] = df_incomes["date"].astype(str)
+    df_expenses["date"] = df_expenses["date"].astype(str)
+    df_sankey_incomes =  df_incomes[(df_incomes["date"]>=str(start)) & (df_incomes["date"]<=str(end))]
+    df_sankey_incomes = df_sankey_incomes.groupby("category")["quantity"].sum().reset_index()
+    
+    incomes_sankey = list(df_sankey_incomes["category"].values)
+    incomes_values_sankey = list(df_sankey_incomes["quantity"].values)
+
+    df_sankey_expenses =  df_expenses[(df_expenses["date"]>=str(start)) & (df_expenses["date"]<=str(end))]
+    df_sankey_expenses = df_sankey_expenses.groupby("category")["quantity"].sum().reset_index()
+    
+    expenses_sankey = list(df_sankey_expenses["category"].values)
+    expenses_values_sankey = list(df_sankey_expenses["quantity"].values)
 
     query = "select cash, investment, donation from safes_distribution where user_id=%s and month=%s and year=%s"
     safes_percentages = db.fetchall(query, (user_id, month, year))
