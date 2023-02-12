@@ -1,6 +1,32 @@
 .css-1x8cf1d.edgvbvh5{
-    background-color: rgba(128, 61, 245);
-    color: whitesmoke;
+  display: inline-block;
+  font-size: 1rem;
+  -moz-box-align: center;
+  align-items: center;
+  -moz-box-pack: center;
+  justify-content: 400;
+  color: white;
+  padding: 0.25rem 0.75rem;
+  border-radius: 0.25rem;
+  margin: 0px 1rem 0px 0px;
+  line-height: 1.6;
+  width: auto;
+  user-select: none;
+  background-color: rgba(128, 61, 245);
+  border: 1px solid rgba(128, 61, 245);
+  text-align: center;
+  text-decoration: none;
+}
+
+.css-1x8cf1d.edgvbvh5:hover{
+  color: rgb(0, 0, 0);
+  border: 1px solid  rgba(138, 89, 223);
+  background-color: rgb(138, 89, 223);
+}
+
+.css-1x8cf1d.edgvbvh5:focus {
+  border-color: rgb(128, 61, 245);
+  color: rgb(0, 0, 0);
 }
 
 .css-184tjsw p {

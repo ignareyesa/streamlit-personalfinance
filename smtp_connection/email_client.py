@@ -51,10 +51,10 @@ class EmailClient:
         """
 
         msg = f"""From: {self.from_name} <{self.from_addr}>
-        To: {to_name} <{to_addr}>
-        Subject: {subject}
+To: {to_name} <{to_addr}>
+Subject: {subject}
         
-        {body}"""
+{body}"""
         print(msg)
 
         self.server.sendmail(self.from_addr, to_addr, msg.encode("utf-8"))

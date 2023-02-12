@@ -1,0 +1,105 @@
+section[data-testid='stSidebar'] {
+    background-color: #111;
+    min-width:unset !important;
+    width: unset !important;
+    flex-shrink: unset !important;
+    
+}
+
+div[data-testid='stSidebarNav'] {
+    background-color:#111;
+    color: #818181,;
+    transition: .3s;
+    white-space: nowrap;
+    text-transform: uppercase
+    
+}
+
+.css-wjbhl0{
+    height: max-content;
+    list-style: none;
+    margin: 0px;
+    padding-top: 6rem;
+    padding-bottom: 1rem;
+    max-height: 60vh;
+}
+
+.css-hied5v::after{
+    display: none;
+}
+
+.css-hied5v::before{
+    display: none;
+}
+
+div[class="css-40ynm6 e1fqkh3o8"]{
+    display: none;
+}
+
+a[class="css-17nby6i e1fqkh3o6"]{
+    background-color: #fff0;
+    font-size: 18px;
+    font-weight: 400;
+}
+
+span[class="css-8hkptd e1fb0mya0"]{
+    margin-left: 0.7rem;
+    margin-right: 0.8rem;
+    font-size: 20px;
+    color: white;
+}
+
+span[class="css-17lntkn e1fqkh3o5"]{
+    color: white;
+    font-size: 18px;
+}
+
+
+button[kind="header"] {
+    background-color: transparent;
+    color:rgb(0, 0, 0)
+}
+
+@media(hover){
+    /* header element to be removed */
+    header[data-testid="stHeader"] {
+        display:none;
+    }
+
+    /* The navigation menu specs and size */
+    section[data-testid='stSidebar'] > div {
+        height: 100%;
+        width: 95px;
+        position: relative;
+        z-index: 1;
+        top: 0;
+        left: 0;
+        background-color: #111;
+        overflow-x: hidden;
+        transition: 0.5s ease;
+        padding-top: 60px;
+        white-space: nowrap;
+    }
+
+    /* The navigation menu open and close on hover and size */
+    /* section[data-testid='stSidebar'] > div {
+    height: 100%;
+    width: 75px; /* Put some width to hover on. */
+    /* } 
+    /* ON HOVER */
+    section[data-testid='stSidebar'] > div:hover{
+    width: 300px;
+    }
+
+    /* The button on the streamlit navigation menu - hidden */
+    button[kind="header"] {
+        display: none;
+    }
+}
+     
+@media(max-width: 272px){
+    
+    section[data-testid='stSidebar'] > div {
+        width:15rem;
+    }
+}
