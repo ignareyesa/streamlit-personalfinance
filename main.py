@@ -94,7 +94,7 @@ No te vayas! Si crees que este u otros proyectos te pueden parecer interesantes,
     )
 
 with col3:
-    image = Image.open('11235941_11124.jpeg')
+    image = Image.open('images/main_vector.jpeg')
     st.image(image, use_column_width=True)
 
 col1, col2, col3, col4 = st.columns(4)

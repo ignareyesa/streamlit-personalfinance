@@ -62,12 +62,12 @@ with col1:
 
 with col3:
     if st.session_state["authentication_status"] == False:
-        image = Image.open('13744790_Mar-Business_16.jpeg')
+        image = Image.open('images/login_vector.jpeg')
         st.image(image, use_column_width=True)
     elif (st.session_state["authentication_status"] == None) or (
         not "authentication_status" in st.session_state
     ):
-        image = Image.open('13744790_Mar-Business_16.jpeg')
+        image = Image.open('images/login_vector.jpeg')
         st.image(image, use_column_width=True)
 
 if st.session_state["authentication_status"]:
