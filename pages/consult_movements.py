@@ -1,6 +1,7 @@
-from gen_functions import (load_css_file, multile_button_inline, logged_in, create_temporary_token, 
-                           check_temporary_token, check_columns, check_data_types, verify_column_values,
+from gen_functions import (load_css_file, multile_button_inline, logged_in, 
+                           check_columns, check_data_types, verify_column_values,
                            progressbar)
+from db_functions import create_temporary_token, check_temporary_token
 from styles.aggrid_styles import posneg_cellstyle, euro_cellstyle, date_cellstyle
 from mappers import incomes_subcategories, expenses_subcategories
 import streamlit as st

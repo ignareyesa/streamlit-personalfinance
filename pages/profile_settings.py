@@ -3,7 +3,8 @@ st.set_page_config(page_title="Finanzas Personales", page_icon="🐍", layout="w
 from main import authenticator, db, credentials
 
 from streamlit_extras.switch_page_button import switch_page
-from gen_functions import logged_in, load_css_file, multile_button_inline, check_temporary_token
+from gen_functions import logged_in, load_css_file, multile_button_inline
+from db_functions import check_temporary_token
 load_css_file("styles/forms.css")
 load_css_file("styles/sidebar.css")
 from st_pages import add_indentation
