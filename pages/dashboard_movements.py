@@ -17,7 +17,6 @@ from gen_functions import (
     calculate_monthly_data,
     calculate_ytd_data
 )
-from init_app import db, authenticator
 import plotly.express as px
 import numpy as np
 from plots import (
@@ -35,6 +34,9 @@ from streamlit_extras.mandatory_date_range import date_range_picker
 from st_pages import add_indentation
 
 add_indentation()
+
+authenticator = st.session_state["authenticator"]
+db = st.session_state["db"]
 
 if not logged_in():
     switch_page("Mi perfil")

@@ -6,7 +6,6 @@ st.set_page_config(page_title="Finanzas Personales", page_icon="🐍", layout="w
 from streamlit_toggle import st_toggle_switch
 import numpy as np
 from streamlit_extras.stoggle import stoggle
-from init_app import db, authenticator
 import pandas as pd
 import plotly.express as px
 import datetime
@@ -15,6 +14,9 @@ from streamlit_extras.switch_page_button import switch_page
 from st_pages import add_indentation
 
 add_indentation()
+
+authenticator = st.session_state["authenticator"]
+db = st.session_state["db"]
 load_css_file("styles/sidebar.css")
 
 

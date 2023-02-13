@@ -1,6 +1,5 @@
 import streamlit as st
 st.set_page_config(page_title="Finanzas Personales", page_icon="🐍", layout="wide")
-from init_app import authenticator, db, credentials
 
 from streamlit_extras.switch_page_button import switch_page
 from gen_functions import logged_in, load_css_file, multile_button_inline
@@ -10,6 +9,10 @@ load_css_file("styles/sidebar.css")
 from st_pages import add_indentation
 
 add_indentation()
+
+authenticator = st.session_state["authenticator"]
+db = st.session_state["db"]
+credentials = st.session_state["credentials"]
 
 if logged_in():
     switch_page("Mi perfil")

@@ -18,7 +18,6 @@ import pandas as pd
 import datetime
 
 from st_aggrid import AgGrid, GridOptionsBuilder, JsCode
-from init_app import db, authenticator
 
 from streamlit_extras.mandatory_date_range import date_range_picker
 from streamlit_extras.switch_page_button import switch_page
@@ -28,6 +27,9 @@ from streamlit_option_menu import option_menu
 from st_pages import add_indentation
 
 add_indentation()
+
+authenticator = st.session_state["authenticator"]
+db = st.session_state["db"]
 
 try:
     search_params = st.experimental_get_query_params()

@@ -17,12 +17,12 @@ with open("predefined_queries.json") as file:
 db = Database(**st.secrets["mysql-dev"])
 
 #Connect to the database
-# @st.cache_resource
-# def set_connection():
-#     db.connect()
+@st.cache_resource
+def set_connection():
+    db.connect()
 
-# set_connection()
-db.connect()
+set_connection()
+# db.connect()
 
 # Commit predefined queries
 @st.cache_data
@@ -77,3 +77,5 @@ email_client = set_smtp_connection()
 
 st.session_state["db"] = db
 st.session_state["authenticator"] = authenticator
+email_client = st.session_state["email_client"]
+

@@ -1,6 +1,5 @@
 import streamlit as st
 import numpy as np
-from init_app import db, authenticator
 import pandas as pd
 import datetime
 import plotly.express as px
@@ -10,7 +9,10 @@ from gen_functions import  logged_in, df_with_all_dates_given_period, spanish_mo
 from st_pages import add_indentation
 
 add_indentation()
-# st.set_page_config(page_title="Finanzas Personales", page_icon="🐍", layout="wide")
+
+authenticator = st.session_state["authenticator"]
+db = st.session_state["db"]
+st.set_page_config(page_title="Finanzas Personales", page_icon="🐍", layout="wide")
 load_css_file("styles/sidebar.css")
 
 

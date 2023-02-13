@@ -5,13 +5,15 @@ load_css_file("styles/forms.css")
 load_css_file("styles/sidebar.css")
 
 
-from init_app import authenticator, email_client, db
 from gen_functions import logged_in, multile_button_inline
 from db_functions import create_temporary_token
 import streamlit as st
 from streamlit_extras.switch_page_button import switch_page
 from st_pages import add_indentation
 
+authenticator = st.session_state["authenticator"]
+db = st.session_state["db"]
+email_client = st.session_state["email_client"]
 
 add_indentation()
 

@@ -6,11 +6,14 @@ load_css_file("styles/forms.css")
 load_css_file("styles/sidebar.css")
 
 
-from init_app import credentials, authenticator, db
 from streamlit_extras.switch_page_button import switch_page
 from st_pages import add_indentation
 
 add_indentation()
+
+authenticator = st.session_state["authenticator"]
+db = st.session_state["db"]
+credentials = st.session_state["credentials"]
 
 if logged_in():
     switch_page("Mi perfil")

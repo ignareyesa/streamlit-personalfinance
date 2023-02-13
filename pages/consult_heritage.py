@@ -12,16 +12,17 @@ import datetime
 
 # Import the necessary libraries
 from st_aggrid import AgGrid, GridOptionsBuilder, JsCode
-from init_app import db, authenticator
-
 from streamlit_extras.mandatory_date_range import date_range_picker
 from streamlit_extras.switch_page_button import switch_page
 from streamlit_option_menu import option_menu
 from st_pages import add_indentation
 
-
 add_indentation()
 st.experimental_set_query_params()
+
+authenticator = st.session_state["authenticator"]
+db = st.session_state["db"]
+
 css_style = "styles/buttons.css"
 
 if not logged_in():
