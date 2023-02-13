@@ -17,12 +17,12 @@ with open("predefined_queries.json") as file:
 db = Database(**st.secrets["mysql-dev"])
 
 #Connect to the database
-# @st.cache_resource
-# def set_connection():
-#     db.connect()
+@st.cache_resource
+def set_connection():
+    db.connect()
+    return db
 
-# set_connection()
-db.connect()
+db = set_connection()
 st.session_state["db"] = db
 
 # Commit predefined queries

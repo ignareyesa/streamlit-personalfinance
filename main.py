@@ -1,5 +1,4 @@
 import streamlit as st
-st.set_page_config(page_title="Finanzas Personales", page_icon="🐍", layout="wide")
 
 
 from init_app import authenticator
