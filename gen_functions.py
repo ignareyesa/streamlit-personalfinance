@@ -5,7 +5,7 @@ import secrets
 from time import sleep
 from st_click_detector import click_detector
 from streamlit_extras.switch_page_button import switch_page
-from init_app import db
+from main import db
 
 
 def load_css_file(css_file_path, as_markdown=True):

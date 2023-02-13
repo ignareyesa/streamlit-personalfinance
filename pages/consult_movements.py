@@ -17,7 +17,7 @@ import pandas as pd
 import datetime
 
 from st_aggrid import AgGrid, GridOptionsBuilder, JsCode
-from init_app import db, authenticator
+from main import db, authenticator
 
 from streamlit_extras.mandatory_date_range import date_range_picker
 from streamlit_extras.switch_page_button import switch_page

@@ -5,7 +5,7 @@ load_css_file("styles/forms.css")
 load_css_file("styles/sidebar.css")
 
 
-from init_app import authenticator, email_client, db
+from main import authenticator, email_client, db
 from gen_functions import logged_in, create_temporary_token, multile_button_inline
 import streamlit as st
 from streamlit_extras.switch_page_button import switch_page
