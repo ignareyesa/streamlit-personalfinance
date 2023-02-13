@@ -1,5 +1,5 @@
 import streamlit as st
-from init_app import authenticator
+from init_app import authenticator, connection
 from streamlit_extras.badges import badge
 from streamlit_extras.mention import mention
 from markdownlit import mdlit
@@ -8,6 +8,7 @@ from gen_functions import logged_in, load_css_file
 from streamlit_extras.switch_page_button import switch_page
 from PIL import Image
 
+connection.reconnect()
 
 st.experimental_set_query_params()
 st.set_page_config(page_title="Finanzas Personales", page_icon="🐍", layout="wide")
