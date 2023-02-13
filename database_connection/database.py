@@ -55,6 +55,7 @@ class Database:
         query (str): The query to execute.
         params (Optional[tuple]): A tuple containing the values for the placeholders in the query.
         """
+        self.connection.reconnect()
         cursor = self.connection.cursor(buffered=False)
         cursor.reset()
         cursor.execute(query, params)
@@ -74,6 +75,7 @@ class Database:
         Returns:
         list: A list of rows returned by the query.
         """
+        self.connection.reconnect()
         cursor = self.connection.cursor(buffered=True)
         cursor.execute(query, params)
         result = cursor.fetchall()
@@ -93,6 +95,7 @@ class Database:
         Returns:
         list: A list the row returned by the query.
         """
+        self.connection.reconnect()
         cursor = self.connection.cursor(buffered=True)
         cursor.execute(query, params)
         result = cursor.fetchone()
@@ -112,6 +115,7 @@ class Database:
         Returns:
         list: A list of column names.
         """
+        self.connection.reconnect()
         cursor = self.connection.cursor(buffered=True)
         cursor.reset()
         cursor.execute(query, params)
