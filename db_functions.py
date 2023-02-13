@@ -47,8 +47,3 @@ def check_temporary_token(table: str, token: str):
         return True
     else:
         raise Exception("El enlace proporcionado no es válido")
-
-
-def reconnect_session():
-    db.close()
-    db.connect()

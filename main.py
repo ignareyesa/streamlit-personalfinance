@@ -1,17 +1,18 @@
+from init_app import authenticator
+
 import streamlit as st
-from init_app import authenticator, connection
+from gen_functions import logged_in, load_css_file
 from streamlit_extras.badges import badge
 from streamlit_extras.mention import mention
 from markdownlit import mdlit
 from st_pages import Page, show_pages, Section, add_indentation
-from gen_functions import logged_in, load_css_file
 from streamlit_extras.switch_page_button import switch_page
 from PIL import Image
 
-st.experimental_set_query_params()
-st.set_page_config(page_title="Finanzas Personales", page_icon="🐍", layout="wide")
 load_css_file("styles/sidebar.css")
 load_css_file("styles/main.css")
+st.experimental_set_query_params()
+
 
 show_pages(
     [
