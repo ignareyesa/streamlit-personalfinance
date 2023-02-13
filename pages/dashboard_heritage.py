@@ -12,7 +12,6 @@ add_indentation()
 
 authenticator = st.session_state["authenticator"]
 db = st.session_state["db"]
-st.set_page_config(page_title="Finanzas Personales", page_icon="🐍", layout="wide")
 load_css_file("styles/sidebar.css")
 
 

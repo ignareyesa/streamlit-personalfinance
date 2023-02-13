@@ -23,6 +23,7 @@ db = Database(**st.secrets["mysql-dev"])
 
 # set_connection()
 db.connect()
+st.session_state["db"] = db
 
 # Commit predefined queries
 @st.cache_data
@@ -52,7 +53,7 @@ authenticator = stauth.Authenticate(
     config["cookie"]["expiry_days"],
     config["preauthorized"],
 )
-
+st.session_state["authenticator"] = authenticator
 
 smtp_connection = st.secrets["smtp_connection"]
 smtp_server = smtp_connection["SMTP_SERVER"]
@@ -74,8 +75,5 @@ def set_smtp_connection():
     )
 
 email_client = set_smtp_connection()
-
-st.session_state["db"] = db
-st.session_state["authenticator"] = authenticator
 st.session_state["email_client"] = email_client 
 
