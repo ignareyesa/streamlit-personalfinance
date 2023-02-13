@@ -1,5 +1,6 @@
 import smtplib
-
+from email.mime.text import MIMEText
+from email.message import EmailMessage
 
 class EmailClient:
     """
@@ -50,12 +51,11 @@ class EmailClient:
             body (str): The body of the email.
         """
 
-        msg = f"""From: {self.from_name} <{self.from_addr}>
-To: {to_name} <{to_addr}>
-Subject: {subject}
-        
-{body}"""
-        print(msg)
+        msg = EmailMessage()
+        msg['Subject'] = subject
+        msg['To'] = f"{to_name} <{to_addr}>"
+        msg['From'] = f"{self.from_name} <{self.from_addr}>"
+        msg.add_alternative(body, subtype='html')
 
-        self.server.sendmail(self.from_addr, to_addr, msg.encode("utf-8"))
-        self._close_connection()
+        self.server.sendmail(self.from_addr, to_addr, msg.as_string())
+        # self._close_connection()

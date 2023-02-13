@@ -64,67 +64,49 @@ with col1:
     
     mdlit(f"""Esta app te permite [violet]**controlar tu ingresos, gastos e inversiones**[/violet] de una forma rápida e intuitiva mediante el uso de [violet]**dashboards interactivos**[/violet] con unos simples clicks.
 
-Esta aplicación forma parte de una serie de proyectos mensuales publicados en la newsletter de Ignacio. Todos [violet]**los proyectos tratan sobre
-análitica avanzada de datos y la programación**[/violet]. La aplicación presente se ha realizado únicamente haciendo uso de Python🐍 y, en concreto de la librería
-`streamlit`.
+Esta aplicación forma parte de una serie de proyectos publicados en mi newsletter, donde, semanalmente publico artículos prácticos que profundizan en proyectos relacionados con la analítica y la ciencia de datos. Si quieres conocer más a fondo la newsletter, aquí tienes el árticulo de presentación. -> [Enlace](https://dataanalyticstalks.substack.com)
 
-Concretamente, este proyecto se ha divido en 4 entregas:
+[violet]**Finanzas Personales con Streamlit**[/violet] se trata del primer proyecto presentado, el cual se desarrolla a lo largo de 5 entregas, en las que se desarrolla esta aplicación haciendo uso del *framework* Streamlit de *Python*, herramienta que posteriormente utilizaremos para disponibilizar modelos de predicción y análisis al usuario.
 
-1. @(⚙️)([violet]**Inicio app, configuración BBDD y portal entrada de usuarios**[/violet])(/) <- Estas aquí
-2. @(📊)(Recogida de datos por usuario y creación de dashboard)(/)
-3. @(🌍)(Despliegue en la web)(/)
-4. @(🟢)(Expandir funcionalidades)(/)
+Las cinco entregas de las que consta el proyecto son:
 
-Si te gusta lo que lees, [violet]**te animo a probar la app**[/violet], pulsando en el siquiente enlace (no hace falta registro)."""
+1. @(⚙️)([violet]**Inicio app y configuración Base de Datos**[/violet])(https://dataanalyticstalks.substack.com)
+2. @(👤)(Portal para usuarios y creación de formularios)(https://dataanalyticstalks.substack.com)
+3. @(🌍)(Tablas interactivas y personalización de la app)(https://dataanalyticstalks.substack.com)
+4. @(📊)(Creación de Dashboards interactivos)(https://dataanalyticstalks.substack.com)
+5. @(🟢)(Despligue de la app y conclusiones sobre Streamlit)(https://dataanalyticstalks.substack.com)
+
+
+Puedes encontrar todo el código en GitHub, a lo largo de las entregas iremos explicando las diferentes partes del código.
+
+@(💻)(Código del proyecto)(https://github.com/ignareyesa/streamlit-personalfinance)
+
+[violet]**Prueba la App**[/violet], pulsando en el siquiente enlace (no hace falta registro)."""
     )
 
     start_now = st.button("👉 Comienza ya! ")
     if start_now:
         switch_page("Mi perfil")
 
-    mdlit("""
-No te vayas! Si crees que este u otros proyectos te pueden parecer interesantes, te dejo por aquí unos enlaces.
+mdlit("""
+Para no perderte ningún proyecto, subscribete a la newsletter de forma gratuita. 
 
-- @(📰)(Newsletter)(/)
-- @(🧮)(Entregas newsletter dedicados a este proyecto)(/)
-- @(💻)(Código del proyecto)(https://github.com/ignareyesa/streamlit-personalfinance)
+@(📰)(Mi newsletter)(https://dataanalyticstalks.substack.com/)
 
-    Y... algún enlace más por si quieres ponerte en contacto conmigo. 
+@(🧮)(Presentación newsletter e introducción este proyecto)(/)
     """
     )
 
 with col3:
     image = Image.open('images/main_vector.jpeg')
     st.image(image, use_column_width=True)
+    st.write(
+            """<hr style='border-top: 3px solid #bbb; border-radius: 1px;'>""",
+            unsafe_allow_html=True,
+        )
+    st.info('**[Web personal](https://ignacioreyesarboledas.tech/)**', icon="👨‍💻")
+    st.info('**[LinkedIn](https://www.linkedin.com/in/ignacioreyesarboledas/)**', icon="🟦",)
+    st.info('**[GitHub](https://github.com/ignareyesa/)**', icon="💼")
 
-col1, col2, col3, col4 = st.columns(4)
-
-foot_mention_1 = mention(
-    label="**[violet]Mi Web[/violet]**",
-    icon="👨‍💻",
-    url="https://ignacioreyesarboledas.tech/",
-    write=False,
-)
-foot_mention_2 = mention(
-    label="**[violet]Github[/violet]**",
-    icon="github",
-    url="https://github.com/ignareyesa/",
-    write=False,
-)
-foot_mention_3 = mention(
-    label="**[violet]LinkedIn[/violet]**",
-    icon="🟦",
-    url="https://www.linkedin.com/in/ignacioreyesarboledas/",
-    write=False,
-)
-
-with col2:
-    mdlit(f"{foot_mention_1}")
-
-with col3:
-    mdlit(f"{foot_mention_2}")
-
-with col4:
-    mdlit(f"{foot_mention_3}")
 
 

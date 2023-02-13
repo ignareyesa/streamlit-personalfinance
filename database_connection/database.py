@@ -73,7 +73,7 @@ class Database:
         Returns:
         list: A list of rows returned by the query.
         """
-        cursor = self.connection.cursor(buffered=True)
+        cursor = self.connection.cursor(buffered=False)
         cursor.execute(query, params)
         result = cursor.fetchall()
         cursor.close()
@@ -92,7 +92,7 @@ class Database:
         Returns:
         list: A list the row returned by the query.
         """
-        cursor = self.connection.cursor(buffered=True)
+        cursor = self.connection.cursor(buffered=False)
         cursor.execute(query, params)
         result = cursor.fetchone()
         cursor.close()
@@ -111,7 +111,7 @@ class Database:
         Returns:
         list: A list of column names.
         """
-        cursor = self.connection.cursor(buffered=True)
+        cursor = self.connection.cursor(buffered=False)
         cursor.execute(query, params)
         column_names = [column[0] for column in cursor.description]
         cursor.close()

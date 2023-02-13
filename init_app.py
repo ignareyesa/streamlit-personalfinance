@@ -9,8 +9,6 @@ from dotenv import load_dotenv
 from database_connection.database import Database
 from smtp_connection.email_client import EmailClient
 
-load_dotenv()
-
 st.set_page_config(page_title="Finanzas Personales", page_icon="🐍", layout="wide")
 
 with open("config.yaml") as file:
@@ -48,19 +46,20 @@ authenticator = stauth.Authenticate(
     config["preauthorized"],
 )
 
+smtp_connection = st.secrets["smtp_connection"]
 
-# smtp_server = os.getenv("SMTP_SERVER")
-# smtp_port = os.getenv("SMTP_PORT")
-# smtp_username = os.getenv("SMTP_API_NAME")
-# smtp_password = os.getenv("SMTP_API_KEY")
-# smtp_from_addr = os.getenv("SMTP_FROM_ADDRESS")
-# smtp_from_name = os.getenv("SMTP_FROM_NAME")
+smtp_server = smtp_connection["SMTP_SERVER"]
+smtp_port = smtp_connection["SMTP_PORT"]
+smtp_username = smtp_connection["SMTP_API_NAME"]
+smtp_password = smtp_connection["SMTP_API_KEY"]
+smtp_from_addr = smtp_connection["SMTP_FROM_ADDRESS"]
+smtp_from_name = smtp_connection["SMTP_FROM_NAME"]
 
-# email_client = EmailClient(
-#     smtp_server=smtp_server,
-#     smtp_port=smtp_port,
-#     username=smtp_username,
-#     password=smtp_password,
-#     from_addr=smtp_from_addr,
-#     from_name=smtp_from_name,
-# )
+email_client = EmailClient(
+    smtp_server=smtp_server,
+    smtp_port=smtp_port,
+    username=smtp_username,
+    password=smtp_password,
+    from_addr=smtp_from_addr,
+    from_name=smtp_from_name,
+)

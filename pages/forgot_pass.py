@@ -11,29 +11,29 @@ import streamlit as st
 from streamlit_extras.switch_page_button import switch_page
 from st_pages import add_indentation
 
+
 add_indentation()
 
 # The body of the email to be sent to the user
 email_body = """
-Hola,
-
-Recibimos una solicitud para recuperar tu contraseña. Si no fuiste tú quien lo solicitó, por favor ignora este mensaje.
-
-Para recuperar tu contraseña, haz clic en el siguiente enlace:
-
-http://localhost:8501/Configuración?page=reset_pass&token={token}&username={username}
-
-Si tienes problemas para acceder al enlace, copia y pega la siguiente dirección en tu navegador:
-
-http://localhost:8501/Configuración?page=reset_pass&token={token}&username={username}
-
-Un saludo,
-
-El equipo de Finanzas Personales
+<html>
+  <head>
+    <title>Recuperación de contraseña</title>
+  </head>
+  <body>
+    <p>Hola,</p>
+    <p>Recibimos una solicitud para recuperar tu contraseña. Si no fuiste tú quien lo solicitó, por favor ignora este mensaje.</p>
+    <p>Para recuperar tu contraseña, haz clic en el siguiente botón:</p>
+    <p><a href="https://finanzaspersonales.streamlit.app/Configuración?page=reset_pass&token={token}&username={username}"><button style="background-color:rgba(128, 61, 245);border:none;color:white;padding:14px 23px;text-align:center;text-decoration:none;display:inline-block;font-size:15px;margin:3px 1px;cursor:pointer;">Recuperar contraseña</button></a></p>    <p>Si tienes problemas para acceder al enlace, copia y pega la siguiente dirección en tu navegador:</p>
+    <p>https://finanzaspersonales.streamlit.app/Configuración?page=reset_pass&token={token}&username={username}</p>
+    <p>Un saludo,</p>
+    <p>El equipo de Finanzas Personales</p>
+  </body>
+</html>
 """
 
 # The subject of the email to be sent to the user
-email_subject = "Recuperación de Contraseña"
+email_subject = "Recuperación de contraseña"
 
 # Check if user is logged in, if is, show warning message and stop execution of code
 if logged_in():
@@ -64,7 +64,7 @@ else:
 
             # Show a success message
             st.success(
-                "Se le ha enviado un enlace a la dirección de correo electrónico asociada a la cuenta"
+                "Se le ha enviado un enlace a la dirección de correo electrónico asociada a la cuenta (revise la carpeta Promociones o Spam)"
             )
     except Exception as e:
         # If there was an error, show it
