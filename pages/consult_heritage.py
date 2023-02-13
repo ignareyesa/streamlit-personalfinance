@@ -12,7 +12,7 @@ import datetime
 
 # Import the necessary libraries
 from st_aggrid import AgGrid, GridOptionsBuilder, JsCode
-from main import db, authenticator
+from init_app import db, authenticator
 
 from streamlit_extras.mandatory_date_range import date_range_picker
 from streamlit_extras.switch_page_button import switch_page

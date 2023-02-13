@@ -6,7 +6,7 @@ st.set_page_config(page_title="Finanzas Personales", page_icon="🐍", layout="w
 from streamlit_toggle import st_toggle_switch
 import numpy as np
 from streamlit_extras.stoggle import stoggle
-from main import db, authenticator
+from init_app import db, authenticator
 import pandas as pd
 import plotly.express as px
 import datetime

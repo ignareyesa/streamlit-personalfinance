@@ -1,6 +1,6 @@
 import streamlit as st
 import numpy as np
-from main import db, authenticator
+from init_app import db, authenticator
 import pandas as pd
 import datetime
 import plotly.express as px

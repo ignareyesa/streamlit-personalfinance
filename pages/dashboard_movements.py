@@ -17,7 +17,7 @@ from gen_functions import (
     calculate_monthly_data,
     calculate_ytd_data
 )
-from main import db, authenticator
+from init_app import db, authenticator
 import plotly.express as px
 import numpy as np
 from plots import (

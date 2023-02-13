@@ -1,8 +1,9 @@
 import streamlit as st
 st.set_page_config(page_title="Finanzas Personales", page_icon="🐍", layout="wide")
 
-from main import authenticator, db
+from init_app import authenticator, db, connection
 from gen_functions import logged_in, multile_button_inline, load_css_file, switch_page, progressbar
+from db_functions import reconnect_session
 from streamlit_extras.add_vertical_space import add_vertical_space
 from authenticator.utils import check_email
 
@@ -15,6 +16,12 @@ load_css_file("styles/sidebar.css")
 
 st.experimental_set_query_params()
 add_indentation()
+st.write(db)
+try:
+    db.fetchone(query="SELECT * FROM users")
+except:
+    
+    db.connect()
 
 css_style = "styles/buttons.css"
 

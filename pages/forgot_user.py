@@ -6,7 +6,7 @@ load_css_file("styles/forms.css")
 load_css_file("styles/sidebar.css")
 
 
-from main import authenticator, db
+from init_app import authenticator, db
 import streamlit as st
 from streamlit_extras.switch_page_button import switch_page
 from st_pages import add_indentation
