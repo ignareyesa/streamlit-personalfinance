@@ -1,4 +1,3 @@
-# import mysql.connector
 import json
 import streamlit as st
 import yaml

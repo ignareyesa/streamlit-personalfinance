@@ -1,7 +1,7 @@
 import streamlit as st
 st.set_page_config(page_title="Finanzas Personales", page_icon="🐍", layout="wide")
 
-from init_app import authenticator, db
+from main import authenticator, db
 from gen_functions import logged_in, multile_button_inline, load_css_file, switch_page, progressbar
 from streamlit_extras.add_vertical_space import add_vertical_space
 from authenticator.utils import check_email
