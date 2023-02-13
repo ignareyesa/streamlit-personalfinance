@@ -1,6 +1,5 @@
 import streamlit as st
 
-from init_app import authenticator, db
 from gen_functions import logged_in, multile_button_inline, load_css_file, switch_page, progressbar
 from streamlit_extras.add_vertical_space import add_vertical_space
 from authenticator.utils import check_email
@@ -15,10 +14,8 @@ load_css_file("styles/sidebar.css")
 st.experimental_set_query_params()
 add_indentation()
 
-try:
-    db.fetchone(query="SELECT * FROM users")
-except:
-    db.connect()
+authenticator = st.session_state["authenticator"]
+db = st.session_state["db"]
 
 css_style = "styles/buttons.css"
 

@@ -1,6 +1,9 @@
+import streamlit as st
+st.set_page_config(page_title="Finanzas Personales", page_icon="🐍", layout="wide")
+
+
 from init_app import authenticator
 
-import streamlit as st
 from gen_functions import logged_in, load_css_file
 from streamlit_extras.badges import badge
 from streamlit_extras.mention import mention
@@ -35,7 +38,8 @@ show_pages(
 )
 
 add_indentation()
-
+authenticator = st.session_state["authenticator"]
+db = st.session_state["db"]
 
 if logged_in():
     authenticator.logout("Salir", "sidebar")

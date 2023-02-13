@@ -6,8 +6,6 @@ import authenticator as stauth
 from database_connection.database import Database
 from smtp_connection.email_client import EmailClient
 
-# st.set_page_config(page_title="Finanzas Personales", page_icon="🐍", layout="wide")
-
 with open("config.yaml") as file:
     config = yaml.load(file, Loader=Loader)
 
@@ -18,35 +16,35 @@ with open("predefined_queries.json") as file:
 # Create an instance of the Database class
 db = Database(**st.secrets["mysql-dev"])
 
-# Connect to the database
-@st.cache_resource
-def set_connection():
-    db.connect()
+#Connect to the database
+# @st.cache_resource
+# def set_connection():
+#     db.connect()
 
-set_connection()
+# set_connection()
+db.connect()
 
 # Commit predefined queries
 @st.cache_data
-def run_initial_queries(predefine_queries):
+def run_predefined_queries():
     for query in predefine_queries:
-        st.write(query)
         try:
             db.commit(query)
         except Exception as e:
             raise ValueError(
                 "Something went wrong during first connection to database: ", e)
-print("AQUI")
-run_initial_queries(predefine_queries)
-print("runned initial")
+
+run_predefined_queries()
 
 
-users = db.fetchall("SELECT * from users;")
+@st.cache_data
+def fetchall(query, params=None):
+    return db.fetchall(query, params)
+
+users = fetchall("SELECT * from users;")
 credentials = {
     "usernames": {i[2]: {"email": i[1], "name": i[3], "password": i[4]} for i in users}
 }
-print("users")
-
-
 authenticator = stauth.Authenticate(
     credentials,
     config["cookie"]["name"],
@@ -54,7 +52,7 @@ authenticator = stauth.Authenticate(
     config["cookie"]["expiry_days"],
     config["preauthorized"],
 )
-print("auth")
+
 
 smtp_connection = st.secrets["smtp_connection"]
 smtp_server = smtp_connection["SMTP_SERVER"]
@@ -76,4 +74,6 @@ def set_smtp_connection():
     )
 
 email_client = set_smtp_connection()
-print("smtp")
+
+st.session_state["db"] = db
+st.session_state["authenticator"] = authenticator
