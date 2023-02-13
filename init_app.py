@@ -1,11 +1,9 @@
 # import mysql.connector
 import json
 import streamlit as st
-import os
 import yaml
 from yaml import CLoader as Loader
 import authenticator as stauth
-from dotenv import load_dotenv
 from database_connection.database import Database
 from smtp_connection.email_client import EmailClient
 
