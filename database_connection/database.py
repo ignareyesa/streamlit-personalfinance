@@ -1,4 +1,5 @@
 import mysql.connector
+import streamlit as st
 
 class Database:
     """
@@ -57,7 +58,6 @@ class Database:
         """
         self.connection.reconnect()
         cursor = self.connection.cursor(buffered=False)
-        cursor.reset()
         cursor.execute(query, params)
         self.connection.commit()
         cursor.close()
@@ -114,7 +114,6 @@ class Database:
         list: A list of column names.
         """
         cursor = self.connection.cursor(buffered=True)
-        cursor.reset()
         cursor.execute(query, params)
         column_names = [column[0] for column in cursor.description]
         cursor.close()

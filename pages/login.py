@@ -18,7 +18,6 @@ add_indentation()
 try:
     db.fetchone(query="SELECT * FROM users")
 except:
-    
     db.connect()
 
 css_style = "styles/buttons.css"

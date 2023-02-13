@@ -6,7 +6,7 @@ import authenticator as stauth
 from database_connection.database import Database
 from smtp_connection.email_client import EmailClient
 
-st.set_page_config(page_title="Finanzas Personales", page_icon="🐍", layout="wide")
+# st.set_page_config(page_title="Finanzas Personales", page_icon="🐍", layout="wide")
 
 with open("config.yaml") as file:
     config = yaml.load(file, Loader=Loader)
@@ -19,20 +19,32 @@ with open("predefined_queries.json") as file:
 db = Database(**st.secrets["mysql-dev"])
 
 # Connect to the database
-connection = db.connect()
+@st.cache_resource
+def set_connection():
+    db.connect()
+
+set_connection()
 
 # Commit predefined queries
-for query in predefine_queries:
-    try:
-        db.commit(query)
-    except Exception as e:
-        raise ValueError(
-            "Something went wrong during first connection to database: ", e)
+@st.cache_data
+def run_initial_queries(predefine_queries):
+    for query in predefine_queries:
+        st.write(query)
+        try:
+            db.commit(query)
+        except Exception as e:
+            raise ValueError(
+                "Something went wrong during first connection to database: ", e)
+print("AQUI")
+run_initial_queries(predefine_queries)
+print("runned initial")
+
 
 users = db.fetchall("SELECT * from users;")
 credentials = {
     "usernames": {i[2]: {"email": i[1], "name": i[3], "password": i[4]} for i in users}
 }
+print("users")
 
 
 authenticator = stauth.Authenticate(
@@ -42,9 +54,9 @@ authenticator = stauth.Authenticate(
     config["cookie"]["expiry_days"],
     config["preauthorized"],
 )
+print("auth")
 
 smtp_connection = st.secrets["smtp_connection"]
-
 smtp_server = smtp_connection["SMTP_SERVER"]
 smtp_port = smtp_connection["SMTP_PORT"]
 smtp_username = smtp_connection["SMTP_API_NAME"]
@@ -52,11 +64,16 @@ smtp_password = smtp_connection["SMTP_API_KEY"]
 smtp_from_addr = smtp_connection["SMTP_FROM_ADDRESS"]
 smtp_from_name = smtp_connection["SMTP_FROM_NAME"]
 
-email_client = EmailClient(
-    smtp_server=smtp_server,
-    smtp_port=smtp_port,
-    username=smtp_username,
-    password=smtp_password,
-    from_addr=smtp_from_addr,
-    from_name=smtp_from_name,
-)
+@st.cache_resource
+def set_smtp_connection():
+    return EmailClient(
+        smtp_server=smtp_server,
+        smtp_port=smtp_port,
+        username=smtp_username,
+        password=smtp_password,
+        from_addr=smtp_from_addr,
+        from_name=smtp_from_name,
+    )
+
+email_client = set_smtp_connection()
+print("smtp")

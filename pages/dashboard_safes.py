@@ -39,7 +39,7 @@ with st.container():
         st.write("""<h1 style='text-align: left;'>Mis ahorros</h1>""", unsafe_allow_html=True)
     with col2:
         st.markdown("""
-                <button class="search-button" title="La información mostrada es para los meses ya terminados.">
+                <button class="search-button" title="La información mostrada es para los meses ya acabados.">
                     <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon"><circle cx="12" cy="12" r="10"></circle><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"></path><line x1="12" y1="17" x2="12.01" y2="17"></line></svg>
                 </button>""", unsafe_allow_html=True)
 
