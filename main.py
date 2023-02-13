@@ -14,9 +14,34 @@ from database_connection.database import Database
 from smtp_connection.email_client import EmailClient
 
 st.set_page_config(page_title="Finanzas Personales", page_icon="🐍", layout="wide")
+st.experimental_set_query_params()
+load_css_file("styles/sidebar.css")
+load_css_file("styles/main.css")
 
 with open("config.yaml") as file:
     config = yaml.load(file, Loader=Loader)
+
+show_pages(
+    [
+        Page("main.py", "Inicio", ":house:"),
+        Page("pages/login.py", "Mi perfil", ":bust_in_silhouette:"),
+        Page("pages/forgot_pass.py", "", ""),
+        Page("pages/forgot_user.py", " ", ""),
+        Page("pages/sign_up.py", "  ", ""),
+        Page("pages/reset_pass.py", "    ", ""),
+        Section("Gastos e Ingresos", ":coin:"),
+            Page("pages/dashboard_movements.py", "Seguimiento", ":bar_chart:"),
+            Page("pages/consult_movements.py","Movimientos",":currency_exchange:"),
+            Page("pages/dashboard_safes.py", "Ahorros", "💹"),
+        Section("Patrimonio", ":bank:"),
+            Page("pages/dashboard_heritage.py","Seguimiento patrimonio",":bar_chart:"),
+            Page("pages/consult_heritage.py","Activos y pasivos",":currency_exchange:"),
+        Section("Administración", ":card_file_box:"),
+            Page("pages/profile_settings.py", "Configuración", ":gear:"),
+    ]
+)
+
+add_indentation()
 
 with open("predefined_queries.json") as file:
     json_loads = json.load(file)
@@ -64,34 +89,6 @@ email_client = EmailClient(
     from_addr=smtp_from_addr,
     from_name=smtp_from_name,
 )
-
-st.experimental_set_query_params()
-st.set_page_config(page_title="Finanzas Personales", page_icon="🐍", layout="wide")
-load_css_file("styles/sidebar.css")
-load_css_file("styles/main.css")
-
-show_pages(
-    [
-        Page("main.py", "Inicio", ":house:"),
-        Page("pages/login.py", "Mi perfil", ":bust_in_silhouette:"),
-        Page("pages/forgot_pass.py", "", ""),
-        Page("pages/forgot_user.py", " ", ""),
-        Page("pages/sign_up.py", "  ", ""),
-        Page("pages/reset_pass.py", "    ", ""),
-        Section("Gastos e Ingresos", ":coin:"),
-            Page("pages/dashboard_movements.py", "Seguimiento", ":bar_chart:"),
-            Page("pages/consult_movements.py","Movimientos",":currency_exchange:"),
-            Page("pages/dashboard_safes.py", "Ahorros", "💹"),
-        Section("Patrimonio", ":bank:"),
-            Page("pages/dashboard_heritage.py","Seguimiento patrimonio",":bar_chart:"),
-            Page("pages/consult_heritage.py","Activos y pasivos",":currency_exchange:"),
-        Section("Administración", ":card_file_box:"),
-            Page("pages/profile_settings.py", "Configuración", ":gear:"),
-    ]
-)
-
-add_indentation()
-
 
 if logged_in():
     authenticator.logout("Salir", "sidebar")
