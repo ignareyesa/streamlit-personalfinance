@@ -30,7 +30,6 @@ show_pages(
             Page("pages/consult_heritage.py","Activos y pasivos",":currency_exchange:"),
         Section("Administración", ":card_file_box:"),
             Page("pages/profile_settings.py", "Configuración", ":gear:"),
-
     ]
 )
 
