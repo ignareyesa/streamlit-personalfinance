@@ -45,11 +45,10 @@ except Exception as e:
     multile_button_inline(["Ir al inicio"],["Mi perfil"])
     st.stop()
 
-
 # show form to get new password and update it in the database
 try:
     # get user id from database
-    user_id = db.fetchone("SELECT id from users where username=%s", (username))[0]
+    user_id = db.fetchone("SELECT id from users where username='{}'".format(username))[0]
     if authenticator.forgot_password(username, "Cambiar contraseña"):
         new_pass = credentials["usernames"][username]["password"]
         db.commit("UPDATE users SET pass=%s WHERE id=%s", (new_pass, user_id))
