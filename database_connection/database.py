@@ -55,7 +55,8 @@ class Database:
         query (str): The query to execute.
         params (Optional[tuple]): A tuple containing the values for the placeholders in the query.
         """
-        cursor = self.connection.cursor(buffered=True)
+        cursor = self.connection.cursor(buffered=False)
+        cursor.reset()
         cursor.execute(query, params)
         self.connection.commit()
         cursor.close()
