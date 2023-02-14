@@ -18,16 +18,17 @@ db = Database(**st.secrets["mysql-dev"])
 
 #Connect to the database
 @st.cache_resource
-def set_connection():
+def set_connection(retry=False):
     db.connect()
     return db
 
 db = set_connection()
+print(db)
 st.session_state["db"] = db
 
 # Commit predefined queries
 @st.cache_data
-def run_predefined_queries():
+def run_predefined_queries(retry=False):
     for query in predefine_queries:
         try:
             db.commit(query)
@@ -39,7 +40,7 @@ run_predefined_queries()
 
 
 @st.cache_data
-def fetchall(query, params=None):
+def fetchall(query, params=None, retry=False):
     return db.fetchall(query, params)
 
 users = fetchall("SELECT * from users;")
@@ -64,7 +65,7 @@ smtp_from_addr = smtp_connection["SMTP_FROM_ADDRESS"]
 smtp_from_name = smtp_connection["SMTP_FROM_NAME"]
 
 @st.cache_resource
-def set_smtp_connection():
+def set_smtp_connection(retry=False):
     return EmailClient(
         smtp_server=smtp_server,
         smtp_port=smtp_port,

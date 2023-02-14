@@ -11,6 +11,8 @@ from st_pages import Page, show_pages, Section, add_indentation
 from streamlit_extras.switch_page_button import switch_page
 from PIL import Image
 
+
+
 load_css_file("styles/sidebar.css")
 load_css_file("styles/main.css")
 st.experimental_set_query_params()
@@ -37,8 +39,13 @@ show_pages(
 )
 
 add_indentation()
-authenticator = st.session_state["authenticator"]
-db = st.session_state["db"]
+try:
+    authenticator = st.session_state["authenticator"]
+    db = st.session_state["db"]
+except:
+    from init_exceptions import authenticator
+    authenticator = st.session_state["authenticator"]
+    db = st.session_state["db"]
 
 if logged_in():
     authenticator.logout("Salir", "sidebar")
