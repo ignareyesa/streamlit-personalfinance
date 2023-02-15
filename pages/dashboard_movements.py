@@ -182,7 +182,7 @@ with tab1:
                 "Ingresos",
                 True,
                 "percent",
-                False,
+                True,
             )
             st.pyplot(fig)
 
@@ -270,8 +270,7 @@ with tab1:
                 3,
                 [mtd_yoy_incomes, mtd_last_incomes, mtd_incomes],
                 [f"{month_name[:3]} {year-1}", f"{prev_date(month, year, True)}", "Mes sel."],
-                "#0979b0",
-                False,
+                "#0979b0",True,
             )
             st.pyplot(fig)
 
