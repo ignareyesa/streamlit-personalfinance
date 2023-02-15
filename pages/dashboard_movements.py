@@ -333,24 +333,7 @@ with tab1:
             unsafe_allow_html=True,
         )
 
-    with st.container():
-        cont3_col1, cont3_col2, cont3_col3 = st.columns([4.5, 5.3, 5.3])
-
-        with cont3_col1:
-            st.write(
-                "<h4 style='text-align: center; font-weight: 400; color: rgb(49, 51, 63); padding: 0px; margin: 0px; line-height: 0.5; font-size: 1.3rem;'>Evolución patrimonio </h4>",
-                unsafe_allow_html=True,
-            )
-        with cont3_col2:
-            st.write(
-                "<h4 style='text-align: center; font-weight: 400; color: rgb(49, 51, 63); padding: 0px; margin: 0px; line-height: 0.5; font-size: 1.3rem;'>Evolución gastos</h4>",
-                unsafe_allow_html=True,
-            )
-        with cont3_col3:
-            st.write(
-                "<h4 style='text-align: center; font-weight: 400; color: rgb(49, 51, 63); padding: 0px; margin: 0px; line-height: 0.5; font-size: 1.3rem;'>Evolución ingresos</h4>",
-                unsafe_allow_html=True,
-            )
+            
     with st.container():
         cont4_col1, cont4_col2, cont4_col3 = st.columns([4.5, 5.3, 5.3])
 
@@ -390,6 +373,10 @@ with tab1:
             fig.update_traces(connectgaps=True)
             fig.update_traces(hovertemplate="Patrimonio: %{y:.1f}€<extra></extra>")
 
+            st.write(
+                "<h4 style='text-align: center; font-weight: 400; color: rgb(49, 51, 63); padding: 0px; margin: 0px; line-height: 0.5; font-size: 1.3rem;'>Evolución patrimonio </h4>",
+                unsafe_allow_html=True,
+            )
             st.plotly_chart(fig, use_container_width=True)
 
         with cont4_col2:
@@ -424,6 +411,10 @@ with tab1:
                 cliponaxis=False,
             )
             fig.update_traces(hovertemplate="Gastos: %{y:.1f}€<extra></extra>")
+            st.write(
+                "<h4 style='text-align: center; font-weight: 400; color: rgb(49, 51, 63); padding: 0px; margin: 0px; line-height: 0.5; font-size: 1.3rem;'>Evolución gastos</h4>",
+                unsafe_allow_html=True,
+            )
             st.plotly_chart(fig, use_container_width=True)
 
         with cont4_col3:
@@ -458,6 +449,10 @@ with tab1:
                 cliponaxis=False,
             )
             fig.update_traces(hovertemplate="Ingresos: %{y:.1f}€<extra></extra>")
+            st.write(
+                "<h4 style='text-align: center; font-weight: 400; color: rgb(49, 51, 63); padding: 0px; margin: 0px; line-height: 0.5; font-size: 1.3rem;'>Evolución ingresos</h4>",
+                unsafe_allow_html=True,
+            )
             st.plotly_chart(fig, use_container_width=True)
 
 with tab2:

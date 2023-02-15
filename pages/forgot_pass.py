@@ -1,4 +1,5 @@
 from gen_functions import load_css_file
+from init_exceptions import if_reconnect
 import streamlit as st
 st.set_page_config(page_title="Finanzas Personales", page_icon="🐍", layout="wide")
 load_css_file("styles/forms.css")
@@ -14,6 +15,8 @@ from st_pages import add_indentation
 # Check if user is logged in, if is, show warning message and stop execution of code
 if logged_in():
     switch_page("Mi perfil")
+
+if_reconnect()
 
 authenticator = st.session_state["authenticator"]
 db = st.session_state["db"]
@@ -70,7 +73,6 @@ try:
             "Se le ha enviado un enlace a la dirección de correo electrónico asociada a la cuenta (revise la carpeta Promociones o Spam)"
         )
 except Exception as e:
-    st.write(email_client)
     st.error(e)
 
 # Show a button to go back to the login page
