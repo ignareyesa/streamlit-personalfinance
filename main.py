@@ -71,12 +71,11 @@ with col1:
 
     badge(type="github", name="ignareyesa/streamlit-personalfinance")
     
-    mdlit(f"""Esta app te permite [violet]**controlar tu ingresos, gastos e inversiones**[/violet] de una forma rápida e intuitiva mediante el uso de [violet]**dashboards interactivos**[/violet] con unos simples clicks.
+    mdlit(f"""Con esta aplicación podrás [violet]controlar tus ingresos, gastos y tu patrimonio[/violet] de manera rápida e intuitiva gracias a sus [violet]paneles de control interactivos[/violet], los cuales podrás utilizar con tan solo unos simples clics.
 
-Esta aplicación forma parte de una serie de proyectos publicados en mi newsletter, donde, semanalmente publico artículos prácticos que profundizan en proyectos relacionados con la analítica y la ciencia de datos. Si quieres conocer más a fondo la newsletter, aquí tienes el árticulo de presentación. -> [Enlace](https://dataanalyticstalks.substack.com)
+Además, esta app forma parte de una serie de proyectos que publico semanalmente en mi newsletter, en la cual comparto artículos prácticos que profundizan en proyectos relacionados con la analítica y la ciencia de datos. Si deseas conocer más detalles sobre mi newsletter, puedes leer el artículo de presentación en este enlace.
 
-[violet]**Finanzas Personales con Streamlit**[/violet] se trata del primer proyecto presentado, el cual se desarrolla a lo largo de 5 entregas, en las que se desarrolla esta aplicación haciendo uso del *framework* Streamlit de *Python*, herramienta que posteriormente utilizaremos para disponibilizar modelos de predicción y análisis al usuario.
-
+[violet]"Finanzas Personales con Streamlit"[/violet] es el primer proyecto que he presentado, el cual se desarrolla a lo largo de 5 entregas. En este proyecto utilizamos el framework Streamlit de Python para crear esta aplicación, y más adelante, podremos utilizar la misma herramienta para ofrecer modelos de predicción y análisis a los usuarios.
 Las cinco entregas de las que consta el proyecto son:
 
 1. @(⚙️)([violet]**Inicio app y configuración Base de Datos**[/violet])(https://dataanalyticstalks.substack.com)

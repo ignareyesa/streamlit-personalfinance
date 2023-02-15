@@ -56,7 +56,11 @@ class Database:
         query (str): The query to execute.
         params (Optional[tuple]): A tuple containing the values for the placeholders in the query.
         """
-        cursor = self.connection.cursor(buffered=True)
+        try:
+            cursor = self.connection.cursor(buffered=True)
+        except:
+            self.connect()
+            cursor = self.connection.cursor(buffered=True)
         cursor.execute(query, params)
         self.connection.commit()
         cursor.close()
@@ -74,7 +78,11 @@ class Database:
         Returns:
         list: A list of rows returned by the query.
         """
-        cursor = self.connection.cursor(buffered=True)
+        try:
+            cursor = self.connection.cursor(buffered=True)
+        except:
+            self.connect()
+            cursor = self.connection.cursor(buffered=True)
         cursor.execute(query, params)
         result = cursor.fetchall()
         cursor.close()
@@ -93,7 +101,11 @@ class Database:
         Returns:
         list: A list the row returned by the query.
         """
-        cursor = self.connection.cursor(buffered=True)
+        try:
+            cursor = self.connection.cursor(buffered=True)
+        except:
+            self.connection.reconnect()
+            cursor = self.connection.cursor(buffered=True)
         cursor.execute(query, params)
         result = cursor.fetchone()
         cursor.close()
@@ -112,7 +124,11 @@ class Database:
         Returns:
         list: A list of column names.
         """
-        cursor = self.connection.cursor(buffered=True)
+        try:
+            cursor = self.connection.cursor(buffered=True)
+        except:
+            self.connect()
+            cursor = self.connection.cursor(buffered=True)
         cursor.execute(query, params)
         column_names = [column[0] for column in cursor.description]
         cursor.close()
