@@ -1,7 +1,9 @@
 import streamlit as st
 
+st.set_page_config(page_title="Finanzas Personales", page_icon="🐍", layout="wide")
 
-from init_app import authenticator
+
+
 
 from gen_functions import logged_in, load_css_file
 from streamlit_extras.badges import badge
@@ -10,7 +12,8 @@ from markdownlit import mdlit
 from st_pages import Page, show_pages, Section, add_indentation
 from streamlit_extras.switch_page_button import switch_page
 from PIL import Image
-
+from init_app import authenticator
+from init_exceptions import if_reconnect
 
 
 load_css_file("styles/sidebar.css")
@@ -39,13 +42,9 @@ show_pages(
 )
 
 add_indentation()
-try:
-    authenticator = st.session_state["authenticator"]
-    db = st.session_state["db"]
-except:
-    from init_exceptions import authenticator
-    authenticator = st.session_state["authenticator"]
-    db = st.session_state["db"]
+if_reconnect()
+authenticator = st.session_state["authenticator"]
+db = st.session_state["db"]
 
 if logged_in():
     authenticator.logout("Salir", "sidebar")

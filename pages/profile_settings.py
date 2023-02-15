@@ -3,6 +3,7 @@ st.set_page_config(page_title="Finanzas Personales", page_icon="🐍", layout="w
 
 from streamlit_extras.switch_page_button import switch_page
 from gen_functions import logged_in, load_css_file, multile_button_inline
+from init_exceptions import if_reconnect
 from db_functions import check_temporary_token
 load_css_file("styles/forms.css")
 load_css_file("styles/sidebar.css")
@@ -10,12 +11,14 @@ from st_pages import add_indentation
 
 add_indentation()
 
+if logged_in():
+    switch_page("Mi perfil")
+
+if_reconnect()
 authenticator = st.session_state["authenticator"]
 db = st.session_state["db"]
 credentials = st.session_state["credentials"]
 
-if logged_in():
-    switch_page("Mi perfil")
 
 # check if page query parameter is given, if not show warning and stop
 try:

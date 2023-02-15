@@ -13,30 +13,29 @@ from st_pages import add_indentation
 
 add_indentation()
 
-authenticator = st.session_state["authenticator"]
-db = st.session_state["db"]
-
 if logged_in():
     switch_page("Mi perfil")
 
+authenticator = st.session_state["authenticator"]
+db = st.session_state["db"]
 
-else:
-    try:
-        username_forgot_username, email_forgot_username = authenticator.forgot_username(
-            "Forgot username"
+
+try:
+    username_forgot_username, email_forgot_username = authenticator.forgot_username(
+        "Forgot username"
+    )
+    # If the user entered an email address, query the database to get the corresponding username
+    if username_forgot_username:
+        query_username = "SELECT username from users where email=%s"
+        username = db.fetchone(query_username, (email_forgot_username,))[0]
+        st.success(f"Tu nombre de usuario es: **{username}**. No lo olvides!😜")
+
+    # If the user didn't enter an email address, show an error message
+    elif username_forgot_username == False:
+        st.error(
+            "El correo eléctronico propor proporcionado no coincide con ninguno registrado."
         )
-        # If the user entered an email address, query the database to get the corresponding username
-        if username_forgot_username:
-            query_username = "SELECT username from users where email=%s"
-            username = db.fetchone(query_username, (email_forgot_username,))[0]
-            st.success(f"Tu nombre de usuario es: **{username}**. No lo olvides!😜")
-
-        # If the user didn't enter an email address, show an error message
-        elif username_forgot_username == False:
-            st.error(
-                "El correo eléctronico propor proporcionado no coincide con ninguno registrado."
-            )
-    except Exception as e:
-        st.error(e)
-    # Show a button to go back to the login page
-    multile_button_inline(["Iniciar sesión"],["Mi perfil"])
+except Exception as e:
+    st.error(e)
+# Show a button to go back to the login page
+multile_button_inline(["Iniciar sesión"],["Mi perfil"])

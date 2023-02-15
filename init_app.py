@@ -23,7 +23,6 @@ def set_connection(retry=False):
     return db
 
 db = set_connection()
-print(db)
 st.session_state["db"] = db
 
 # Commit predefined queries

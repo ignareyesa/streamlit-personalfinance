@@ -2,11 +2,11 @@ from gen_functions import (load_css_file, multile_button_inline, logged_in,
                            check_columns, check_data_types, verify_column_values,
                            progressbar)
 from db_functions import create_temporary_token, check_temporary_token
+from init_exceptions import if_reconnect
 from styles.aggrid_styles import posneg_cellstyle, euro_cellstyle, date_cellstyle
 from mappers import incomes_subcategories, expenses_subcategories
 import streamlit as st
 
-st.set_page_config(page_title="Finanzas Personales", page_icon="🐍", layout="wide")
 
 load_css_file("styles/add_movements.css")
 load_css_file("styles/sidebar.css")
@@ -28,8 +28,7 @@ from st_pages import add_indentation
 
 add_indentation()
 
-authenticator = st.session_state["authenticator"]
-db = st.session_state["db"]
+
 
 try:
     search_params = st.experimental_get_query_params()
@@ -37,10 +36,12 @@ try:
 except:
     page = None
 
-if page!="modify_movement":
-    if not logged_in():
+if page!="modify_movement" and not logged_in():
         switch_page("Mi perfil")
 
+elif page!="modify_movement":
+    authenticator = st.session_state["authenticator"]
+    db = st.session_state["db"]
     authenticator.logout("Salir", "sidebar")
 
     # Get the user's ID from the database
@@ -210,7 +211,7 @@ if page!="modify_movement":
                 token = create_temporary_token(table="modify_movement_tokens")
                 nav_script = """
                     <meta http-equiv="refresh" content="0; url='%s'">
-                    """ % (f"""/Mis movimientos?page=modify_movement&token={token}-{movement_id}&username={username}&option={option}&date={str(df.iloc[selected_row]["date"])}&quantity={str(abs(df.iloc[selected_row]["quantity"]))}&concept={df.iloc[selected_row]["concept"]}""")
+                    """ % (f"""/Movimientos?page=modify_movement&token={token}-{movement_id}&username={username}&option={option}&date={str(df.iloc[selected_row]["date"])}&quantity={str(abs(df.iloc[selected_row]["quantity"]))}&concept={df.iloc[selected_row]["concept"]}""")
                 st.write(nav_script, unsafe_allow_html=True)
 
         else:
@@ -445,6 +446,9 @@ if page!="modify_movement":
 
 
 else:
+    if_reconnect()
+    authenticator = st.session_state["authenticator"]
+    db = st.session_state["db"]
     try:
         token, movement_id = search_params.get("token")[0].split("-")
         username = search_params.get("username")[0]
@@ -473,10 +477,10 @@ else:
 
     authenticator.logout("Salir", "sidebar")
     st.subheader(f"Rellene el formulario para modificar el {movement_type[:-1].lower()} seleccionado")
-    # Disable the submit button after it is clicked
-    def disable():
-        st.session_state.disabled = True
 
+    def disable(boolean = False):
+        if boolean:
+            st.session_state.disabled = True
     # Initialize disabled for form_submit_button to False
     if "disabled" not in st.session_state:
         st.session_state.disabled = False
@@ -506,13 +510,15 @@ else:
         movement_form = st.form("add-movement")
         form_response = movement_form.form_submit_button("Modificar movimiento", on_click=disable, disabled=st.session_state.disabled)
 
-    multile_button_inline(["Pulsar para volver"],["Mis movimientos"], css=css_style)
+
+    multile_button_inline(["Pulsar para volver"],["Seguimiento"], css=css_style)
 
     try:
         if form_response and len(category)>0 and len(subcategory)>0 and len(concept)>0 and quantity is not None:
             query = f"UPDATE {table_name} SET date=%s,category=%s,subcategory=%s,concept=%s,quantity=%s WHERE id=%s"
             db.commit(query,(date, category, subcategory, concept, quantity, movement_id))
             st.success(f"Movimiento actualizado correctamente, pulse el botón para volver.")
+            disable(True)
         
         elif form_response and (len(category)<=0 or len(subcategory)<=0 or len(concept)<=0 or quantity is None):
             st.error("Rellene todos los campos del formulario.")

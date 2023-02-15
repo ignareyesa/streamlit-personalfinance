@@ -1,12 +1,13 @@
 import streamlit as st
 
-from gen_functions import logged_in, multile_button_inline, load_css_file, switch_page, progressbar
+from gen_functions import multile_button_inline, load_css_file, switch_page, progressbar, stateful_button
 from streamlit_extras.add_vertical_space import add_vertical_space
 from authenticator.utils import check_email
 
 from st_pages import add_indentation
 from PIL import Image
 
+st.set_page_config(page_title="Finanzas Personales", page_icon="🐍", layout="wide")
 st.markdown("<style>div[class='row-widget stButton']{margin-top:7px; margin-bottom:34px}</style>", unsafe_allow_html=True)
 load_css_file("styles/forms.css")
 load_css_file("styles/sidebar.css")
@@ -14,22 +15,19 @@ load_css_file("styles/sidebar.css")
 st.experimental_set_query_params()
 add_indentation()
 
-authenticator = st.session_state["authenticator"]
-db = st.session_state["db"]
+try:
+    authentication_status = st.session_state["authentication_status"]
+    authenticator = st.session_state["authenticator"]
+    db = st.session_state["db"]
+except:
+    st.markdown("La web ha sido desactivada para ahorrar recursos, por favor, pulse en el siguiente enlace para reactivarla.")
+    multile_button_inline(["Volver a conectar"],["Inicio"])
+    st.stop()
+
 
 css_style = "styles/buttons.css"
 
-def stateful_button(*args, key=None, **kwargs):
-    if key is None:
-        raise ValueError("Must pass key")
 
-    if key not in st.session_state:
-        st.session_state[key] = False
-
-    if st.button(*args, **kwargs):
-        st.session_state[key] = not st.session_state[key]
-
-    return st.session_state[key]
 
 # define labels and links for the buttons at the bottom of the page
 labels_forgot = ["¿Has olvidado tu contraseña?", "¿Has olvidado tu nombre de usuario?"]
@@ -37,9 +35,6 @@ links_forgot = ["", " "]
 labels_sign = ["¿Eres nuevo? Registrate"]
 links_sign = ["  "]
 
-# check if user is logged in
-if not logged_in():
-    pass
 
 #show login form and handle authentication
 col1, col2, col3 = st.columns([1,0.25,0.77])
@@ -71,12 +66,12 @@ with col3:
         image = Image.open('images/login_vector.jpeg')
         st.image(image, use_column_width=True)
 
-if st.session_state["authentication_status"]:
+if authentication_status:
     authenticator.logout("Salir", "sidebar")
     username = st.session_state["username"]
     query_id = "SELECT id, name, username, email from users where username=%s"
     user_id, current_name, current_username, current_email  = db.fetchone(query_id, (username,))
-
+    
     with st.container():
         col1, col2, col3 = st.columns([1,0.3,0.9])
         with col2:
@@ -98,7 +93,7 @@ if st.session_state["authentication_status"]:
             add_vertical_space(1)
             new_username = st.text_input("Nombre de usuario", current_username, disabled = not username_but)
             add_vertical_space(1)
-            new_email = st.text_input("Correo electrónico", "ignareyesa@gmail.com", disabled = not mail_but)
+            new_email = st.text_input("Correo electrónico", current_email, disabled = not mail_but)
             add_vertical_space(1)
             password = st.text_input("Contraseña", "**********", disabled = True)
             if new_username != current_username or new_name != current_name or new_email != current_email:

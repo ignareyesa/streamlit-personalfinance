@@ -11,12 +11,14 @@ from st_pages import add_indentation
 
 add_indentation()
 
+if logged_in():
+    switch_page("Mi perfil")
+
 authenticator = st.session_state["authenticator"]
 db = st.session_state["db"]
 credentials = st.session_state["credentials"]
 
-if logged_in():
-    switch_page("Mi perfil")
+
 
 try:
     if authenticator.register_user("¡Únete!", preauthorization=False):

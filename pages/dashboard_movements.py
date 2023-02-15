@@ -33,13 +33,16 @@ from streamlit_extras.switch_page_button import switch_page
 from streamlit_extras.mandatory_date_range import date_range_picker
 from st_pages import add_indentation
 
+st.experimental_set_query_params()
 add_indentation()
+
+if not logged_in():
+    switch_page("Mi perfil")
 
 authenticator = st.session_state["authenticator"]
 db = st.session_state["db"]
 
-if not logged_in():
-    switch_page("Mi perfil")
+
 
 authenticator.logout("Salir", "sidebar")
 

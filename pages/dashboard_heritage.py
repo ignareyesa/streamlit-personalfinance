@@ -10,13 +10,14 @@ from st_pages import add_indentation
 
 add_indentation()
 
+if not logged_in():
+    switch_page("Mi perfil")
+
 authenticator = st.session_state["authenticator"]
 db = st.session_state["db"]
 load_css_file("styles/sidebar.css")
 
 
-if not logged_in():
-    switch_page("Mi perfil")
 
 authenticator.logout("Salir", "sidebar")
 username = st.session_state["username"]

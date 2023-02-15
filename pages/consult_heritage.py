@@ -20,13 +20,14 @@ from st_pages import add_indentation
 add_indentation()
 st.experimental_set_query_params()
 
+if not logged_in():
+    switch_page("Mi perfil")
+
 authenticator = st.session_state["authenticator"]
 db = st.session_state["db"]
 
 css_style = "styles/buttons.css"
 
-if not logged_in():
-    switch_page("Mi perfil")
 
 authenticator.logout("Salir", "sidebar")
 
