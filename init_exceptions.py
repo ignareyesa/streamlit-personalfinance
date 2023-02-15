@@ -23,7 +23,7 @@ authenticator = stauth.Authenticate(
 email_client = set_smtp_connection(retry=True)
 
 
-def if_reconnect(session_state=st.session_state):
+def if_reconnect():
     """
     Checks whether the page is working properly
     If the not field is not present in the
@@ -37,7 +37,7 @@ def if_reconnect(session_state=st.session_state):
         bool: Whether the user is logged in or not.
     """
     try:
-        if session_state["authenticator"]:
+        if st.session_state["authenticator"]:
             return
     except KeyError:
         st.session_state["authenticator"] = authenticator
