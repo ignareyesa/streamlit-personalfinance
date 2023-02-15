@@ -58,7 +58,7 @@ class Database:
         """
         try:
             cursor = self.connection.cursor(buffered=True)
-        except (mysql.connector.errors.OperationalError, mysql.connector.errors.InternalError):
+        except (mysql.connector.errors.OperationalError, mysql.connector.errors.InternalError, mysql.connector.errors.InterfaceError):
             self.connect()
             cursor = self.connection.cursor(buffered=True)
         cursor.execute(query, params)
@@ -80,7 +80,7 @@ class Database:
         """
         try:
             cursor = self.connection.cursor(buffered=True)
-        except (mysql.connector.errors.OperationalError, mysql.connector.errors.InternalError):
+        except (mysql.connector.errors.OperationalError, mysql.connector.errors.InternalError, mysql.connector.errors.InterfaceError):
             self.connect()
             cursor = self.connection.cursor(buffered=True)
         cursor.execute(query, params)
@@ -103,8 +103,8 @@ class Database:
         """
         try:
             cursor = self.connection.cursor(buffered=True)
-        except (mysql.connector.errors.OperationalError, mysql.connector.errors.InternalError):
-            self.connection.reconnect()
+        except (mysql.connector.errors.OperationalError, mysql.connector.errors.InternalError, mysql.connector.errors.InterfaceError):
+            self.connect()
             cursor = self.connection.cursor(buffered=True)
         cursor.execute(query, params)
         result = cursor.fetchone()
@@ -126,7 +126,7 @@ class Database:
         """
         try:
             cursor = self.connection.cursor(buffered=True)
-        except (mysql.connector.errors.OperationalError, mysql.connector.errors.InternalError):
+        except (mysql.connector.errors.OperationalError, mysql.connector.errors.InternalError, mysql.connector.errors.InterfaceError):
             self.connect()
             cursor = self.connection.cursor(buffered=True)
         cursor.execute(query, params)
