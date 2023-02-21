@@ -58,7 +58,7 @@ class Database:
         """
         try:
             cursor = self.connection.cursor(buffered=True)
-        except 
+        except:
             self.connect()
             cursor = self.connection.cursor(buffered=True)
         cursor.execute(query, params)
@@ -80,7 +80,7 @@ class Database:
         """
         try:
             cursor = self.connection.cursor(buffered=True)
-        except 
+        except:
             self.connect()
             cursor = self.connection.cursor(buffered=True)
         cursor.execute(query, params)
@@ -103,7 +103,7 @@ class Database:
         """
         try:
             cursor = self.connection.cursor(buffered=True)
-        except 
+        except:
             self.connect()
             cursor = self.connection.cursor(buffered=True)
         cursor.execute(query, params)
@@ -126,7 +126,7 @@ class Database:
         """
         try:
             cursor = self.connection.cursor(buffered=True)
-        except 
+        except:
             self.connect()
             cursor = self.connection.cursor(buffered=True)
         cursor.execute(query, params)
