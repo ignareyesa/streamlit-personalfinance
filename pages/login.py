@@ -8,7 +8,6 @@ from st_pages import add_indentation
 from PIL import Image
 
 st.set_page_config(page_title="Finanzas Personales", page_icon="🐍", layout="wide")
-st.markdown("<style>div[class='row-widget stButton']{margin-top:7px; margin-bottom:34px}</style>", unsafe_allow_html=True)
 load_css_file("styles/forms.css")
 load_css_file("styles/sidebar.css")
 
@@ -34,6 +33,8 @@ labels_forgot = ["¿Has olvidado tu contraseña?", "¿Has olvidado tu nombre de 
 links_forgot = ["", " "]
 labels_sign = ["¿Eres nuevo? Registrate"]
 links_sign = ["  "]
+labels_main = ["Panel de Control", "Añadir Movimientos", "Mis ahorros", "Mi patrimonio"]
+links_main = ["seguimiento", "movimientos", "ahorros", "patrimonio"]
 
 
 #show login form and handle authentication
@@ -58,13 +59,13 @@ with col1:
 
 with col3:
     if st.session_state["authentication_status"] == False:
-        image = Image.open('images/login_vector.jpeg')
-        st.image(image, use_column_width=True)
+        st.write("TUTORIAL")
+
     elif (st.session_state["authentication_status"] == None) or (
         not "authentication_status" in st.session_state
     ):
-        image = Image.open('images/login_vector.jpeg')
-        st.image(image, use_column_width=True)
+
+        st.write("TUTORIAL")
 
 if authentication_status:
     authenticator.logout("Salir", "sidebar")
@@ -73,34 +74,31 @@ if authentication_status:
     user_id, current_name, current_username, current_email  = db.fetchone(query_id, (username,))
     
     with st.container():
-        col1, col2, col3 = st.columns([1,0.3,0.9])
-        with col2:
-            add_vertical_space(19)
+        col1, col2, col3 = st.columns([1,0.25,0.77])
+        with col1:
+            st.write("### Principales enlaces")
+            multile_button_inline(labels_main, links_main, css=css_style)
+            image = Image.open('images/login_vector.jpeg')
+            st.image(image, use_column_width=True)
 
-            username_but = stateful_button("Modificar", False, key = "username_but")
-            add_vertical_space(1)
-            mail_but = stateful_button("Modificar", key="email_but")
-            add_vertical_space(1)
-            pass_but = st.button("Modificar", key="password_but")
+
+        with col3:
+            st.write("### Mis datos")
+            edit_but = stateful_button("Habilitar edición datos", False, key = "edit_but")
+            new_name = st.text_input("Nombre", current_name, disabled = not edit_but)
+            new_username = st.text_input("Nombre de usuario", current_username, disabled = not edit_but)
+            new_email = st.text_input("Correo electrónico", current_email, disabled = not edit_but)
+            password = st.text_input("Contraseña", "**********", disabled = True)
+            pass_but = st.button("Modificar contraseña", key="password_but")
             if pass_but:
                 switch_page("    ")
 
-        with col1:
-            st.write("### Mi perfil")
-            st.write("Usuario desde Oct-2022.")
-            st.write("### Mis datos")
-            new_name = st.text_input("Nombre", current_name)
-            add_vertical_space(1)
-            new_username = st.text_input("Nombre de usuario", current_username, disabled = not username_but)
-            add_vertical_space(1)
-            new_email = st.text_input("Correo electrónico", current_email, disabled = not mail_but)
-            add_vertical_space(1)
-            password = st.text_input("Contraseña", "**********", disabled = True)
             if new_username != current_username or new_name != current_name or new_email != current_email:
                 final_but_dis = False
             else: 
                 final_but_dis = True    
             safe_changes = st.button("Guardar cambios", disabled = final_but_dis)
+            
             if safe_changes:
                 if check_email(new_email):
                     try:
@@ -117,9 +115,7 @@ if authentication_status:
                             if error[-1] == "'username'":
                                 st.error(f"El nombre de usuario '{new_username}' ya está en uso, utilize otro")
                 else:
-                    st.error("El correo electrónico introducido no es vaĺido")
-        with col3:
-            add_vertical_space(8)
-            st.write("TUTORIAL")
+                    st.error("El correo electrónico introducido no es válido")
+        
         
 
