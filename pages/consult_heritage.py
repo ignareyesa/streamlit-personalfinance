@@ -1,5 +1,5 @@
 import streamlit as st
-from gen_functions import load_css_file, logged_in, progressbar, multile_button_inline
+from gen_functions import load_css_file, logged_in, progressbar
 from styles.aggrid_styles import posneg_cellstyle, euro_cellstyle, date_cellstyle
 
 load_css_file("styles/add_movements.css")
@@ -17,6 +17,8 @@ from streamlit_extras.switch_page_button import switch_page
 from streamlit_option_menu import option_menu
 from st_pages import add_indentation
 
+with open('error.txt', 'r') as error_file:
+    error_text = error_file.read()
 add_indentation()
 st.experimental_set_query_params()
 
@@ -286,4 +288,4 @@ if selected == "Añadir":
             else:
                 pass
         except Exception as e: 
-            st.write(e)
+            st.write(error_text, unsafe_allow_html=True)

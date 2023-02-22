@@ -1,7 +1,6 @@
 import streamlit as st
 
 from gen_functions import multile_button_inline, load_css_file, switch_page, progressbar, stateful_button
-from streamlit_extras.add_vertical_space import add_vertical_space
 from authenticator.utils import check_email
 
 from st_pages import add_indentation
@@ -10,6 +9,8 @@ from PIL import Image
 st.set_page_config(page_title="Finanzas Personales", page_icon="🐍", layout="wide")
 load_css_file("styles/forms.css")
 load_css_file("styles/sidebar.css")
+with open('error.txt', 'r') as error_file:
+    error_text = error_file.read()
 
 st.experimental_set_query_params()
 add_indentation()
@@ -71,7 +72,11 @@ if authentication_status:
     authenticator.logout("Salir", "sidebar")
     username = st.session_state["username"]
     query_id = "SELECT id, name, username, email from users where username=%s"
-    user_id, current_name, current_username, current_email  = db.fetchone(query_id, (username,))
+    try:
+        user_id, current_name, current_username, current_email  = db.fetchone(query_id, (username,))
+    except:
+        st.write(error_text, unsafe_allow_html=True)
+        st.stop()
     
     with st.container():
         col1, col2, col3 = st.columns([1,0.25,0.77])
@@ -116,6 +121,5 @@ if authentication_status:
                                 st.error(f"El nombre de usuario '{new_username}' ya está en uso, utilize otro")
                 else:
                     st.error("El correo electrónico introducido no es válido")
-        
-        
 
+    

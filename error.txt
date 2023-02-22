@@ -1,0 +1,64 @@
+<html>
+  <style>
+    body {
+      background-color: #f4f4f4;
+      font-family: sans-serif;
+      margin: 0;
+      padding: 0;
+    }
+
+    .container {
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+    }
+
+    .title {
+      font-size: 3rem;
+      font-weight: bold;
+      color: #000000;
+      margin-bottom: 1rem;
+      text-align: center;
+    }
+
+    .message {
+      font-size: 1.5rem;
+      color: #000000;
+      margin-bottom: 0.2rem;
+      text-align: center;
+    }
+
+    .message2 {
+      font-size: 1rem;
+      color: #000000;
+      margin-bottom: 0.2rem;
+      text-align: center;
+    }
+
+    .error {
+      font-size: 1.2rem;
+      font-weight: bold;
+      padding: 10px 20px;
+      border: none;
+      border-radius: 2px;
+      text-decoration: none;
+      cursor: pointer;
+      transition: background-color 0.3s ease;
+      margin-top: 2rem;
+    }
+
+    .error:hover {
+      background-color: #FFFFFF;
+    }
+  </style>
+<body>
+  <div class="container">
+    <h1 class="title">Ha habido un error</h1>
+    <p class="message">Pruebe a ir a la pagina de inicio</p>
+    <p class="message">Si el problema persiste, por favor, espere.</p>
+    <p class="message2">Estamos gestionando este problema lo más rápido posible.</p>
+    <a href="/" onclick="return false" class="error">Ir a la página principal</a>
+  </div>
+</body>
+</html>

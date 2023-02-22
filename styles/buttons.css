@@ -125,3 +125,25 @@ div{
     width: 176px;
   }
 }
+
+
+.error_button {
+  display: table-cell;
+  font-size: 1.2rem;
+  font-weight: bold;
+  color: white;
+  background-color: #8041f5;
+  padding: 10px 20px;
+  border: none;
+  border-radius: 2px;
+  text-decoration: none;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.error_button:hover {
+  background-color: #6630cc;
+  text-decoration: none;
+  color: white;
+
+}

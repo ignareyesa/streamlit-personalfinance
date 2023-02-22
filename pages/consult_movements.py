@@ -26,6 +26,8 @@ from streamlit_extras.no_default_selectbox import selectbox
 from streamlit_option_menu import option_menu
 from st_pages import add_indentation
 
+with open('error.txt', 'r') as error_file:
+    error_text = error_file.read()
 add_indentation()
 
 
@@ -332,7 +334,7 @@ elif page!="modify_movement":
                     else:
                         pass
                 except Exception as e: 
-                    st.write(e)
+                    st.write(error_text, unsafe_allow_html=True)
                 
             
             elif option == "Archivo":
@@ -409,18 +411,16 @@ elif page!="modify_movement":
                             df['date'] = pd.to_datetime(df['date'])
                         except Exception as e:
                             st.error("La columna `date` no se ha podido convetir a formato fecha. Asegurese de que sigue el siguiente formato DD/MM/YYYY.")
-                            raise e
+                            
                         try:
                             df['quantity'] = df['quantity'].astype(float)
                         except Exception as e:
                             st.error("La columna `quantity` no es del tipo númerico. Por favor, revísela.")
-                            raise e
 
                         try: 
                             check_data_types(df, expected_columns, expected_types)
                         except Exception as e:
-                            st.error(e)
-                            raise e
+                            st.error("Algunas columnas no son del tipo adecuado.")
 
                         
                         try:
@@ -437,7 +437,6 @@ elif page!="modify_movement":
                             st.success('Archivo cargado correctamente en el sistema.')
 
                         except Exception as e:
-                            st.exception(e)
                             st.error("Ha habido un error al cargar su archivo en el sistema. Por favor, inténtelo de nuevo")
                 else:
                     movement_type = None
@@ -525,4 +524,4 @@ else:
         else:
             pass
     except Exception as e: 
-        st.write(e)
+        st.write(error_text, unsafe_allow_html=True)

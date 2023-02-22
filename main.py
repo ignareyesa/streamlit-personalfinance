@@ -1,9 +1,6 @@
 import streamlit as st
 
-st.set_page_config(page_title="Finanzas Personales", page_icon="🐍", layout="wide")
-
-
-
+st.set_page_config(page_title="Finanzas Personales", page_icon="🐍", layout="wide", initial_sidebar_state="auto")
 
 from gen_functions import logged_in, load_css_file
 from streamlit_extras.badges import badge
