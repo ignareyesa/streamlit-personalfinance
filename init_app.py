@@ -30,7 +30,7 @@ st.session_state["db"] = db
 def run_predefined_queries(retry=False):
     try:
         db.fetchone("set max_allowed_packet=67108864")
-    except:
+    except Exception as e:
         raise ValueError(
                 "Something went wrong during first connection to database: ", e)
     for query in predefine_queries:
