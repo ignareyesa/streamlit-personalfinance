@@ -28,11 +28,6 @@ st.session_state["db"] = db
 # Commit predefined queries
 @st.cache_data
 def run_predefined_queries(retry=False):
-    try:
-        db.fetchone("set max_allowed_packet=67108864")
-    except Exception as e:
-        raise ValueError(
-                "Something went wrong during first connection to database: ", e)
     for query in predefine_queries:
         try:
             
