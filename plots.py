@@ -78,7 +78,7 @@ def kpi_single_indicator_comparison(kpi_value : float,
                                     comparison_value : float, 
                                     kpi_label : str, 
                                     comparison_label : str, 
-                                    title : str, 
+                                    title : str = "", 
                                     green_for_up : bool = True,
                                     comparison_type : str = "value",
                                     use_labels = True,
@@ -190,7 +190,7 @@ def kpi_double_indicator_comparison(kpi_value : float,
                                     comparison_value_2 : float,
                                     kpi_label : str, 
                                     comparison_label : str, 
-                                    title : str, 
+                                    title : str = "", 
                                     green_for_up : bool = True,
                                     use_labels = True,
                                     background_color = "#ffffff"):
@@ -386,7 +386,7 @@ def sankey_movements_plot(incomes : list, incomes_values, expenses : list, expen
                 "value": values}))
     return fig
 
-def bar_plot_unifiedhover(df, x, y, x_label, y_label, title:str = None,
+def bar_plot_unifiedhover(df, x, y, x_label, y_label, title:str = "",
                 y_ticksuffix="", height=300, series:str = None, text_auto = False):
     """
     series is to add more columns as series
@@ -462,7 +462,7 @@ def bar_plot_unifiedhover(df, x, y, x_label, y_label, title:str = None,
         )
     return fig
 
-def line_plot_unifiedhover(df, x, y, x_label, y_label, title:str = None,
+def line_plot_unifiedhover(df, x, y, x_label, y_label, title:str = "",
                 y_ticksuffix="", height=300, series=None, text=None, series_label=None,
                 color_discrete_map={}):
     fig = px.line(df, x=x, y=y, color=series, text=text, labels={
@@ -526,7 +526,7 @@ def line_plot_unifiedhover(df, x, y, x_label, y_label, title:str = None,
     return fig
 
 def line_bar_plot_unifiedhover(df, x, y_bars, y_line, x_label, y_bars_label, y_line_label, color_bars, color_line,
-                title:str = None, y_ticksuffix="", height=300):
+                title:str = "", y_ticksuffix="", height=300):
     fig = px.line(df, x=x, y=y_line,
         labels={
             x: x_label,
@@ -600,4 +600,28 @@ def line_bar_plot_unifiedhover(df, x, y_bars, y_line, x_label, y_bars_label, y_l
             t=40,
             ),
         )
+    return fig
+
+def pie_plot(df, values, names, color=None, color_discrete_map=None, title="", hole=0, hovertemplate="", textfont_size=13, height=350):
+    fig = px.pie(df, values=values, names=names, color=color, color_discrete_map=color_discrete_map,height=height)
+    fig.update_traces(
+        textinfo="percent+label",
+        hole=hole,
+        marker=dict(line=dict(color="#000000", width=0.5)),
+        textfont_size=textfont_size,
+        hovertemplate=hovertemplate,
+        )
+    fig.update_layout(
+                    paper_bgcolor="rgba(0,0,0,0)",
+                    plot_bgcolor="rgba(0,0,0,0)",
+                    showlegend=False,
+                    title=None,
+        )
+    fig.update_layout(
+        hovermode="x unified",
+        hoverlabel=dict(bgcolor="rgba(255,255,255,0.95)"),
+        title_text=title
+        )
+
+    
     return fig
