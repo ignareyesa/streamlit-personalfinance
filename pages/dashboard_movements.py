@@ -26,6 +26,7 @@ from plots import (
     bar_plot_unifiedhover,
     kpi_double_indicator_comparison,
     line_plot_unifiedhover,
+    pie_plot
 )
 from mappers import expenses_subcategories_colors, income_subcategories_colors
 from streamlit_option_menu import option_menu
@@ -98,7 +99,7 @@ try:
         multile_button_inline(["Añadir movimiento"], ["Movimientos"])
         st.stop()
 
-    tab1, tab2, tab3 = st.tabs(["General", "Detalle", "Extra: Flujo de gastos e ingresos"])
+    tab1, tab2 = st.tabs(["General", "Detalle"])
 
     with tab1:
         df_all["month"] = df_all["month"].apply(spanish_month_name, abbreviate=False)
@@ -111,7 +112,7 @@ try:
         
         col1, col2, col3, col4, col5, col6, col7 = st.columns(7)
         with col1:
-            month_name, year = st.selectbox("Fecha", dates, index=list(dates).index(most_race_date)).split(" ")
+            month_name, year = most_race_date.split(" ")
             month = int(spanish_month_num(month_name))
             year = int(year)
 
@@ -167,8 +168,8 @@ try:
                 fig = kpi_single_indicator_comparison(
                     ytd_expenses,
                     ytd_last_expenses,
-                    f"{year} YTD",
-                    f"{year-1} YTD",
+                    f"{year}     ",
+                    f"{year-1}     ",
                     "Gastos",
                     False,
                     "percent",
@@ -180,8 +181,8 @@ try:
                 fig = kpi_single_indicator_comparison(
                     ytd_incomes,
                     ytd_last_incomes,
-                    f"{year} YTD",
-                    f"{year-1} YTD",
+                    f"{year}     ",
+                    f"{year-1}     ",
                     "Ingresos",
                     True,
                     "percent",
@@ -375,6 +376,7 @@ try:
                 fig.update_xaxes(tick0="2000-01-31", dtick="M1", tickformat="%b\n%Y")
                 fig.update_traces(connectgaps=True)
                 fig.update_traces(hovertemplate="Patrimonio: %{y:.1f}€<extra></extra>")
+                fig.update_layout(yaxis=dict(showgrid=False))
 
                 st.write(
                     "<h4 style='text-align: center; font-weight: 400; color: rgb(49, 51, 63); padding: 0px; margin: 0px; line-height: 0.5; font-size: 1.3rem;'>Evolución patrimonio </h4>",
@@ -395,6 +397,7 @@ try:
                 )
                 fig.update_traces(marker_color="#9a5833")
                 fig.update_xaxes(tick0="2000-01-31", dtick="M1", tickformat="%b\n%Y")
+                fig.update_layout(yaxis=dict(showgrid=False))
                 fig.update_yaxes(
                     range=[
                         0,
@@ -433,6 +436,7 @@ try:
                 )
                 fig.update_traces(marker_color="#0979b0")
                 fig.update_xaxes(tick0="2000-01-31", dtick="M1", tickformat="%b\n%Y")
+                fig.update_layout(yaxis=dict(showgrid=False))
                 fig.update_yaxes(
                     range=[
                         0,
@@ -484,12 +488,13 @@ try:
             1,
         )
 
-        selected = option_menu(None, [f"Ingresos: {incomes_last} €", f"Gastos: {expenses_last} €"],
+        selected = option_menu(None, [f"Ingresos: {incomes_last} €", f"Gastos: {expenses_last} €"], 
             icons=['piggy-bank', 'wallet2'], 
-            menu_icon="cast", default_index=0, orientation="horizontal",
+            menu_icon="cast", default_index=1, orientation="horizontal",
             styles={
-            "container": {"width":"40%"},
-            "nav": {"margin-left": "1rem", "margin-right": "1rem"}})
+            "container": {"width":"30%"},
+            "nav": {"margin-left": "1rem", "margin-right": "1rem"},
+            "nav-link-selected": {"background-color": "#8041f5"}})
 
         if selected == f"Ingresos: {incomes_last} €":
             selection = "incomes"
@@ -508,27 +513,8 @@ try:
                         (df_incomes_grouped["year"] == year_det_main)
                         & (df_incomes_grouped["month"] == month_det_main)
                     ]
-                    fig = px.pie(
-                        df_incomes_last, values="quantity", names="category", color="category", height=430, color_discrete_map=income_subcategories_colors
-                    )
-                    fig.update_traces(
-                        textinfo="percent+label",
-                        hole=0.00,
-                        textfont_size=13,
-                        marker=dict(line=dict(color="#000000", width=0.5)),
-                        hovertemplate="%{label}: <br>Cantidad: %{value:.1f}€ </br>Porcentaje: %{percent}",
-                    )
-                    # fig.update_layout(margin=dict(t=10, b=30, l=50, r=50))
-                    fig.update_layout(
-                        paper_bgcolor="rgba(0,0,0,0)",
-                        plot_bgcolor="rgba(0,0,0,0)",
-                        showlegend=False,
-                        title=None,
-                    )
-                    fig.update_layout(
-                        hovermode="x unified",
-                        hoverlabel=dict(bgcolor="rgba(255,255,255,0.95)"),
-                    )
+                    fig = pie_plot(df_incomes_last, "quantity", "category", "category", income_subcategories_colors, height=430,
+                        hovertemplate="%{label}: <br>Cantidad: %{value:.1f}€ </br>Porcentaje: %{percent}")
                     st.plotly_chart(fig, use_container_width=True)
 
                 # Top table
@@ -699,7 +685,8 @@ try:
                             tickmode = 'array',
                             tickvals = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12],
                             ticktext = ['Ene', 'Feb', 'Mar', 'Abr', 'May', 'Jun', 'Jul', 'Ago', 'Sep', 'Oct', 'Nov', 'Dic']
-                        )
+                        ),
+                        yaxis=dict(showgrid=False)
                     )
 
                     st.plotly_chart(fig, use_container_width=True)
@@ -716,26 +703,8 @@ try:
                         (df_incomes_grouped["year"] == year_det_pie1_comp)
                         & (df_incomes_grouped["month"] == month_det_pie1_comp)
                     ]
-                    fig_pie1 = px.pie(
-                        df_incomes_pie, values="quantity", names="category", color="category", height=430, color_discrete_map=income_subcategories_colors
-                    )
-                    fig_pie1.update_traces(
-                        textinfo="percent+label",
-                        hole=0.75,
-                        textfont_size=13,
-                        marker=dict(line=dict(color="#000000", width=0.5)),
-                        hovertemplate="%{label}: <br>Cantidad: %{value:.1f}€ </br>Porcentaje: %{percent}",
-                    )
-                    fig_pie1.update_layout(
-                        paper_bgcolor="rgba(0,0,0,0)",
-                        plot_bgcolor="rgba(0,0,0,0)",
-                        showlegend=False,
-                        title=None,
-                    )
-                    fig_pie1.update_layout(
-                        hovermode="x unified",
-                        hoverlabel=dict(bgcolor="rgba(255,255,255,0.95)"),
-                    )
+                    fig_pie1 = pie_plot(df_incomes_pie, "quantity", "category", "category", income_subcategories_colors, hole=0.75, height=430,
+                        hovertemplate="%{label}: <br>Cantidad: %{value:.1f}€ </br>Porcentaje: %{percent}")
                     fig_pie1.update_layout(
                         annotations=[
                             dict(
@@ -763,26 +732,8 @@ try:
                         (df_incomes_grouped["year"] == year_det_pie2_comp)
                         & (df_incomes_grouped["month"] == month_det_pie2_comp)
                     ]
-                    fig_pie2 = px.pie(
-                        df_incomes_pie, values="quantity", names="category", color="category", height=430, color_discrete_map=income_subcategories_colors
-                    )
-                    fig_pie2.update_traces(
-                        textinfo="percent+label",
-                        hole=0.75,
-                        textfont_size=13,
-                        marker=dict(line=dict(color="#000000", width=0.5)),
-                        hovertemplate="%{label}: <br>Cantidad: %{value:.1f}€ </br>Porcentaje: %{percent}",
-                    )
-                    fig_pie2.update_layout(
-                        paper_bgcolor="rgba(0,0,0,0)",
-                        plot_bgcolor="rgba(0,0,0,0)",
-                        showlegend=False,
-                        title=None,
-                    )
-                    fig_pie2.update_layout(
-                        hovermode="x unified",
-                        hoverlabel=dict(bgcolor="rgba(255,255,255,0.95)"),
-                    )
+                    fig_pie2 = pie_plot(df_incomes_pie, "quantity", "category", "category", income_subcategories_colors, hole=0.75, height=430,
+                        hovertemplate="%{label}: <br>Cantidad: %{value:.1f}€ </br>Porcentaje: %{percent}")
                     fig_pie2.update_layout(
                         annotations=[
                             dict(
@@ -826,26 +777,8 @@ try:
                 col1, col2 = st.columns([1.3, 1])
                 # Pie
                 with col1:
-                    fig = px.pie(
-                        df_expenses_last, values="quantity", names="category", color="category", height=430, color_discrete_map=expenses_subcategories_colors
-                    )
-                    fig.update_traces(
-                        textinfo="percent+label",
-                        hole=0.00,
-                        textfont_size=13,
-                        marker=dict(line=dict(color="#000000", width=0.5)),
-                        hovertemplate="%{label}: <br>Cantidad: %{value:.1f}€ </br>Porcentaje: %{percent}",
-                    )
-                    fig.update_layout(
-                        paper_bgcolor="rgba(0,0,0,0)",
-                        plot_bgcolor="rgba(0,0,0,0)",
-                        showlegend=False,
-                        title=None,
-                    )
-                    fig.update_layout(
-                        hovermode="x unified",
-                        hoverlabel=dict(bgcolor="rgba(255,255,255,0.95)"),
-                    )
+                    fig = pie_plot(df_expenses_last, "quantity", "category", "category", expenses_subcategories_colors, height=430,
+                        hovertemplate="%{label}: <br>Cantidad: %{value:.1f}€ </br>Porcentaje: %{percent}")
                     st.plotly_chart(fig, use_container_width=True)
                 # Table top
                 with col2:
@@ -1017,7 +950,8 @@ try:
                             tickmode = 'array',
                             tickvals = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12],
                             ticktext = ['Ene', 'Feb', 'Mar', 'Abr', 'May', 'Jun', 'Jul', 'Ago', 'Sep', 'Oct', 'Nov', 'Dic']
-                        )
+                        ),
+                        yaxis=dict(showgrid=False)
                     )
 
                     st.plotly_chart(fig, use_container_width=True)
@@ -1034,26 +968,8 @@ try:
                         (df_expenses_grouped["year"] == year_det_pie1_comp)
                         & (df_expenses_grouped["month"] == month_det_pie1_comp)
                     ]
-                    fig_pie1 = px.pie(
-                        df_expenses_pie, values="quantity", names="category", color="category", height=430, color_discrete_map=expenses_subcategories_colors
-                    )
-                    fig_pie1.update_traces(
-                        textinfo="percent+label",
-                        hole=0.75,
-                        textfont_size=13,
-                        marker=dict(line=dict(color="#000000", width=0.5)),
-                        hovertemplate="%{label}: <br>Cantidad: %{value:.1f}€ </br>Porcentaje: %{percent}",
-                    )
-                    fig_pie1.update_layout(
-                        paper_bgcolor="rgba(0,0,0,0)",
-                        plot_bgcolor="rgba(0,0,0,0)",
-                        showlegend=False,
-                        title=None,
-                    )
-                    fig_pie1.update_layout(
-                        hovermode="x unified",
-                        hoverlabel=dict(bgcolor="rgba(255,255,255,0.95)"),
-                    )
+                    fig_pie1 = pie_plot(df_expenses_pie, "quantity", "category", "category", expenses_subcategories_colors, hole=0.75, height=430,
+                        hovertemplate="%{label}: <br>Cantidad: %{value:.1f}€ </br>Porcentaje: %{percent}")
                     fig_pie1.update_layout(
                         annotations=[
                             dict(
@@ -1080,26 +996,8 @@ try:
                         (df_expenses_grouped["year"] == year_det_pie2_comp)
                         & (df_expenses_grouped["month"] == month_det_pie2_comp)
                     ]
-                    fig_pie2 = px.pie(
-                        df_expenses_pie, values="quantity", names="category", color="category", height=430, color_discrete_map=expenses_subcategories_colors
-                    )
-                    fig_pie2.update_traces(
-                        textinfo="percent+label",
-                        hole=0.75,
-                        textfont_size=13,
-                        marker=dict(line=dict(color="#000000", width=0.5)),
-                        hovertemplate="%{label}: <br>Cantidad: %{value:.1f}€ </br>Porcentaje: %{percent}",
-                    )
-                    fig_pie2.update_layout(
-                        paper_bgcolor="rgba(0,0,0,0)",
-                        plot_bgcolor="rgba(0,0,0,0)",
-                        showlegend=False,
-                        title=None,
-                    )
-                    fig_pie2.update_layout(
-                        hovermode="x unified",
-                        hoverlabel=dict(bgcolor="rgba(255,255,255,0.95)"),
-                    )
+                    fig_pie2 = pie_plot(df_expenses_pie, "quantity", "category", "category", expenses_subcategories_colors, hole=0.75, height=430,
+                        hovertemplate="%{label}: <br>Cantidad: %{value:.1f}€ </br>Porcentaje: %{percent}")
                     fig_pie2.update_layout(
                         annotations=[
                             dict(
@@ -1125,53 +1023,53 @@ try:
                         st.plotly_chart(fig_pie2, use_container_width=True)
 
 
-    with tab3:
-        start, end = date_range_picker("Selecciona un rango de fechas", error_message="Porfavor, seleccione fecha de inicio y final",
-                    key="sankey_date", default_start=datetime.date.today() - datetime.timedelta(days=30))
+    # with tab3:
+    #     start, end = date_range_picker("Selecciona un rango de fechas", error_message="Porfavor, seleccione fecha de inicio y final",
+    #                 key="sankey_date", default_start=datetime.date.today() - datetime.timedelta(days=30))
         
-        if end > datetime.datetime.now().date():
-            st.warning("El rango de fechas seleccionado no ha terminado a día de hoy, la gráfica se puede ver influenciada.")
+    #     if end > datetime.datetime.now().date():
+    #         st.warning("El rango de fechas seleccionado no ha terminado a día de hoy, la gráfica se puede ver influenciada.")
 
-        df_incomes["date"] = df_incomes["date"].astype(str)
-        df_expenses["date"] = df_expenses["date"].astype(str)
-        df_sankey_incomes =  df_incomes[(df_incomes["date"]>=str(start)) & (df_incomes["date"]<=str(end))]
-        df_sankey_incomes = df_sankey_incomes.groupby("category")["quantity"].sum().reset_index()
+    #     df_incomes["date"] = df_incomes["date"].astype(str)
+    #     df_expenses["date"] = df_expenses["date"].astype(str)
+    #     df_sankey_incomes =  df_incomes[(df_incomes["date"]>=str(start)) & (df_incomes["date"]<=str(end))]
+    #     df_sankey_incomes = df_sankey_incomes.groupby("category")["quantity"].sum().reset_index()
         
-        incomes_sankey = list(df_sankey_incomes["category"].values)
-        incomes_values_sankey = list(df_sankey_incomes["quantity"].values)
+    #     incomes_sankey = list(df_sankey_incomes["category"].values)
+    #     incomes_values_sankey = list(df_sankey_incomes["quantity"].values)
 
-        df_sankey_expenses =  df_expenses[(df_expenses["date"]>=str(start)) & (df_expenses["date"]<=str(end))]
-        df_sankey_expenses = df_sankey_expenses.groupby("category")["quantity"].sum().reset_index()
+    #     df_sankey_expenses =  df_expenses[(df_expenses["date"]>=str(start)) & (df_expenses["date"]<=str(end))]
+    #     df_sankey_expenses = df_sankey_expenses.groupby("category")["quantity"].sum().reset_index()
         
-        expenses_sankey = list(df_sankey_expenses["category"].values)
-        expenses_values_sankey = list(df_sankey_expenses["quantity"].values)
+    #     expenses_sankey = list(df_sankey_expenses["category"].values)
+    #     expenses_values_sankey = list(df_sankey_expenses["quantity"].values)
 
-        query = "select cash, investment, donation from safes_distribution where user_id=%s and month=%s and year=%s"
-        safes_percentages = db.fetchall(query, (user_id, month, year))
+    #     query = "select cash, investment, donation from safes_distribution where user_id=%s and month=%s and year=%s"
+    #     safes_percentages = db.fetchall(query, (user_id, month, year))
 
-        safes_sankey = ["Efectivo", "Inversión", "Donación"]
-        if safes_percentages != []:
-            safes_percentages_df = pd.DataFrame(safes_percentages, columns=safes_sankey).T
-            safes_percentages = list(
-                safes_percentages_df.replace(0, np.nan)
-                .dropna()
-                .T.iloc[0]
-                .astype(float)
-                .values
-            )
-            safes_sankey = list(safes_percentages_df.replace(0, np.nan).dropna().T.columns)
-        else:
-            safes_percentages = [1]
-            safes_sankey = ["Efectivo"]
-        fig = sankey_movements_plot(
-            incomes_sankey,
-            incomes_values_sankey,
-            expenses_sankey,
-            expenses_values_sankey,
-            safes_sankey,
-            safes_percentages,
-        )
-        st.plotly_chart(fig)
+    #     safes_sankey = ["Efectivo", "Inversión", "Donación"]
+    #     if safes_percentages != []:
+    #         safes_percentages_df = pd.DataFrame(safes_percentages, columns=safes_sankey).T
+    #         safes_percentages = list(
+    #             safes_percentages_df.replace(0, np.nan)
+    #             .dropna()
+    #             .T.iloc[0]
+    #             .astype(float)
+    #             .values
+    #         )
+    #         safes_sankey = list(safes_percentages_df.replace(0, np.nan).dropna().T.columns)
+    #     else:
+    #         safes_percentages = [1]
+    #         safes_sankey = ["Efectivo"]
+    #     fig = sankey_movements_plot(
+    #         incomes_sankey,
+    #         incomes_values_sankey,
+    #         expenses_sankey,
+    #         expenses_values_sankey,
+    #         safes_sankey,
+    #         safes_percentages,
+    #     )
+    #     st.plotly_chart(fig)
 
 except:
     st.write(error_text, unsafe_allow_html=True)
