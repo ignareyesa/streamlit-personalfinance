@@ -131,7 +131,7 @@ with tab1:
             legend=dict(
                 orientation="h",
                 yanchor="bottom",
-                y=1.02,
+                y=0.95,
                 xanchor="left",
                 x=0.05,
                 font = dict(size=14)
@@ -227,7 +227,7 @@ with tab2:
                 orientation="h",
                 font = dict(size=14),
                 yanchor="bottom",
-                y=1.02,
+                y=0.95,
                 xanchor="left",
                 x=0.01
             ),
@@ -266,7 +266,7 @@ with tab2:
             df_pie_filtered = df_pie[(df_pie["year"]==year) & (df_pie["month"]==month_name)]
             fig = pie_plot(df_pie_filtered, "quantity","category", "category", color_mapper, hole=0.5, textfont_size=17,
                 hovertemplate="%{label}: <br>Valor: %{value}€ </br>Porcentaje : %{percent}")
-            fig.update_layout(margin=dict(t=30, b=10, l=50, r=50))
+            fig.update_layout(margin=dict(t=40, b=00, l=50, r=50))
 
             fig.update_layout(
                     annotations=[

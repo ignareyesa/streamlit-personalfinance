@@ -398,6 +398,11 @@ try:
                 fig.update_traces(marker_color="#9a5833")
                 fig.update_xaxes(tick0="2000-01-31", dtick="M1", tickformat="%b\n%Y")
                 fig.update_layout(yaxis=dict(showgrid=False))
+                fig.update_layout(
+                    xaxis=dict(
+                        showline=False,
+                        ticklen = 0)
+                    )
                 fig.update_yaxes(
                     range=[
                         0,
@@ -437,6 +442,11 @@ try:
                 fig.update_traces(marker_color="#0979b0")
                 fig.update_xaxes(tick0="2000-01-31", dtick="M1", tickformat="%b\n%Y")
                 fig.update_layout(yaxis=dict(showgrid=False))
+                fig.update_layout(
+                    xaxis=dict(
+                        showline=False,
+                        ticklen = 0)
+                    )
                 fig.update_yaxes(
                     range=[
                         0,
@@ -665,7 +675,7 @@ try:
                             orientation="h",
                             font=dict(size=14),
                             yanchor="bottom",
-                            y=1.02,
+                            y=0.95,
                             xanchor="left",
                             x=0.01,
                         ),
@@ -930,7 +940,7 @@ try:
                             orientation="h",
                             font=dict(size=14),
                             yanchor="bottom",
-                            y=1.02,
+                            y=0.95,
                             xanchor="left",
                             x=0.01,
                         ),

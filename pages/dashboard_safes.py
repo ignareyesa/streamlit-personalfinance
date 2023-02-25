@@ -245,7 +245,7 @@ with st.container():
             
             fig = pie_plot(df, "values","safes_cat", "safes_cat", safes_categories_colors, hole=0.3, textfont_size=17,
                 hovertemplate="%{label}: <br>Cantidad: %{value:.1f}€ </br>Porcentaje: %{percent}")
-            fig.update_layout(margin=dict(t=10, b=30, l=50, r=50))
+            fig.update_layout(margin=dict(t=40, b=00, l=50, r=50))
 
             st.plotly_chart(fig, use_container_width=True) 
 
