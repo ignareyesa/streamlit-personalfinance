@@ -21,7 +21,7 @@ from st_aggrid import AgGrid, GridOptionsBuilder, JsCode
 
 from streamlit_extras.mandatory_date_range import date_range_picker
 from streamlit_extras.switch_page_button import switch_page
-from streamlit_extras.stoggle import stoggle
+from streamlit_toggle import st_toggle_switch
 from streamlit_extras.no_default_selectbox import selectbox
 from streamlit_option_menu import option_menu
 from st_pages import add_indentation
@@ -52,11 +52,12 @@ elif page!="modify_movement":
     user_id = db.fetchone(query_id, (username,))[0]
 
     selected = option_menu(None, ["Consultar", "Añadir"], 
-        icons=['cash', 'house'], 
+        icons=['arrow-left-right', 'bookmark-plus'], 
         menu_icon="cast", default_index=1, orientation="horizontal",
         styles={
-        "container": {"width":"40%"},
-        "nav": {"margin-left": "1rem", "margin-right": "1rem"}})
+        "container": {"width":"30%"},
+        "nav": {"margin-left": "1rem", "margin-right": "1rem"},
+        "nav-link-selected": {"background-color": "#8041f5"}})
 
 
     if selected == "Consultar":
@@ -157,7 +158,9 @@ elif page!="modify_movement":
 
         # Build the grid
         # Define a cell style function to change the color of the quantity cells based on their value
+        st.cache_data()
         gb = GridOptionsBuilder.from_dataframe(df_selection)
+        gb.configure_default_column(filterable=False, sortable=False)
         gb.configure_selection("multiple", use_checkbox=True, header_checkbox=True, suppressRowClickSelection=True)
         gb.configure_pagination(paginationAutoPageSize=False, paginationPageSize=15)
         gb.configure_column("date",header_name="Fecha", cellRenderer=JsCode(date_cellstyle),width=300)
@@ -349,29 +352,32 @@ elif page!="modify_movement":
                 movement_type = selectbox("Elija el tipo de movimiento",["Ingresos", "Gastos"])
 
 
-                
-                expected_columns = ['date', 'category', 'subcategory', 'concept', 'quantity']
+                expected_columns_es = ['Fecha', 'Categoría', 'Subcategoría', 'Concepto', 'Cantidad']
+                expected_columns_en = ['date', 'category', 'subcategory', 'concept', 'quantity']
                 expected_types = ['datetime64[ns]', 'object', 'object', 'object', 'float64']
 
                 # Display income or expense form according to user's choice
                 # Incomes form
                 if movement_type == "Ingresos":
-                    stoggle(
-                        "Categorías aceptadas para ingresos (pulsar)",
-                        """Ingresos: Salario, Venta, Inversión, Intereses de ahorros, Dividendos, 
-                        Ganancias de juegos de azar, Pensiones """
-                    )
                     table_name = "incomes_movements"
                     subcategories = incomes_subcategories
                 if movement_type == "Gastos":
-                    stoggle(
-                        "Categorías aceptadas para gastos (pulsar)",
-                        """GASTOS: Vivienda, Facturas, Supermercado, Transporte, Seguros, Ocio, 
-                        Hijos, Educación, Compras, Viajes, Salud y bienestar, Deporte, Regalos, Mascotas, 
-                        Deudas, Bancos y finanzas, Impuestos, Inversiones, Perdidas de juegos de azar, Otros"""
-                    )
                     table_name = "expenses_movements"
                     subcategories = expenses_subcategories
+                show_movement_subcat = st_toggle_switch(
+                    label=f"Mostrar las categorías y subcategorías",
+                    key="switch_1",
+                    default_value=False,
+                    label_after=True,
+                    inactive_color="#D3D3D3",  
+                    active_color="#6630cc",
+                    track_color="#6630cc",
+                )
+                if show_movement_subcat:
+                    try:
+                        st.json(subcategories, expanded=False)
+                    except:
+                        st.warning("No ha seleccionado el tipo de movimiento.")
 
                 if movement_type:
                     file = st.file_uploader("Subir el archivo", type="xlsx")
@@ -383,29 +389,33 @@ elif page!="modify_movement":
                         if "subcategory" in existing_columns:
                             try:
                                 df["subcategory"] = df["subcategory"].fillna("Otros")
-                                check_columns(df, expected_columns)
+                                check_columns(df, expected_columns_es)
                             except Exception as e:
                                 st.error(e)
                                 st.stop()
                         else: 
                             try:
                                 df["subcategory"] = "Otros"
-                                check_columns(df, expected_columns)
+                                check_columns(df, expected_columns_es)
                             except Exception as e:
                                 st.error(e)
                                 st.stop()
+                        df = df.rename(columns=dict(zip(expected_columns_es, expected_columns_en)))
                         
                         try:
                             verify_column_values(df, "category", list(subcategories))
                         except Exception as e:
-                            st.error("Algunos de las categorías que intenta introducir no son válidas. Por favor, comprueba la lista de categorías aceptadas para ingresos.")
+                            st.error("Algunos de las categorías que intenta introducir no son válidas.")
                             st.stop()
                     
 
                         for cat in list(subcategories):
                             mask = (df["category"]==cat)
                             if not df[mask]["subcategory"].isin(subcategories[cat]).all():
-                                st.error("Hay subcategorias que no están dentro de las del sistema")
+                                df.loc[mask & ~df["subcategory"].isin(subcategories[cat]), "subcategory"] = "Otros"
+                                not_in_subcategories = True
+                        if not_in_subcategories:
+                            st.error("Hay subcategorias que no están dentro de las del sistema")
 
                         try:
                             df['date'] = pd.to_datetime(df['date'])
@@ -418,7 +428,7 @@ elif page!="modify_movement":
                             st.error("La columna `quantity` no es del tipo númerico. Por favor, revísela.")
 
                         try: 
-                            check_data_types(df, expected_columns, expected_types)
+                            check_data_types(df, expected_columns_en, expected_types)
                         except Exception as e:
                             st.error("Algunas columnas no son del tipo adecuado.")
 
