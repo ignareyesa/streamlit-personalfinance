@@ -35,7 +35,7 @@ links_forgot = ["", " "]
 labels_sign = ["¿Eres nuevo? Registrate"]
 links_sign = ["  "]
 labels_main = ["Panel de Control", "Añadir Movimientos", "Mis ahorros", "Mi patrimonio"]
-links_main = ["seguimiento", "movimientos", "ahorros", "patrimonio"]
+links_main = ["seguimiento", "movimientos", "ahorros", "seguimiento patrimonio"]
 
 
 #show login form and handle authentication
