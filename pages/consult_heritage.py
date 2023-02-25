@@ -39,11 +39,12 @@ query_id = "SELECT id from users where username=%s"
 user_id = db.fetchone(query_id, (username,))[0]
 
 selected = option_menu(None, ["Consultar", "Añadir"], 
-    icons=['cash', 'house'], 
+    icons=['arrow-left-right', 'bookmark-plus'], 
     menu_icon="cast", default_index=1, orientation="horizontal",
     styles={
-    "container": {"width":"40%"},
-    "nav": {"margin-left": "1rem", "margin-right": "1rem"}})
+    "container": {"width":"30%"},
+    "nav": {"margin-left": "1rem", "margin-right": "1rem"},
+    "nav-link-selected": {"background-color": "#8041f5"}})
 
 
 if selected == "Consultar":
