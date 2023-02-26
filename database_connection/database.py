@@ -63,7 +63,6 @@ class Database:
             self.connect()
             cursor = self.connection.cursor(buffered=True)
             cursor.execute(query, params)
-        cursor.execute(query, params)
         self.connection.commit()
         cursor.close()
 
@@ -87,7 +86,6 @@ class Database:
             self.connect()
             cursor = self.connection.cursor(buffered=True)
             cursor.execute(query, params)
-        cursor.execute(query, params)
         result = cursor.fetchall()
         cursor.close()
         return result
@@ -112,7 +110,6 @@ class Database:
             self.connect()
             cursor = self.connection.cursor(buffered=True)
             cursor.execute(query, params)
-        cursor.execute(query, params)
         result = cursor.fetchone()
         cursor.close()
         return result
