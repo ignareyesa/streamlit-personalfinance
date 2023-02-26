@@ -1,6 +1,7 @@
 import streamlit as st
 from gen_functions import load_css_file, logged_in, progressbar
 from styles.aggrid_styles import posneg_cellstyle, euro_cellstyle, date_cellstyle
+from mysql.connector.errors import OperationalError
 
 load_css_file("styles/add_movements.css")
 load_css_file("styles/sidebar.css")
@@ -36,7 +37,12 @@ authenticator.logout("Salir", "sidebar")
 # Get the user's ID from the database
 username = st.session_state["username"]
 query_id = "SELECT id from users where username=%s"
-user_id = db.fetchone(query_id, (username,))[0]
+try:
+    user_id = db.fetchone(query_id, (username,))[0]
+except OperationalError:
+    st.error("Ha habido un error durante la conexión a la base de datos. Estamos trabajando para solucionarlo.")
+    st.error("Para solventarlo, vuelva a la página de inicio y repita lo que estaba haciendo.")
+    st.stop()
 
 selected = option_menu(None, ["Consultar", "Añadir"], 
     icons=['arrow-left-right', 'bookmark-plus'], 
