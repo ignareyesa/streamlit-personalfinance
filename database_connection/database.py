@@ -58,9 +58,11 @@ class Database:
         """
         try:
             cursor = self.connection.cursor(buffered=True)
+            cursor.execute(query, params)
         except:
             self.connect()
             cursor = self.connection.cursor(buffered=True)
+            cursor.execute(query, params)
         cursor.execute(query, params)
         self.connection.commit()
         cursor.close()
@@ -80,9 +82,11 @@ class Database:
         """
         try:
             cursor = self.connection.cursor(buffered=True)
+            cursor.execute(query, params)
         except:
             self.connect()
             cursor = self.connection.cursor(buffered=True)
+            cursor.execute(query, params)
         cursor.execute(query, params)
         result = cursor.fetchall()
         cursor.close()
@@ -103,9 +107,11 @@ class Database:
         """
         try:
             cursor = self.connection.cursor(buffered=True)
+            cursor.execute(query, params)
         except:
             self.connect()
             cursor = self.connection.cursor(buffered=True)
+            cursor.execute(query, params)
         cursor.execute(query, params)
         result = cursor.fetchone()
         cursor.close()
@@ -126,10 +132,11 @@ class Database:
         """
         try:
             cursor = self.connection.cursor(buffered=True)
+            cursor.execute(query, params)
         except:
             self.connect()
             cursor = self.connection.cursor(buffered=True)
-        cursor.execute(query, params)
+            cursor.execute(query, params)
         column_names = [column[0] for column in cursor.description]
         cursor.close()
         return column_names
