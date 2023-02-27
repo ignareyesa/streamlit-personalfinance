@@ -36,6 +36,7 @@ try:
     user_id = db.fetchone(query_id, (username,))[0]
 except:
     st.write(error_text, unsafe_allow_html=True)
+    st.stop()
 
 with st.container():
     st.markdown("""<style>
