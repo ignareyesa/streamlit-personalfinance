@@ -440,7 +440,7 @@ elif page!="modify_movement":
                         
                         try:
                             df["user_id"] = user_id
-                            df = df[["user_id"] + expected_columns]
+                            df = df[["user_id"] + expected_columns_en]
                             df['date'] = df['date'].astype(str)
                             
                             column_names = ",".join(df.columns)

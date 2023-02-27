@@ -39,8 +39,8 @@ query_id = "SELECT id from users where username=%s"
 try:
     user_id = db.fetchone(query_id, (username,))[0]
 except:
-    st.markdown("La web ha sido desactivada para ahorrar recursos, por favor, pulse en el siguiente enlace para reactivarla.")
-    multile_button_inline(["Volver a conectar"],["Inicio"])
+    st.markdown("Ha habido un error durante el proceso, porfavor vuelva al inicio.")
+    multile_button_inline(["Volver a Inicio"],["Inicio"])
     st.stop()
 
 selected = option_menu(None, ["Consultar", "Añadir"], 
