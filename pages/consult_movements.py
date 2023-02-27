@@ -49,7 +49,12 @@ elif page!="modify_movement":
     # Get the user's ID from the database
     username = st.session_state["username"]
     query_id = "SELECT id from users where username=%s"
-    user_id = db.fetchone(query_id, (username,))[0]
+    try:
+        user_id = db.fetchone(query_id, (username,))[0]
+    except:
+        st.markdown("Ha habido un error durante el proceso, porfavor vuelva al inicio.")
+        multile_button_inline(["Volver a Inicio"],["Inicio"])
+        st.stop()
 
     selected = option_menu(None, ["Consultar", "Añadir"], 
         icons=['arrow-left-right', 'bookmark-plus'], 
