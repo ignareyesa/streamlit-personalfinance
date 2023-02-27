@@ -19,6 +19,7 @@ try:
     authentication_status = st.session_state["authentication_status"]
     authenticator = st.session_state["authenticator"]
     db = st.session_state["db"]
+    credentials = st.session_state["credentials"]
 except:
     st.markdown("La web ha sido desactivada para ahorrar recursos, por favor, pulse en el siguiente enlace para reactivarla.")
     multile_button_inline(["Volver a conectar"],["Inicio"])
@@ -69,6 +70,8 @@ with col3:
         st.write("TUTORIAL")
 
 if authentication_status:
+    # st.write(credentials)
+    # st.write(st.session_state["credentials"])
     authenticator.logout("Salir", "sidebar")
     username = st.session_state["username"]
     query_id = "SELECT id, name, username, email from users where username=%s"
@@ -109,6 +112,11 @@ if authentication_status:
                     try:
                         query = "UPDATE users SET email=%s, name=%s, username=%s WHERE id=%s"
                         db.commit(query, (new_email, new_name, new_username, user_id))
+                        users = db.fetchall("SELECT * from users;")
+                        credentials = {
+                            "usernames": {i[2]: {"email": i[1], "name": i[3], "password": i[4]} for i in users}
+                        }
+                        st.session_state["credentials"] = credentials 
                         st.success("Datos modificados exitósamente, la página se recargará en un instante.")
                         progressbar()
                         st.experimental_rerun()
