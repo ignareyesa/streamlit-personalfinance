@@ -29,7 +29,6 @@ except:
 css_style = "styles/buttons.css"
 
 
-
 # define labels and links for the buttons at the bottom of the page
 labels_forgot = ["¿Has olvidado tu contraseña?", "¿Has olvidado tu nombre de usuario?"]
 links_forgot = ["", " "]
@@ -70,16 +69,16 @@ with col3:
         st.write("TUTORIAL")
 
 if authentication_status:
-    st.write(credentials)
-    st.write(st.session_state["credentials"])
     authenticator.logout("Salir", "sidebar")
     username = st.session_state["username"]
     query_id = "SELECT id, name, username, email from users where username=%s"
-    try:
-        user_id, current_name, current_username, current_email  = db.fetchone(query_id, (username,))
-    except:
-        st.write(error_text, unsafe_allow_html=True)
-        st.stop()
+    # try:
+    #     user_id, current_name, current_username, current_email  = db.fetchone(query_id, (username,))
+    # except:
+    #     st.write(error_text, unsafe_allow_html=True)
+    #     st.stop()
+    
+    user_id, current_name, current_username, current_email  = db.fetchone(query_id, (username,))
     
     with st.container():
         col1, col2, col3 = st.columns([1,0.25,0.77])
@@ -93,41 +92,36 @@ if authentication_status:
         with col3:
             st.write("### Mis datos")
             edit_but = stateful_button("Habilitar edición datos", False, key = "edit_but")
-            new_name = st.text_input("Nombre", current_name, disabled = not edit_but)
-            new_username = st.text_input("Nombre de usuario", current_username, disabled = not edit_but)
-            new_email = st.text_input("Correo electrónico", current_email, disabled = not edit_but)
+            new_username, new_name, new_email = authenticator.reser_user_details(disable = edit_but)
+            # new_name = st.text_input("Nombre", current_name, disabled = not edit_but)
+            # new_username = st.text_input("Nombre de usuario", current_username, disabled = not edit_but)
+            # new_email = st.text_input("Correo electrónico", current_email, disabled = not edit_but)
             password = st.text_input("Contraseña", "**********", disabled = True)
             pass_but = st.button("Modificar contraseña", key="password_but")
             if pass_but:
                 switch_page("    ")
 
-            if new_username != current_username or new_name != current_name or new_email != current_email:
-                final_but_dis = False
-            else: 
-                final_but_dis = True    
-            safe_changes = st.button("Guardar cambios", disabled = final_but_dis)
-            
-            if safe_changes:
-                if check_email(new_email):
-                    try:
-                        query = "UPDATE users SET email=%s, name=%s, username=%s WHERE id=%s"
-                        db.commit(query, (new_email, new_name, new_username, user_id))
-                        users = db.fetchall("SELECT * from users;")
-                        credentials = {
-                            "usernames": {i[2]: {"email": i[1], "name": i[3], "password": i[4]} for i in users}
-                        }
-                        st.session_state["credentials"] = credentials 
-                        st.success("Datos modificados exitósamente, la página se recargará en un instante.")
-                        progressbar()
-                        st.experimental_rerun()
-                    except Exception as e:
-                        error = str(e).split(" ")
-                        if '1062' in error and '(23000):' in error:
-                            if error[-1] == "'email'":
-                                st.error(f"El email '{new_email}' ya está en uso, utilize otro")
-                            if error[-1] == "'username'":
-                                st.error(f"El nombre de usuario '{new_username}' ya está en uso, utilize otro")
-                else:
-                    st.error("El correo electrónico introducido no es válido")
+            if new_username or new_name or new_email:
+                try:
+                    query = "UPDATE users SET email=%s, name=%s, username=%s WHERE id=%s"
+                    db.commit(query, (new_email, new_name, new_username, user_id))
+                    users = db.fetchall("SELECT * from users;")
+                    credentials = {
+                        "usernames": {i[2]: {"email": i[1], "name": i[3], "password": i[4]} for i in users}
+                    }
+                    st.session_state["credentials"] = credentials 
+                    st.success("Datos modificados exitósamente, la página se recargará en un instante.")
+                    progressbar()
+                    st.experimental_rerun()
+                except Exception as e:
+                    error = str(e).split(" ")
+                    if '1062' in error and '(23000):' in error:
+                        if error[-1] == "'email'":
+                            st.error(f"El email '{new_email}' ya está en uso, utilize otro")
+                        if error[-1] == "'username'":
+                            st.error(f"El nombre de usuario '{new_username}' ya está en uso, utilize otro")
+            else:
+                st.stop()
+    
 
     
