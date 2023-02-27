@@ -70,8 +70,8 @@ with col3:
         st.write("TUTORIAL")
 
 if authentication_status:
-    # st.write(credentials)
-    # st.write(st.session_state["credentials"])
+    st.write(credentials)
+    st.write(st.session_state["credentials"])
     authenticator.logout("Salir", "sidebar")
     username = st.session_state["username"]
     query_id = "SELECT id, name, username, email from users where username=%s"
