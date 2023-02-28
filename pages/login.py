@@ -92,7 +92,7 @@ if authentication_status:
         with col3:
             st.write("### Mis datos")
             edit_but = stateful_button("Habilitar edición datos", False, key = "edit_but")
-            new_username, new_name, new_email = authenticator.reser_user_details(disable = edit_but)
+            new_username, new_name, new_email = authenticator.reset_user_details(disable = edit_but)
             # new_name = st.text_input("Nombre", current_name, disabled = not edit_but)
             # new_username = st.text_input("Nombre de usuario", current_username, disabled = not edit_but)
             # new_email = st.text_input("Correo electrónico", current_email, disabled = not edit_but)

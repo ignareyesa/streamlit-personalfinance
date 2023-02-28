@@ -754,7 +754,7 @@ class Authenticate:
             else:
                 raise CredentialsError
             
-    def reser_user_details(self, disable: bool = False) -> bool:
+    def reset_user_details(self, disable: bool = False) -> bool:
         """
         Creates a data reset widget.
 
