@@ -787,14 +787,14 @@ class Authenticate:
                 if len(new_username) > 0 and len(new_name)>0 and len(new_email)>0:
                     if check_email(new_email):
                         if new_name != current_name:
-                            self._update_entry(username=self.username, key="name", value=new_name)
+                            self._update_entry(username=current_username, key="name", value=new_name)
                             st.session_state["name"] = new_name
 
                         if new_email != current_email:
-                            self._update_entry(username=self.username, key="email", value=new_email)
+                            self._update_entry(username=current_username, key="email", value=new_email)
                         if new_username != current_username:
                             if new_username not in self.credentials["usernames"]:
-                                self._update_username(self.username, new_username)
+                                self._update_username(current_username, new_username)
                                 st.session_state["username"] = new_username
                             else:
                                 raise ResetError("El nombre de usuario ya está en uso")
