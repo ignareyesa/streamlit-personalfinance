@@ -48,7 +48,7 @@ credentials = {
     "usernames": {i[2]: {"email": i[1], "name": i[3], "password": i[4]} for i in users}
 }
 st.session_state["credentials"] = credentials 
-
+print(credentials)
 
 authenticator = stauth.Authenticate(
     credentials,
