@@ -1,8 +1,7 @@
 import streamlit as st
 
 from gen_functions import multile_button_inline, load_css_file, switch_page, progressbar, stateful_button
-from authenticator.utils import check_email
-
+from mysql.connector.errors import OperationalError
 from st_pages import add_indentation
 from PIL import Image
 
@@ -78,7 +77,13 @@ if authentication_status:
     #     st.write(error_text, unsafe_allow_html=True)
     #     st.stop()
     
-    user_id, current_name, current_username, current_email  = db.fetchone(query_id, (username,))
+    try:
+        user_id, current_name, current_username, current_email  = db.fetchone(query_id, (username,))
+    except OperationalError:
+        db.close()
+        st.markdown("La base de datos ha sufrido una sobrecarga, por favor, pulse en el siguiente botón para reactivarla.")
+        multile_button_inline(["Volver a conectar"],["Inicio"])
+        st.stop()
     
     with st.container():
         col1, col2, col3 = st.columns([1,0.25,0.77])
