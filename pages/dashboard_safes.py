@@ -54,7 +54,7 @@ with st.container():
                 </button>""", unsafe_allow_html=True)
 
 with st.container():
-    query = """SELECT LAST_DAY(CONCAT(year,"-",month,"-01")) as date, safes FROM ( 
+    query = """SELECT LAST_DAY(CONCAT(year,'-',month,'-01')) as date, safes FROM ( 
         SELECT COALESCE(exp.month, inc.month) AS month, COALESCE(exp.year, inc.year) AS year, exp.expenses, inc.incomes,
         COALESCE(inc.incomes, 0) - COALESCE(exp.expenses, 0) AS safes
     FROM

@@ -67,12 +67,12 @@ elif page!="modify_movement":
 
     if selected == "Consultar":
         # Get the user's income movements from the database
-        query = """SELECT "incomes" AS movement,
+        query = """SELECT 'incomes' AS movement,
                                 incomes.*
                             FROM incomes_movements AS incomes
                             WHERE user_id=%s
                             UNION ALL
-                            SELECT "expenses" AS movement,
+                            SELECT 'expenses' AS movement,
                                 expenses.id,
                                 expenses.user_id,
                                 expenses.date,

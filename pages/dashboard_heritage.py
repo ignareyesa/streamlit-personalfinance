@@ -51,7 +51,7 @@ tab1, tab2 = st.tabs(["General", "Detalle"])
 
 with tab1:
     with st.container():
-        query = """SELECT LAST_DAY(CONCAT(year,"-",month,"-01")) as date, pasive, active, heritage FROM ( 
+        query = """SELECT LAST_DAY(CONCAT(year,'-',month,'-01')) as date, pasive, active, heritage FROM ( 
             SELECT COALESCE(pas.month, act.month) AS month, COALESCE(pas.year, act.year) AS year, COALESCE(pas.pasives, 0) as pasive, COALESCE(act.actives, 0) as active,
             COALESCE(act.actives, 0) - COALESCE(pas.pasives, 0) AS heritage
         FROM
@@ -179,7 +179,7 @@ with tab2:
             selection = pasivos
             color_mapper = pasives_categories_colors
 
-        query = f"""SELECT LAST_DAY(CONCAT(year,"-",month,"-01")), category, quantity FROM (
+        query = f"""SELECT LAST_DAY(CONCAT(year,'-',month,'-01')), category, quantity FROM (
         SELECT month(date) AS month, year(date) AS year, category, sum(quantity) AS quantity
             FROM {table}
             WHERE user_id = %s
