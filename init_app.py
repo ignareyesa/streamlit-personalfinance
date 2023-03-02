@@ -68,26 +68,3 @@ authenticator = stauth.Authenticate(
     config["preauthorized"],
 )
 st.session_state["authenticator"] = authenticator
-
-# smtp_connection = st.secrets["smtp_connection"]
-# smtp_server = smtp_connection["SMTP_SERVER"]
-# smtp_port = smtp_connection["SMTP_PORT"]
-# smtp_username = smtp_connection["SMTP_API_NAME"]
-# smtp_password = smtp_connection["SMTP_API_KEY"]
-# smtp_from_addr = smtp_connection["SMTP_FROM_ADDRESS"]
-# smtp_from_name = smtp_connection["SMTP_FROM_NAME"]
-
-# @st.cache_resource
-# def set_smtp_connection(retry=False):
-#     return EmailClient(
-#         smtp_server=smtp_server,
-#         smtp_port=smtp_port,
-#         username=smtp_username,
-#         password=smtp_password,
-#         from_addr=smtp_from_addr,
-#         from_name=smtp_from_name,
-#     )
-
-# email_client = set_smtp_connection()
-# st.session_state["email_client"] = email_client 
-

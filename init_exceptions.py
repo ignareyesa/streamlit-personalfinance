@@ -21,8 +21,6 @@ authenticator = stauth.Authenticate(
     config["cookie"]["expiry_days"],
     config["preauthorized"],
 )
-# email_client = set_smtp_connection(retry=True)
-
 
 def if_reconnect():
     """
