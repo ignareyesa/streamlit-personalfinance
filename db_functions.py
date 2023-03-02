@@ -1,6 +1,9 @@
 import streamlit as st
 import datetime
 import secrets
+from init_exceptions import if_reconnect
+
+if_reconnect()
 
 db = st.session_state["db"]
 
