@@ -545,17 +545,18 @@ class Authenticate:
         new_password_repeat = reset_password_form.text_input(
             "Repetir contreseña", type="password"
         )
+        self.password = new_password        
 
         if reset_password_form.form_submit_button("Cambiar contreseña"):
             if self._check_username():
                 if len(new_password) > 0:
                     if new_password == new_password_repeat:
-                        if self.password != new_password:
+                        if not self._check_pw():#self.password != new_password:
                             self._update_password(self.username, new_password)
                             return True
                         else:
                             raise ResetError(
-                                "La contraseña actual y la nueva son las mismas"
+                                "La contraseña actual y la nueva son la misma"
                             )
                     else:
                         raise ResetError("Las contraseñas no coinciden")
