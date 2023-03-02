@@ -1,7 +1,7 @@
 from gen_functions import load_css_file
 from init_exceptions import if_reconnect
+from smtp_connection.email_client import EmailClient
 import streamlit as st
-st.set_page_config(page_title="Finanzas Personales", page_icon="🐍", layout="wide")
 load_css_file("styles/forms.css")
 load_css_file("styles/sidebar.css")
 
@@ -24,12 +24,31 @@ if_reconnect()
 try:
   authenticator = st.session_state["authenticator"]
   db = st.session_state["db"]
-  email_client = st.session_state["email_client"]
 except:
     st.write(error_text, unsafe_allow_html=True)
     st.stop()
 
-  # The body of the email to be sent to the user
+smtp_connection = st.secrets["smtp_connection"]
+smtp_server = smtp_connection["SMTP_SERVER"]
+smtp_port = smtp_connection["SMTP_PORT"]
+smtp_username = smtp_connection["SMTP_API_NAME"]
+smtp_password = smtp_connection["SMTP_API_KEY"]
+smtp_from_addr = smtp_connection["SMTP_FROM_ADDRESS"]
+smtp_from_name = smtp_connection["SMTP_FROM_NAME"]
+
+def set_smtp_connection(retry=False):
+    return EmailClient(
+        smtp_server=smtp_server,
+        smtp_port=smtp_port,
+        username=smtp_username,
+        password=smtp_password,
+        from_addr=smtp_from_addr,
+        from_name=smtp_from_name,
+    )
+
+email_client = set_smtp_connection()
+
+# The body of the email to be sent to the user
 email_body = """
   <html>
     <head>
@@ -77,7 +96,7 @@ try:
       )
 
 except Exception as e:
-  st.error(e)
+  st.error("Ha habido un error en el proceso.")
 
 # Show a button to go back to the login page
 multile_button_inline(["Iniciar sesión"],["Mi perfil"])
