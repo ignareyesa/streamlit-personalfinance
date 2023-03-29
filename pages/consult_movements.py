@@ -45,12 +45,15 @@ elif page!="modify_movement":
     authenticator = st.session_state["authenticator"]
     db = st.session_state["db"]
     authenticator.logout("Salir", "sidebar")
+    @st.cache_data
+    def fetchone(query, params):
+        return db.fetchone(query, params)
 
     # Get the user's ID from the database
     username = st.session_state["username"]
     query_id = "SELECT id from users where username=%s"
     try:
-        user_id = db.fetchone(query_id, (username,))[0]
+        user_id = fetchone(query_id, (username,))[0]
     except:
         st.markdown("Ha habido un error durante el proceso, porfavor vuelva al inicio.")
         multile_button_inline(["Volver a Inicio"],["Inicio"])
@@ -64,6 +67,13 @@ elif page!="modify_movement":
         "nav": {"margin-left": "1rem", "margin-right": "1rem"},
         "nav-link-selected": {"background-color": "#8041f5"}})
 
+    @st.cache_data
+    def fetchall(query, params):
+        return db.fetchall(query, params)
+    
+    @st.cache_data
+    def get_columns(query, params):
+        return db.get_columns(query, params)
 
     if selected == "Consultar":
         # Get the user's income movements from the database
@@ -85,8 +95,8 @@ elif page!="modify_movement":
                             ORDER BY date DESC;
                         """
 
-        data = db.fetchall(query, (user_id, user_id))
-        columns = db.get_columns(query, (user_id, user_id))
+        data = fetchall(query, (user_id, user_id))
+        columns = get_columns(query, (user_id, user_id))
 
         # Convert the data to a pandas DataFrame
         df = pd.DataFrame(data=data, columns=columns)
@@ -463,6 +473,9 @@ else:
     if_reconnect()
     authenticator = st.session_state["authenticator"]
     db = st.session_state["db"]
+    @st.cache_data
+    def fetchone(query, params):
+        return db.fetchone(query, params)
     try:
         token, movement_id = search_params.get("token")[0].split("-")
         username = search_params.get("username")[0]
@@ -471,7 +484,7 @@ else:
         date_placeholder = datetime.datetime.strptime(search_params.get("date")[0], "%Y-%m-%d").date()
         quantity_placeholder = float(search_params.get("quantity")[0])
         # Get id from database
-        user_id, user_name = db.fetchone("SELECT id, name from users where username=%s", (username,))
+        user_id, user_name = fetchone("SELECT id, name from users where username=%s", (username,))
     except:
         st.warning("El enlace proporcionado no es válido.")
         multile_button_inline(["Volver a iniciar sesión"],["Mi perfil"], css=css_style)
