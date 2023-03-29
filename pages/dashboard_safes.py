@@ -24,6 +24,9 @@ try:
     authenticator = st.session_state["authenticator"]
     db = st.session_state["db"]
     load_css_file("styles/sidebar.css")
+    @st.cache_data
+    def fetchone(query, params):
+        return db.fetchone(query, params)
 
 
 
@@ -33,7 +36,7 @@ try:
     # Get the user's ID from the database
     username = st.session_state["username"]
     query_id = "SELECT id from users where username=%s"
-    user_id = db.fetchone(query_id, (username,))[0]
+    user_id = fetchone(query_id, (username,))[0]
 except:
     st.write(error_text, unsafe_allow_html=True)
     st.stop()
@@ -52,6 +55,15 @@ with st.container():
                 <button class="search-button" title="La información mostrada es para los meses ya acabados.">
                     <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon"><circle cx="12" cy="12" r="10"></circle><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"></path><line x1="12" y1="17" x2="12.01" y2="17"></line></svg>
                 </button>""", unsafe_allow_html=True)
+
+@st.cache_data
+def fetchall(query, params):
+    return db.fetchall(query, params)
+
+@st.cache_data
+def get_columns(query, params):
+    return db.get_columns(query, params)
+
 
 with st.container():
     query = """SELECT LAST_DAY(CONCAT(year,'-',month,'-01')) as date, safes FROM ( 
@@ -82,7 +94,7 @@ with st.container():
         WHERE user_id = %s
         GROUP BY month(date), year(date)) AS inc
     ON exp.month = inc.month AND exp.year = inc.year) AS main;"""
-    query_results = db.fetchall(query, (user_id, user_id, user_id, user_id))
+    query_results = fetchall(query, (user_id, user_id, user_id, user_id))
 
     if query_results == []:
         st.warning("No ha añadido ningún movimiento")
@@ -154,7 +166,7 @@ with st.container():
 with st.container():
     col1, col2 = st.columns([1,1])
     query = "select sum(quantity) from {} where user_id=%s and month(date)=%s and year(date)=%s"
-    incomes = db.fetchone(query.format("incomes_movements"), (user_id, month, year))[0]
+    incomes = fetchone(query.format("incomes_movements"), (user_id, month, year))[0]
     
     # Check if current month
     now = datetime.datetime.now()
@@ -164,7 +176,7 @@ with st.container():
     if not incomes: 
         incomes = 0
     query = "select sum(quantity) from {} where user_id=%s and month(date)=%s and YEAR(date)=%s"
-    expenses = db.fetchone(query.format("expenses_movements"), (user_id, month, year))[0]
+    expenses = fetchone(query.format("expenses_movements"), (user_id, month, year))[0]
     if not expenses:
         expenses = 0
     safes = float(incomes - expenses)
@@ -233,7 +245,7 @@ with st.container():
             labels = ['Efectivo', 'Inversión', 'Donación']
             colors = ['mediumturquoise', 'darkorange', 'lightgreen']
             query = "select cash, investment, donation from safes_distribution where user_id=%s and month=%s and year=%s"
-            safes_percentages = db.fetchall(query, (user_id, month, year))
+            safes_percentages = fetchall(query, (user_id, month, year))
             if safes_percentages != []:
                 safes_percentages_df = pd.DataFrame(safes_percentages, columns=labels).T
                 safes_percentages = list(safes_percentages_df.replace(0, np.nan).dropna().T.iloc[0].astype(float).values)
@@ -308,7 +320,7 @@ with st.container():
             try:
                 if safes_but:
                     query = "SELECT id from safes_distribution WHERE user_id =%s and month=%s and year=%s"
-                    safes_id = db.fetchone(query, (user_id, month, year))
+                    safes_id = fetchone(query, (user_id, month, year))
                     if safes_id:
                         query = """UPDATE safes_distribution SET cash = %s, investment=%s, donation=%s WHERE ID=%s"""
                         db.commit(query, (cash, investment, donate, safes_id[0]))

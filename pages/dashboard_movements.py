@@ -45,7 +45,9 @@ try:
 
     authenticator = st.session_state["authenticator"]
     db = st.session_state["db"]
-
+    @st.cache_data
+    def fetchone(query, params):
+        return db.fetchone(query, params)
 
 
     authenticator.logout("Salir", "sidebar")
@@ -53,7 +55,7 @@ try:
     # Get the user's ID from the database
     username = st.session_state["username"]
     query_id = "SELECT id from users where username=%s"
-    user_id = db.fetchone(query_id, (username,))[0]
+    user_id = fetchone(query_id, (username,))[0]
 except:
     st.write(error_text, unsafe_allow_html=True)
 

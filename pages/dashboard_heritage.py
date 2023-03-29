@@ -14,6 +14,8 @@ add_indentation()
 if not logged_in():
     switch_page("Mi perfil")
 
+
+
 try:
     authenticator = st.session_state["authenticator"]
     db = st.session_state["db"]
@@ -21,14 +23,23 @@ try:
 
     authenticator.logout("Salir", "sidebar")
     username = st.session_state["username"]
+    @st.cache_data
+    def fetchone(query, params):
+        return db.fetchone(query, params)
     query_id = "SELECT id from users where username=%s"
     # Get id from database
-    user_id = db.fetchone(query_id, (username,))[0]
+    user_id = fetchone(query_id, (username,))[0]
 except:
     st.write(error_text, unsafe_allow_html=True)
     st.stop()
 
+@st.cache_data
+def fetchall(query, params):
+    return db.fetchall(query, params)
 
+@st.cache_data
+def get_columns(query, params):
+    return db.get_columns(query, params)
 
 with st.container():
     st.markdown("""<style>
@@ -79,7 +90,7 @@ with tab1:
             WHERE user_id = %s
             GROUP BY month(date), year(date)) AS act
         ON pas.month = act.month AND pas.year = act.year) AS main;"""
-        query_results = db.fetchall(query, (user_id, user_id, user_id, user_id))
+        query_results = fetchall(query, (user_id, user_id, user_id, user_id))
         
         if query_results == []:
             st.warning("No ha añadido ningún patrimonio.")
@@ -184,7 +195,7 @@ with tab2:
             FROM {table}
             WHERE user_id = %s
             GROUP BY month(date), year(date), category) AS main"""
-        query_results = db.fetchall(query, (user_id, ))
+        query_results = fetchall(query, (user_id, ))
         if query_results == []:
             st.warning(f"No ha añadido ningún {option[:-1].lower()}")
             multile_button_inline(["Añadir"], ["Activos y pasivos"])
