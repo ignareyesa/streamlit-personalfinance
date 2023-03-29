@@ -74,10 +74,18 @@ query_incomes = """SELECT date, category, subcategory, quantity, concept
             ORDER BY date DESC;
         """
 
-data_expenses = db.fetchall(query_expenses, (user_id,))
-columns_expenses = db.get_columns(query_expenses, (user_id,))
-data_incomes = db.fetchall(query_incomes, (user_id,))
-columns_incomes = db.get_columns(query_incomes, (user_id,))
+@st.cache_data
+def fetchall(query, params):
+    return db.fetchall(query, params)
+
+@st.cache_data
+def get_columns(query, params):
+    return db.get_columns(query, params)
+
+data_expenses = fetchall(query_expenses, (user_id,))
+columns_expenses = get_columns(query_expenses, (user_id,))
+data_incomes = fetchall(query_incomes, (user_id,))
+columns_incomes = get_columns(query_incomes, (user_id,))
 
 # Convert the data to a pandas DataFrame
 df_expenses = pd.DataFrame(data=data_expenses, columns=columns_expenses)
@@ -221,9 +229,9 @@ with tab1:
                 WHERE user_id = %s
                 GROUP BY month(date), year(date)) AS act
             ON pas.month = act.month AND pas.year = act.year) AS main;"""
-            query_results = db.fetchall(query, (user_id, user_id, user_id, user_id))
+            query_results = fetchall(query, (user_id, user_id, user_id, user_id))
 
-            query_results = db.fetchall(query, (user_id, user_id, user_id, user_id))
+            query_results = fetchall(query, (user_id, user_id, user_id, user_id))
             heritage_last_15 = df_with_all_dates_given_period(
                 query_results, ["date"], 15, ["heritage"]
             )
@@ -309,7 +317,7 @@ with tab1:
                 WHERE user_id = %s
                 GROUP BY month(date), year(date)) AS inc
             ON exp.month = inc.month AND exp.year = inc.year) AS main;"""
-            query_results = db.fetchall(query, (user_id, user_id, user_id, user_id))
+            query_results = fetchall(query, (user_id, user_id, user_id, user_id))
             safes_last_12 = df_with_all_dates_given_period(
                 query_results, ["date"], 12, ["safes"]
             )
@@ -347,7 +355,7 @@ with tab1:
         FROM incomes_movements
         WHERE user_id = %s AND date >= DATE_SUB(CURRENT_DATE(), INTERVAL 2 YEAR)
         GROUP BY LAST_DAY(CONCAT(year(date),'-',month(date),'-01'))"""
-        query_results = db.fetchall(query_inc, (user_id,))
+        query_results = fetchall(query_inc, (user_id,))
         # Generate a list of dates representing all of the months within the last 24 months
         df_bars_incomes = df_with_all_dates_given_period(
             query_results, ["date"], 15, ["incomes"], include_actual=True
@@ -357,7 +365,7 @@ with tab1:
         FROM expenses_movements
         WHERE user_id = %s AND date >= DATE_SUB(CURRENT_DATE(), INTERVAL 2 YEAR)
         GROUP BY LAST_DAY(CONCAT(year(date),'-',month(date),'-01'))"""
-        query_results = db.fetchall(query_exp, (user_id,))
+        query_results = fetchall(query_exp, (user_id,))
         df_bars_expenses = df_with_all_dates_given_period(
             query_results, ["date"], 15, ["expenses"], include_actual=True
         )
