@@ -70,10 +70,9 @@ with col1:
     
     mdlit(f"""Con esta aplicación podrás [violet]controlar tus ingresos, gastos y tu patrimonio[/violet] de manera rápida e intuitiva gracias a sus [violet]paneles de control interactivos[/violet], los cuales podrás utilizar con tan solo unos simples clics.
 
-Además, esta app forma parte de una serie de proyectos que publico semanalmente en mi newsletter, en la cual comparto artículos prácticos que profundizan en proyectos relacionados con la analítica y la ciencia de datos. Si deseas conocer más detalles sobre mi newsletter, puedes leer el artículo de presentación en este enlace.
+[violet]"Finanzas Personales con Streamlit"[/violet] es el primer proyecto de mi nueva iniciativa "Conversaciones sobre Data & Analytics", una newsletter en la que semanalmente publicaré contenido sobre el sector de la analítica y la ciencia de datos. Te animo a echarle un vistazo al primer artículo y conocer de primera mano que cosillas vamos a hacer juntos -> [Presentación Newsletter](https://dataanalyticstalks.substack.com)
 
-[violet]"Finanzas Personales con Streamlit"[/violet] es el primer proyecto que he presentado, el cual se desarrolla a lo largo de 5 entregas. En este proyecto utilizamos el framework Streamlit de Python para crear esta aplicación, y más adelante, podremos utilizar la misma herramienta para ofrecer modelos de predicción y análisis a los usuarios.
-Las cinco entregas de las que consta el proyecto son:
+La ejecución de este primer proyecto, se presenta a lo largo de 5 artículos en los que explico de forma técnica y no tan técnica los componentes más útiles de Streamlit con el fin de entender el potencial y la usabilidad de esta herramienta. Los artículos son los siguientes:
 
 1. @(⚙️)([violet]**Inicio app y configuración Base de Datos**[/violet])(https://dataanalyticstalks.substack.com)
 2. @(👤)(Portal para usuarios y creación de formularios)(https://dataanalyticstalks.substack.com)
@@ -81,12 +80,11 @@ Las cinco entregas de las que consta el proyecto son:
 4. @(📊)(Creación de Dashboards interactivos)(https://dataanalyticstalks.substack.com)
 5. @(🟢)(Despligue de la app y conclusiones sobre Streamlit)(https://dataanalyticstalks.substack.com)
 
-
-Puedes encontrar todo el código en GitHub, a lo largo de las entregas iremos explicando las diferentes partes del código.
+Además, el código de la aplicación se encuentra en GitHub para su consulta.
 
 @(💻)(Código del proyecto)(https://github.com/ignareyesa/streamlit-personalfinance)
 
-[violet]**Prueba la App**[/violet], pulsando en el siquiente enlace (no hace falta registro)."""
+¡¡¡[violet]**Prueba la App**[/violet], pulsando en el siquiente enlace!!!."""
     )
 
     start_now = st.button("👉 Comienza ya! ")

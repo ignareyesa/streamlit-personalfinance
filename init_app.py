@@ -4,7 +4,6 @@ import yaml
 from yaml import CLoader as Loader
 import authenticator as stauth
 from database_connection.database import Database
-from smtp_connection.email_client import EmailClient
 
 with open("config.yaml") as file:
     config = yaml.load(file, Loader=Loader)
