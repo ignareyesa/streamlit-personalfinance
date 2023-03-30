@@ -53,12 +53,12 @@ selected = option_menu(None, ["Consultar", "Añadir"],
 
 
 if selected == "Consultar":
-    query = """SELECT "actives" AS movement,
+    query = """SELECT 'actives' AS movement,
                             actives.*
                         FROM actives_movements AS actives
                         WHERE user_id=%s
                         UNION ALL
-                        SELECT "pasives" AS movement,
+                        SELECT 'pasives' AS movement,
                             pasives.id,
                             pasives.user_id,
                             pasives.date,
