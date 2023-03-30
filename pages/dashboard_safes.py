@@ -245,7 +245,7 @@ with st.container():
             labels = ['Efectivo', 'Inversión', 'Donación']
             colors = ['mediumturquoise', 'darkorange', 'lightgreen']
             query = "select cash, investment, donation from safes_distribution where user_id=%s and month=%s and year=%s"
-            safes_percentages = fetchall(query, (user_id, month, year))
+            safes_percentages = db.fetchall(query, (user_id, month, year))
             if safes_percentages != []:
                 safes_percentages_df = pd.DataFrame(safes_percentages, columns=labels).T
                 safes_percentages = list(safes_percentages_df.replace(0, np.nan).dropna().T.iloc[0].astype(float).values)

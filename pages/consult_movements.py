@@ -67,14 +67,6 @@ elif page!="modify_movement":
         "nav": {"margin-left": "1rem", "margin-right": "1rem"},
         "nav-link-selected": {"background-color": "#8041f5"}})
 
-    @st.cache_data
-    def fetchall(query, params):
-        return db.fetchall(query, params)
-    
-    @st.cache_data
-    def get_columns(query, params):
-        return db.get_columns(query, params)
-
     if selected == "Consultar":
         # Get the user's income movements from the database
         query = """SELECT 'incomes' AS movement,
@@ -95,8 +87,8 @@ elif page!="modify_movement":
                             ORDER BY date DESC;
                         """
 
-        data = fetchall(query, (user_id, user_id))
-        columns = get_columns(query, (user_id, user_id))
+        data = db.fetchall(query, (user_id, user_id))
+        columns = db.get_columns(query, (user_id, user_id))
 
         # Convert the data to a pandas DataFrame
         df = pd.DataFrame(data=data, columns=columns)
@@ -173,7 +165,6 @@ elif page!="modify_movement":
 
         # Build the grid
         # Define a cell style function to change the color of the quantity cells based on their value
-        st.cache_data()
         gb = GridOptionsBuilder.from_dataframe(df_selection)
         gb.configure_default_column(filterable=False, sortable=False)
         gb.configure_selection("multiple", use_checkbox=True, header_checkbox=True, suppressRowClickSelection=True)
