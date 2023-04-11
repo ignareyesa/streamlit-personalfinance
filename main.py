@@ -74,10 +74,10 @@ with col1:
 
 La ejecución de este primer proyecto, se presenta a lo largo de 5 artículos en los que explico de forma técnica y no tan técnica los componentes más útiles de Streamlit con el fin de entender el potencial y la usabilidad de esta herramienta. Los artículos son los siguientes:
 
-1. @(⚙️)([violet]**Inicio app y configuración Base de Datos**[/violet])(https://dataanalyticstalks.substack.com)
-2. @(👤)(Portal para usuarios y creación de formularios)(https://dataanalyticstalks.substack.com)
-3. @(🌍)(Tablas interactivas y personalización de la app)(https://dataanalyticstalks.substack.com)
-4. @(📊)(Creación de Dashboards interactivos)(https://dataanalyticstalks.substack.com)
+1. @(⚙️)([violet]**Proceso CRISP-DM y configuración app en Streamlit**[/violet])(https://dataanalyticstalks.substack.com)
+2. @(👤)(Portal para usuarios y conexión a BBDD)(https://dataanalyticstalks.substack.com)
+3. @(🌍)(Formularios y gráficas y tablas interactivas)(https://dataanalyticstalks.substack.com)
+4. @(📊)(Personalización de la app)(https://dataanalyticstalks.substack.com)
 5. @(🟢)(Despligue de la app y conclusiones sobre Streamlit)(https://dataanalyticstalks.substack.com)
 
 Además, el código de la aplicación se encuentra en GitHub para su consulta.
