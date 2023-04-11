@@ -82,7 +82,8 @@ except:
     st.session_state["retry_movements"] = True
     retry = st.session_state["retry_movements"]
 
-print(retry)
+st.write(retry)
+st.write(st.session_state)
 
 @st.cache_data
 def fetchall(query, params, retry=retry):

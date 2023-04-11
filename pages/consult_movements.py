@@ -38,7 +38,7 @@ try:
 except:
     st.session_state["retry_movements"] = False
 
-print(st.session_state["retry_movements"])
+st.write(st.session_state["retry_movements"])
 
 
 try:
