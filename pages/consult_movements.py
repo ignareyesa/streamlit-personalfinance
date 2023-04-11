@@ -31,13 +31,14 @@ with open('error.txt', 'r') as error_file:
 add_indentation()
 
 try:
-    retry = st.session_state["retry_movements"]
-    if retry:
+    if st.session_state["retry_movements"]:
         st.session_state["retry_movements"] = False
     else:
         st.session_state["retry_movements"] = True
 except:
     st.session_state["retry_movements"] = False
+
+print(st.session_state["retry_movements"])
 
 
 try:
