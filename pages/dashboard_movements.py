@@ -76,12 +76,17 @@ query_incomes = """SELECT date, category, subcategory, quantity, concept
             ORDER BY date DESC;
         """
 
+try:
+    retry = st.session_state["retry_movements"]
+except:
+    st.session_state["retry_movements"] = True
+
 @st.cache_data
-def fetchall(query, params):
+def fetchall(query, params, retry=retry):
     return db.fetchall(query, params)
 
 @st.cache_data
-def get_columns(query, params):
+def get_columns(query, params, retry=retry):
     return db.get_columns(query, params)
 
 data_expenses = fetchall(query_expenses, (user_id,))
