@@ -31,20 +31,6 @@ with open('error.txt', 'r') as error_file:
 add_indentation()
 
 try:
-    pruf = st.session_state["retry_movements"]
-except:
-    st.session_state["retry_movements"] = False
-
-if st.session_state["retry_movements"] is True:
-    st.session_state["retry_movements"] = False
-else:
-    st.session_state["retry_movements"] = True
-
-
-st.write(st.session_state["retry_movements"])
-
-
-try:
     search_params = st.experimental_get_query_params()
     page = search_params.get("page")[0]
 except:
