@@ -33,13 +33,6 @@ except:
     st.write(error_text, unsafe_allow_html=True)
     st.stop()
 
-@st.cache_data
-def fetchall(query, params):
-    return db.fetchall(query, params)
-
-@st.cache_data
-def get_columns(query, params):
-    return db.get_columns(query, params)
 
 with st.container():
     st.markdown("""<style>
@@ -90,7 +83,7 @@ with tab1:
             WHERE user_id = %s
             GROUP BY month(date), year(date)) AS act
         ON pas.month = act.month AND pas.year = act.year) AS main;"""
-        query_results = fetchall(query, (user_id, user_id, user_id, user_id))
+        query_results = db.fetchall(query, (user_id, user_id, user_id, user_id))
         
         if query_results == []:
             st.warning("No ha añadido ningún patrimonio.")

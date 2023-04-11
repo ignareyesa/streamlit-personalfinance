@@ -61,15 +61,6 @@ try:
 except:
     st.session_state["retry_movements"] = True
 
-@st.cache_data
-def fetchall(query, params, retry=retry):
-    return db.fetchall(query, params)
-
-@st.cache_data
-def get_columns(query, params,retry=retry):
-    return db.get_columns(query, params)
-
-
 with st.container():
     query = """SELECT LAST_DAY(CONCAT(year,'-',month,'-01')) as date, safes FROM ( 
         SELECT COALESCE(exp.month, inc.month) AS month, COALESCE(exp.year, inc.year) AS year, exp.expenses, inc.incomes,
@@ -99,7 +90,7 @@ with st.container():
         WHERE user_id = %s
         GROUP BY month(date), year(date)) AS inc
     ON exp.month = inc.month AND exp.year = inc.year) AS main;"""
-    query_results = fetchall(query, (user_id, user_id, user_id, user_id))
+    query_results = db.fetchall(query, (user_id, user_id, user_id, user_id))
 
     if query_results == []:
         st.warning("No ha añadido ningún movimiento")

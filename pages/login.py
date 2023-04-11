@@ -65,7 +65,10 @@ with col3:
         not "authentication_status" in st.session_state
     ):
 
-        st.write("TUTORIAL")
+        video_file = open('images/intro.mp4', 'rb')
+        video_bytes = video_file.read()
+
+        st.video(video_bytes)
 
 if authentication_status:
     authenticator.logout("Salir", "sidebar")
