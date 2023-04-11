@@ -188,7 +188,7 @@ with tab2:
             FROM {table}
             WHERE user_id = %s
             GROUP BY month(date), year(date), category) AS main"""
-        query_results = fetchall(query, (user_id, ))
+        query_results = db.fetchall(query, (user_id, ))
         if query_results == []:
             st.warning(f"No ha añadido ningún {option[:-1].lower()}")
             multile_button_inline(["Añadir"], ["Activos y pasivos"])
