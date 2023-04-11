@@ -80,6 +80,9 @@ try:
     retry = st.session_state["retry_movements"]
 except:
     st.session_state["retry_movements"] = True
+    retry = st.session_state["retry_movements"]
+
+print(retry)
 
 @st.cache_data
 def fetchall(query, params, retry=retry):
