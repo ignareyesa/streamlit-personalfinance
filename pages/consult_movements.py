@@ -38,6 +38,9 @@ except:
 if st.session_state["retry_movements"] is True:
     st.session_state["retry_movements"] = False
 
+if st.session_state["retry_movements"] is False:
+    st.session_state["retry_movements"] = True
+
 
 st.write(st.session_state["retry_movements"])
 
