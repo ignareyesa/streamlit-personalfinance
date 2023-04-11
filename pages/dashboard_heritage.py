@@ -1,31 +1,38 @@
 import streamlit as st
 import numpy as np
-from main import db, authenticator
 import pandas as pd
 import datetime
-import plotly.express as px
-from plots import line_plot_unifiedhover, line_bar_plot_unifiedhover
+from plots import line_plot_unifiedhover, line_bar_plot_unifiedhover, pie_plot
 from streamlit_extras.switch_page_button import switch_page
 from gen_functions import  logged_in, df_with_all_dates_given_period, spanish_month_name, spanish_month_num, load_css_file, multile_button_inline
+from mappers import active_categories as activos, pasive_categories as pasivos, actives_categories_colors, pasives_categories_colors
 from st_pages import add_indentation
-
+with open('error.txt', 'r') as error_file:
+    error_text = error_file.read()
 add_indentation()
-# st.set_page_config(page_title="Finanzas Personales", page_icon="🐍", layout="wide")
-load_css_file("styles/sidebar.css")
-
 
 if not logged_in():
     switch_page("Mi perfil")
 
-authenticator.logout("Salir", "sidebar")
-username = st.session_state["username"]
-query_id = "SELECT id from users where username=%s"
-# Get id from database
-user_id = db.fetchone(query_id, (username,))[0]
 
 
-activos = ['Propiedad', 'Cuenta bancaria', 'Inversiones', 'Vehículo', 'Ahorros']
-pasivos = ['Deuda', 'Préstamo', 'Tarjeta de crédito', 'Hipoteca']
+try:
+    authenticator = st.session_state["authenticator"]
+    db = st.session_state["db"]
+    load_css_file("styles/sidebar.css")
+
+    authenticator.logout("Salir", "sidebar")
+    username = st.session_state["username"]
+    @st.cache_data
+    def fetchone(query, params):
+        return db.fetchone(query, params)
+    query_id = "SELECT id from users where username=%s"
+    # Get id from database
+    user_id = fetchone(query_id, (username,))[0]
+except:
+    st.write(error_text, unsafe_allow_html=True)
+    st.stop()
+
 
 with st.container():
     st.markdown("""<style>
@@ -38,17 +45,17 @@ with st.container():
         st.write("""<h1 style='text-align: left;'>Mi patrimonio</h1>""", unsafe_allow_html=True)
     with col2:
         st.markdown("""
-                <button class="search-button" title="La información mostrada es para los meses ya terminados.">
+                <button class="search-button" title="La información mostrada es para los meses ya acabados.">
                     <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon"><circle cx="12" cy="12" r="10"></circle><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"></path><line x1="12" y1="17" x2="12.01" y2="17"></line></svg>
                 </button>""", unsafe_allow_html=True)
 
 # Radio button to choose between active or pasive
 
 tab1, tab2 = st.tabs(["General", "Detalle"])
-  
+
 with tab1:
     with st.container():
-        query = """SELECT LAST_DAY(CONCAT(year,"-",month,"-01")) as date, pasive, active, heritage FROM ( 
+        query = """SELECT LAST_DAY(CONCAT(year,'-',month,'-01')) as date, pasive, active, heritage FROM ( 
             SELECT COALESCE(pas.month, act.month) AS month, COALESCE(pas.year, act.year) AS year, COALESCE(pas.pasives, 0) as pasive, COALESCE(act.actives, 0) as active,
             COALESCE(act.actives, 0) - COALESCE(pas.pasives, 0) AS heritage
         FROM
@@ -120,21 +127,21 @@ with tab1:
             yaxis=dict(
                 showline=False,
                 ticklen = 0,
-                showticklabels=False)
+                showticklabels=False,
+                showgrid=False)
             )
         fig.update_layout(
             showlegend=True,
             legend=dict(
                 orientation="h",
                 yanchor="bottom",
-                y=1.02,
+                y=0.95,
                 xanchor="left",
                 x=0.05,
                 font = dict(size=14)
                 )
             )
         fig["data"][0]["connectgaps"] = True
-
 
 
         fig["data"][0]['line']['color'] = "#b5aa8d"
@@ -170,11 +177,13 @@ with tab2:
         if option=="Activos":
             table = "actives_movements"
             selection = activos
+            color_mapper = actives_categories_colors
         else:
             table = "pasives_movements"
             selection = pasivos
+            color_mapper = pasives_categories_colors
 
-        query = f"""SELECT LAST_DAY(CONCAT(year,"-",month,"-01")), category, quantity FROM (
+        query = f"""SELECT LAST_DAY(CONCAT(year,'-',month,'-01')), category, quantity FROM (
         SELECT month(date) AS month, year(date) AS year, category, sum(quantity) AS quantity
             FROM {table}
             WHERE user_id = %s
@@ -211,7 +220,8 @@ with tab2:
         col1, col2 = st.columns([3,1])
         
         with col1:
-            fig = line_plot_unifiedhover(df, "date","quantity","Fecha","Valor", y_ticksuffix="€", height=400, series="category", text="category", series_label="Categoría")
+            fig = line_plot_unifiedhover(df, "date","quantity","Fecha","Valor", y_ticksuffix="€", height=400, series="category", text="category", 
+                series_label="Categoría", color_discrete_map=color_mapper)
             fig.update_traces(mode="markers+lines")
             fig.update_xaxes(
                 tick0="2000-01-31",
@@ -221,16 +231,15 @@ with tab2:
                 orientation="h",
                 font = dict(size=14),
                 yanchor="bottom",
-                y=1.02,
+                y=0.95,
                 xanchor="left",
                 x=0.01
             ),
             legend_title_text='Categoría')
+            fig.update_layout(yaxis=dict(showgrid=False))
             colors = ["#1058ae","#c23c4f","#76138e","#02983e","#f94f6a"]
 
             for i in fig['data']:
-                index_pic = selection.index(i["legendgroup"]) 
-                i['line']['color'] = colors[index_pic]
                 i['line']['width'] = 3
                 i['marker']['size'] = 9
 
@@ -253,30 +262,15 @@ with tab2:
             except:
                 pass
             fig.update_traces(connectgaps=False)
-            
             fig.update_traces(hovertemplate= 'Categoría: %{text}<br>Valor: %{y:.1f}€<extra></extra>')
 
             st.plotly_chart(fig, use_container_width=True)   
         
         with col2:
             df_pie_filtered = df_pie[(df_pie["year"]==year) & (df_pie["month"]==month_name)]
-            fig = px.pie(df_pie_filtered, values='quantity', names='category',
-                        height=350)
-            fig.update_traces(textinfo='percent+label', hole=.5, textfont_size=17, marker=dict(colors=colors, 
-            line=dict(color='#000000', width=.5)),
-                hovertemplate = "%{label}: <br>Valor: %{value}€ </br>Porcentaje : %{percent}")
-            fig.update_layout(margin=dict(t=10, b=30, l=50, r=50))
-            fig.update_layout(
-                paper_bgcolor='rgba(0,0,0,0)',
-                plot_bgcolor='rgba(0,0,0,0)',
-                showlegend = False,
-                title=None
-            )
-            fig.update_layout(hovermode="x unified", hoverlabel=dict(bgcolor='rgba(255,255,255,0.95)'))
-            try:
-                fig["data"][0]["marker"]["colors"] = [colors[activos.index(i)] for i in fig["data"][0]["labels"]]
-            except:
-                fig["data"][0]["marker"]["colors"] = [colors[pasivos.index(i)] for i in fig["data"][0]["labels"]]
+            fig = pie_plot(df_pie_filtered, "quantity","category", "category", color_mapper, hole=0.5, textfont_size=17,
+                hovertemplate="%{label}: <br>Valor: %{value}€ </br>Porcentaje : %{percent}")
+            fig.update_layout(margin=dict(t=40, b=00, l=50, r=50))
 
             fig.update_layout(
                     annotations=[
@@ -297,7 +291,3 @@ with tab2:
                     ]
                 )
             st.plotly_chart(fig, use_container_width=True)   
-
-
-
-    

@@ -1,18 +1,30 @@
 import streamlit as st
 st.set_page_config(page_title="Finanzas Personales", page_icon="🐍", layout="wide")
-from main import authenticator, db, credentials
 
 from streamlit_extras.switch_page_button import switch_page
 from gen_functions import logged_in, load_css_file, multile_button_inline
+from init_exceptions import if_reconnect
 from db_functions import check_temporary_token
 load_css_file("styles/forms.css")
 load_css_file("styles/sidebar.css")
 from st_pages import add_indentation
 
+with open('error.txt', 'r') as error_file:
+    error_text = error_file.read()
 add_indentation()
 
 if logged_in():
     switch_page("Mi perfil")
+
+if_reconnect()
+try:
+    authenticator = st.session_state["authenticator"]
+    db = st.session_state["db"]
+    credentials = st.session_state["credentials"]
+except:
+    st.write(error_text, unsafe_allow_html=True)
+    st.stop()
+
 
 # check if page query parameter is given, if not show warning and stop
 try:
@@ -57,4 +69,4 @@ try:
 except Exception as e:
     st.error(e)
 
-multile_button_inline(["Iniciar sesión"],["Mi perfil"])
+multile_button_inline(["Ir al inicio"],["Mi perfil"])

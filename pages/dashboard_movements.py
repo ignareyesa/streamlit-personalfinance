@@ -17,7 +17,6 @@ from gen_functions import (
     calculate_monthly_data,
     calculate_ytd_data
 )
-from main import db, authenticator
 import plotly.express as px
 import numpy as np
 from plots import (
@@ -27,6 +26,7 @@ from plots import (
     bar_plot_unifiedhover,
     kpi_double_indicator_comparison,
     line_plot_unifiedhover,
+    pie_plot
 )
 from mappers import expenses_subcategories_colors, income_subcategories_colors
 from streamlit_option_menu import option_menu
@@ -34,17 +34,30 @@ from streamlit_extras.switch_page_button import switch_page
 from streamlit_extras.mandatory_date_range import date_range_picker
 from st_pages import add_indentation
 
+with open('error.txt', 'r') as error_file:
+    error_text = error_file.read()
+st.experimental_set_query_params()
 add_indentation()
 
 if not logged_in():
     switch_page("Mi perfil")
+try:
 
-authenticator.logout("Salir", "sidebar")
+    authenticator = st.session_state["authenticator"]
+    db = st.session_state["db"]
+    @st.cache_data
+    def fetchone(query, params):
+        return db.fetchone(query, params)
 
-# Get the user's ID from the database
-username = st.session_state["username"]
-query_id = "SELECT id from users where username=%s"
-user_id = db.fetchone(query_id, (username,))[0]
+
+    authenticator.logout("Salir", "sidebar")
+
+    # Get the user's ID from the database
+    username = st.session_state["username"]
+    query_id = "SELECT id from users where username=%s"
+    user_id = fetchone(query_id, (username,))[0]
+except:
+    st.write(error_text, unsafe_allow_html=True)
 
 with st.container():
     st.write(
@@ -62,6 +75,14 @@ query_incomes = """SELECT date, category, subcategory, quantity, concept
             WHERE user_id=%s
             ORDER BY date DESC;
         """
+
+@st.cache_data
+def fetchall(query, params, retry=False):
+    return db.fetchall(query, params)
+
+@st.cache_data
+def get_columns(query, params, retry=False):
+    return db.get_columns(query, params)
 
 data_expenses = db.fetchall(query_expenses, (user_id,))
 columns_expenses = db.get_columns(query_expenses, (user_id,))
@@ -90,7 +111,7 @@ if len(df_all)==0:
     multile_button_inline(["Añadir movimiento"], ["Movimientos"])
     st.stop()
 
-tab1, tab2, tab3 = st.tabs(["General", "Detalle", "Extra: Flujo de gastos e ingresos"])
+tab1, tab2 = st.tabs(["General", "Detalle"])
 
 with tab1:
     df_all["month"] = df_all["month"].apply(spanish_month_name, abbreviate=False)
@@ -103,7 +124,7 @@ with tab1:
     
     col1, col2, col3, col4, col5, col6, col7 = st.columns(7)
     with col1:
-        month_name, year = st.selectbox("Fecha", dates, index=list(dates).index(most_race_date)).split(" ")
+        month_name, year = most_race_date.split(" ")
         month = int(spanish_month_num(month_name))
         year = int(year)
 
@@ -159,8 +180,8 @@ with tab1:
             fig = kpi_single_indicator_comparison(
                 ytd_expenses,
                 ytd_last_expenses,
-                f"{year} YTD",
-                f"{year-1} YTD",
+                f"{year}     ",
+                f"{year-1}     ",
                 "Gastos",
                 False,
                 "percent",
@@ -172,17 +193,17 @@ with tab1:
             fig = kpi_single_indicator_comparison(
                 ytd_incomes,
                 ytd_last_incomes,
-                f"{year} YTD",
-                f"{year-1} YTD",
+                f"{year}     ",
+                f"{year-1}     ",
                 "Ingresos",
                 True,
                 "percent",
-                False,
+                True,
             )
             st.pyplot(fig)
 
         with cont2_col1:
-            query = """SELECT LAST_DAY(CONCAT(year,"-",month,"-01")) as date, heritage FROM ( 
+            query = """SELECT LAST_DAY(CONCAT(year,'-',month,'-01')) as date, heritage FROM ( 
                 SELECT COALESCE(pas.month, act.month) AS month, COALESCE(pas.year, act.year) AS year, pas.pasives, act.actives,
                 COALESCE(act.actives, 0) - COALESCE(pas.pasives, 0) AS heritage
             FROM
@@ -265,13 +286,12 @@ with tab1:
                 3,
                 [mtd_yoy_incomes, mtd_last_incomes, mtd_incomes],
                 [f"{month_name[:3]} {year-1}", f"{prev_date(month, year, True)}", "Mes sel."],
-                "#0979b0",
-                False,
+                "#0979b0",True,
             )
             st.pyplot(fig)
 
         with cont2_col1:
-            query = """SELECT LAST_DAY(CONCAT(year,"-",month,"-01")) as date, safes FROM ( 
+            query = """SELECT LAST_DAY(CONCAT(year,'-',month,'-01')) as date, safes FROM ( 
                 SELECT COALESCE(exp.month, inc.month) AS month, COALESCE(exp.year, inc.year) AS year, exp.expenses, inc.incomes,
                 COALESCE(inc.incomes, 0) - COALESCE(exp.expenses, 0) AS safes
             FROM
@@ -329,41 +349,24 @@ with tab1:
             unsafe_allow_html=True,
         )
 
-    with st.container():
-        cont3_col1, cont3_col2, cont3_col3 = st.columns([4.5, 5.3, 5.3])
-
-        with cont3_col1:
-            st.write(
-                "<h4 style='text-align: center; font-weight: 400; color: rgb(49, 51, 63); padding: 0px; margin: 0px; line-height: 0.5; font-size: 1.3rem;'>Evolución patrimonio </h4>",
-                unsafe_allow_html=True,
-            )
-        with cont3_col2:
-            st.write(
-                "<h4 style='text-align: center; font-weight: 400; color: rgb(49, 51, 63); padding: 0px; margin: 0px; line-height: 0.5; font-size: 1.3rem;'>Evolución gastos</h4>",
-                unsafe_allow_html=True,
-            )
-        with cont3_col3:
-            st.write(
-                "<h4 style='text-align: center; font-weight: 400; color: rgb(49, 51, 63); padding: 0px; margin: 0px; line-height: 0.5; font-size: 1.3rem;'>Evolución ingresos</h4>",
-                unsafe_allow_html=True,
-            )
+            
     with st.container():
         cont4_col1, cont4_col2, cont4_col3 = st.columns([4.5, 5.3, 5.3])
 
-        query_inc = """SELECT LAST_DAY(CONCAT(year(date),"-",month(date),"-01")) AS date, sum(quantity) AS incomes
+        query_inc = """SELECT LAST_DAY(CONCAT(year(date),'-',month(date),'-01')) AS date, sum(quantity) AS incomes
         FROM incomes_movements
         WHERE user_id = %s AND date >= DATE_SUB(CURRENT_DATE(), INTERVAL 2 YEAR)
-        GROUP BY month(date), year(date)"""
+        GROUP BY LAST_DAY(CONCAT(year(date),'-',month(date),'-01'))"""
         query_results = db.fetchall(query_inc, (user_id,))
         # Generate a list of dates representing all of the months within the last 24 months
         df_bars_incomes = df_with_all_dates_given_period(
             query_results, ["date"], 15, ["incomes"], include_actual=True
         )
 
-        query_exp = """SELECT LAST_DAY(CONCAT(year(date),"-",month(date),"-01")) AS date, sum(quantity) AS expenses
+        query_exp = """SELECT LAST_DAY(CONCAT(year(date),'-',month(date),'-01')) AS date, sum(quantity) AS expenses
         FROM expenses_movements
         WHERE user_id = %s AND date >= DATE_SUB(CURRENT_DATE(), INTERVAL 2 YEAR)
-        GROUP BY month(date), year(date)"""
+        GROUP BY LAST_DAY(CONCAT(year(date),'-',month(date),'-01'))"""
         query_results = db.fetchall(query_exp, (user_id,))
         df_bars_expenses = df_with_all_dates_given_period(
             query_results, ["date"], 15, ["expenses"], include_actual=True
@@ -385,7 +388,12 @@ with tab1:
             fig.update_xaxes(tick0="2000-01-31", dtick="M1", tickformat="%b\n%Y")
             fig.update_traces(connectgaps=True)
             fig.update_traces(hovertemplate="Patrimonio: %{y:.1f}€<extra></extra>")
+            fig.update_layout(yaxis=dict(showgrid=False))
 
+            st.write(
+                "<h4 style='text-align: center; font-weight: 400; color: rgb(49, 51, 63); padding: 0px; margin: 0px; line-height: 0.5; font-size: 1.3rem;'>Evolución patrimonio </h4>",
+                unsafe_allow_html=True,
+            )
             st.plotly_chart(fig, use_container_width=True)
 
         with cont4_col2:
@@ -401,6 +409,12 @@ with tab1:
             )
             fig.update_traces(marker_color="#9a5833")
             fig.update_xaxes(tick0="2000-01-31", dtick="M1", tickformat="%b\n%Y")
+            fig.update_layout(yaxis=dict(showgrid=False))
+            fig.update_layout(
+                xaxis=dict(
+                    showline=False,
+                    ticklen = 0)
+                )
             fig.update_yaxes(
                 range=[
                     0,
@@ -420,6 +434,10 @@ with tab1:
                 cliponaxis=False,
             )
             fig.update_traces(hovertemplate="Gastos: %{y:.1f}€<extra></extra>")
+            st.write(
+                "<h4 style='text-align: center; font-weight: 400; color: rgb(49, 51, 63); padding: 0px; margin: 0px; line-height: 0.5; font-size: 1.3rem;'>Evolución gastos</h4>",
+                unsafe_allow_html=True,
+            )
             st.plotly_chart(fig, use_container_width=True)
 
         with cont4_col3:
@@ -435,6 +453,12 @@ with tab1:
             )
             fig.update_traces(marker_color="#0979b0")
             fig.update_xaxes(tick0="2000-01-31", dtick="M1", tickformat="%b\n%Y")
+            fig.update_layout(yaxis=dict(showgrid=False))
+            fig.update_layout(
+                xaxis=dict(
+                    showline=False,
+                    ticklen = 0)
+                )
             fig.update_yaxes(
                 range=[
                     0,
@@ -454,6 +478,10 @@ with tab1:
                 cliponaxis=False,
             )
             fig.update_traces(hovertemplate="Ingresos: %{y:.1f}€<extra></extra>")
+            st.write(
+                "<h4 style='text-align: center; font-weight: 400; color: rgb(49, 51, 63); padding: 0px; margin: 0px; line-height: 0.5; font-size: 1.3rem;'>Evolución ingresos</h4>",
+                unsafe_allow_html=True,
+            )
             st.plotly_chart(fig, use_container_width=True)
 
 with tab2:
@@ -482,12 +510,13 @@ with tab2:
         1,
     )
 
-    selected = option_menu(None, [f"Ingresos: {incomes_last} €", f"Gastos: {expenses_last} €"],
+    selected = option_menu(None, [f"Ingresos: {incomes_last} €", f"Gastos: {expenses_last} €"], 
         icons=['piggy-bank', 'wallet2'], 
-        menu_icon="cast", default_index=0, orientation="horizontal",
+        menu_icon="cast", default_index=1, orientation="horizontal",
         styles={
-        "container": {"width":"40%"},
-        "nav": {"margin-left": "1rem", "margin-right": "1rem"}})
+        "container": {"width":"30%"},
+        "nav": {"margin-left": "1rem", "margin-right": "1rem"},
+        "nav-link-selected": {"background-color": "#8041f5"}})
 
     if selected == f"Ingresos: {incomes_last} €":
         selection = "incomes"
@@ -506,27 +535,8 @@ with tab2:
                     (df_incomes_grouped["year"] == year_det_main)
                     & (df_incomes_grouped["month"] == month_det_main)
                 ]
-                fig = px.pie(
-                    df_incomes_last, values="quantity", names="category", color="category", height=430, color_discrete_map=income_subcategories_colors
-                )
-                fig.update_traces(
-                    textinfo="percent+label",
-                    hole=0.00,
-                    textfont_size=13,
-                    marker=dict(line=dict(color="#000000", width=0.5)),
-                    hovertemplate="%{label}: <br>Cantidad: %{value:.1f}€ </br>Porcentaje: %{percent}",
-                )
-                # fig.update_layout(margin=dict(t=10, b=30, l=50, r=50))
-                fig.update_layout(
-                    paper_bgcolor="rgba(0,0,0,0)",
-                    plot_bgcolor="rgba(0,0,0,0)",
-                    showlegend=False,
-                    title=None,
-                )
-                fig.update_layout(
-                    hovermode="x unified",
-                    hoverlabel=dict(bgcolor="rgba(255,255,255,0.95)"),
-                )
+                fig = pie_plot(df_incomes_last, "quantity", "category", "category", income_subcategories_colors, height=430,
+                    hovertemplate="%{label}: <br>Cantidad: %{value:.1f}€ </br>Porcentaje: %{percent}")
                 st.plotly_chart(fig, use_container_width=True)
 
             # Top table
@@ -677,7 +687,7 @@ with tab2:
                         orientation="h",
                         font=dict(size=14),
                         yanchor="bottom",
-                        y=1.02,
+                        y=0.95,
                         xanchor="left",
                         x=0.01,
                     ),
@@ -697,7 +707,8 @@ with tab2:
                         tickmode = 'array',
                         tickvals = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12],
                         ticktext = ['Ene', 'Feb', 'Mar', 'Abr', 'May', 'Jun', 'Jul', 'Ago', 'Sep', 'Oct', 'Nov', 'Dic']
-                    )
+                    ),
+                    yaxis=dict(showgrid=False)
                 )
 
                 st.plotly_chart(fig, use_container_width=True)
@@ -714,26 +725,8 @@ with tab2:
                     (df_incomes_grouped["year"] == year_det_pie1_comp)
                     & (df_incomes_grouped["month"] == month_det_pie1_comp)
                 ]
-                fig_pie1 = px.pie(
-                    df_incomes_pie, values="quantity", names="category", color="category", height=430, color_discrete_map=income_subcategories_colors
-                )
-                fig_pie1.update_traces(
-                    textinfo="percent+label",
-                    hole=0.75,
-                    textfont_size=13,
-                    marker=dict(line=dict(color="#000000", width=0.5)),
-                    hovertemplate="%{label}: <br>Cantidad: %{value:.1f}€ </br>Porcentaje: %{percent}",
-                )
-                fig_pie1.update_layout(
-                    paper_bgcolor="rgba(0,0,0,0)",
-                    plot_bgcolor="rgba(0,0,0,0)",
-                    showlegend=False,
-                    title=None,
-                )
-                fig_pie1.update_layout(
-                    hovermode="x unified",
-                    hoverlabel=dict(bgcolor="rgba(255,255,255,0.95)"),
-                )
+                fig_pie1 = pie_plot(df_incomes_pie, "quantity", "category", "category", income_subcategories_colors, hole=0.75, height=430,
+                    hovertemplate="%{label}: <br>Cantidad: %{value:.1f}€ </br>Porcentaje: %{percent}")
                 fig_pie1.update_layout(
                     annotations=[
                         dict(
@@ -761,26 +754,8 @@ with tab2:
                     (df_incomes_grouped["year"] == year_det_pie2_comp)
                     & (df_incomes_grouped["month"] == month_det_pie2_comp)
                 ]
-                fig_pie2 = px.pie(
-                    df_incomes_pie, values="quantity", names="category", color="category", height=430, color_discrete_map=income_subcategories_colors
-                )
-                fig_pie2.update_traces(
-                    textinfo="percent+label",
-                    hole=0.75,
-                    textfont_size=13,
-                    marker=dict(line=dict(color="#000000", width=0.5)),
-                    hovertemplate="%{label}: <br>Cantidad: %{value:.1f}€ </br>Porcentaje: %{percent}",
-                )
-                fig_pie2.update_layout(
-                    paper_bgcolor="rgba(0,0,0,0)",
-                    plot_bgcolor="rgba(0,0,0,0)",
-                    showlegend=False,
-                    title=None,
-                )
-                fig_pie2.update_layout(
-                    hovermode="x unified",
-                    hoverlabel=dict(bgcolor="rgba(255,255,255,0.95)"),
-                )
+                fig_pie2 = pie_plot(df_incomes_pie, "quantity", "category", "category", income_subcategories_colors, hole=0.75, height=430,
+                    hovertemplate="%{label}: <br>Cantidad: %{value:.1f}€ </br>Porcentaje: %{percent}")
                 fig_pie2.update_layout(
                     annotations=[
                         dict(
@@ -824,26 +799,8 @@ with tab2:
             col1, col2 = st.columns([1.3, 1])
             # Pie
             with col1:
-                fig = px.pie(
-                    df_expenses_last, values="quantity", names="category", color="category", height=430, color_discrete_map=expenses_subcategories_colors
-                )
-                fig.update_traces(
-                    textinfo="percent+label",
-                    hole=0.00,
-                    textfont_size=13,
-                    marker=dict(line=dict(color="#000000", width=0.5)),
-                    hovertemplate="%{label}: <br>Cantidad: %{value:.1f}€ </br>Porcentaje: %{percent}",
-                )
-                fig.update_layout(
-                    paper_bgcolor="rgba(0,0,0,0)",
-                    plot_bgcolor="rgba(0,0,0,0)",
-                    showlegend=False,
-                    title=None,
-                )
-                fig.update_layout(
-                    hovermode="x unified",
-                    hoverlabel=dict(bgcolor="rgba(255,255,255,0.95)"),
-                )
+                fig = pie_plot(df_expenses_last, "quantity", "category", "category", expenses_subcategories_colors, height=430,
+                    hovertemplate="%{label}: <br>Cantidad: %{value:.1f}€ </br>Porcentaje: %{percent}")
                 st.plotly_chart(fig, use_container_width=True)
             # Table top
             with col2:
@@ -995,7 +952,7 @@ with tab2:
                         orientation="h",
                         font=dict(size=14),
                         yanchor="bottom",
-                        y=1.02,
+                        y=0.95,
                         xanchor="left",
                         x=0.01,
                     ),
@@ -1015,7 +972,8 @@ with tab2:
                         tickmode = 'array',
                         tickvals = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12],
                         ticktext = ['Ene', 'Feb', 'Mar', 'Abr', 'May', 'Jun', 'Jul', 'Ago', 'Sep', 'Oct', 'Nov', 'Dic']
-                    )
+                    ),
+                    yaxis=dict(showgrid=False)
                 )
 
                 st.plotly_chart(fig, use_container_width=True)
@@ -1032,26 +990,8 @@ with tab2:
                     (df_expenses_grouped["year"] == year_det_pie1_comp)
                     & (df_expenses_grouped["month"] == month_det_pie1_comp)
                 ]
-                fig_pie1 = px.pie(
-                    df_expenses_pie, values="quantity", names="category", color="category", height=430, color_discrete_map=expenses_subcategories_colors
-                )
-                fig_pie1.update_traces(
-                    textinfo="percent+label",
-                    hole=0.75,
-                    textfont_size=13,
-                    marker=dict(line=dict(color="#000000", width=0.5)),
-                    hovertemplate="%{label}: <br>Cantidad: %{value:.1f}€ </br>Porcentaje: %{percent}",
-                )
-                fig_pie1.update_layout(
-                    paper_bgcolor="rgba(0,0,0,0)",
-                    plot_bgcolor="rgba(0,0,0,0)",
-                    showlegend=False,
-                    title=None,
-                )
-                fig_pie1.update_layout(
-                    hovermode="x unified",
-                    hoverlabel=dict(bgcolor="rgba(255,255,255,0.95)"),
-                )
+                fig_pie1 = pie_plot(df_expenses_pie, "quantity", "category", "category", expenses_subcategories_colors, hole=0.75, height=430,
+                    hovertemplate="%{label}: <br>Cantidad: %{value:.1f}€ </br>Porcentaje: %{percent}")
                 fig_pie1.update_layout(
                     annotations=[
                         dict(
@@ -1078,26 +1018,8 @@ with tab2:
                     (df_expenses_grouped["year"] == year_det_pie2_comp)
                     & (df_expenses_grouped["month"] == month_det_pie2_comp)
                 ]
-                fig_pie2 = px.pie(
-                    df_expenses_pie, values="quantity", names="category", color="category", height=430, color_discrete_map=expenses_subcategories_colors
-                )
-                fig_pie2.update_traces(
-                    textinfo="percent+label",
-                    hole=0.75,
-                    textfont_size=13,
-                    marker=dict(line=dict(color="#000000", width=0.5)),
-                    hovertemplate="%{label}: <br>Cantidad: %{value:.1f}€ </br>Porcentaje: %{percent}",
-                )
-                fig_pie2.update_layout(
-                    paper_bgcolor="rgba(0,0,0,0)",
-                    plot_bgcolor="rgba(0,0,0,0)",
-                    showlegend=False,
-                    title=None,
-                )
-                fig_pie2.update_layout(
-                    hovermode="x unified",
-                    hoverlabel=dict(bgcolor="rgba(255,255,255,0.95)"),
-                )
+                fig_pie2 = pie_plot(df_expenses_pie, "quantity", "category", "category", expenses_subcategories_colors, hole=0.75, height=430,
+                    hovertemplate="%{label}: <br>Cantidad: %{value:.1f}€ </br>Porcentaje: %{percent}")
                 fig_pie2.update_layout(
                     annotations=[
                         dict(
@@ -1123,50 +1045,51 @@ with tab2:
                     st.plotly_chart(fig_pie2, use_container_width=True)
 
 
-with tab3:
-    start, end = date_range_picker("Selecciona un rango de fechas", error_message="Porfavor, seleccione fecha de inicio y final",
-                key="sankey_date", default_start=datetime.date.today() - datetime.timedelta(days=30))
-    
-    if end > datetime.datetime.now().date():
-        st.warning("El rango de fechas seleccionado no ha terminado a día de hoy, la gráfica se puede ver influenciada.")
+    # with tab3:
+    #     start, end = date_range_picker("Selecciona un rango de fechas", error_message="Porfavor, seleccione fecha de inicio y final",
+    #                 key="sankey_date", default_start=datetime.date.today() - datetime.timedelta(days=30))
+        
+    #     if end > datetime.datetime.now().date():
+    #         st.warning("El rango de fechas seleccionado no ha terminado a día de hoy, la gráfica se puede ver influenciada.")
 
-    df_incomes["date"] = df_incomes["date"].astype(str)
-    df_expenses["date"] = df_expenses["date"].astype(str)
-    df_sankey_incomes =  df_incomes[(df_incomes["date"]>=str(start)) & (df_incomes["date"]<=str(end))]
-    df_sankey_incomes = df_sankey_incomes.groupby("category")["quantity"].sum().reset_index()
-    
-    incomes_sankey = list(df_sankey_incomes["category"].values)
-    incomes_values_sankey = list(df_sankey_incomes["quantity"].values)
+    #     df_incomes["date"] = df_incomes["date"].astype(str)
+    #     df_expenses["date"] = df_expenses["date"].astype(str)
+    #     df_sankey_incomes =  df_incomes[(df_incomes["date"]>=str(start)) & (df_incomes["date"]<=str(end))]
+    #     df_sankey_incomes = df_sankey_incomes.groupby("category")["quantity"].sum().reset_index()
+        
+    #     incomes_sankey = list(df_sankey_incomes["category"].values)
+    #     incomes_values_sankey = list(df_sankey_incomes["quantity"].values)
 
-    df_sankey_expenses =  df_expenses[(df_expenses["date"]>=str(start)) & (df_expenses["date"]<=str(end))]
-    df_sankey_expenses = df_sankey_expenses.groupby("category")["quantity"].sum().reset_index()
-    
-    expenses_sankey = list(df_sankey_expenses["category"].values)
-    expenses_values_sankey = list(df_sankey_expenses["quantity"].values)
+    #     df_sankey_expenses =  df_expenses[(df_expenses["date"]>=str(start)) & (df_expenses["date"]<=str(end))]
+    #     df_sankey_expenses = df_sankey_expenses.groupby("category")["quantity"].sum().reset_index()
+        
+    #     expenses_sankey = list(df_sankey_expenses["category"].values)
+    #     expenses_values_sankey = list(df_sankey_expenses["quantity"].values)
 
-    query = "select cash, investment, donation from safes_distribution where user_id=%s and month=%s and year=%s"
-    safes_percentages = db.fetchall(query, (user_id, month, year))
+    #     query = "select cash, investment, donation from safes_distribution where user_id=%s and month=%s and year=%s"
+    #     safes_percentages = db.fetchall(query, (user_id, month, year))
 
-    safes_sankey = ["Efectivo", "Inversión", "Donación"]
-    if safes_percentages != []:
-        safes_percentages_df = pd.DataFrame(safes_percentages, columns=safes_sankey).T
-        safes_percentages = list(
-            safes_percentages_df.replace(0, np.nan)
-            .dropna()
-            .T.iloc[0]
-            .astype(float)
-            .values
-        )
-        safes_sankey = list(safes_percentages_df.replace(0, np.nan).dropna().T.columns)
-    else:
-        safes_percentages = [1]
-        safes_sankey = ["Efectivo"]
-    fig = sankey_movements_plot(
-        incomes_sankey,
-        incomes_values_sankey,
-        expenses_sankey,
-        expenses_values_sankey,
-        safes_sankey,
-        safes_percentages,
-    )
-    st.plotly_chart(fig)
+    #     safes_sankey = ["Efectivo", "Inversión", "Donación"]
+    #     if safes_percentages != []:
+    #         safes_percentages_df = pd.DataFrame(safes_percentages, columns=safes_sankey).T
+    #         safes_percentages = list(
+    #             safes_percentages_df.replace(0, np.nan)
+    #             .dropna()
+    #             .T.iloc[0]
+    #             .astype(float)
+    #             .values
+    #         )
+    #         safes_sankey = list(safes_percentages_df.replace(0, np.nan).dropna().T.columns)
+    #     else:
+    #         safes_percentages = [1]
+    #         safes_sankey = ["Efectivo"]
+    #     fig = sankey_movements_plot(
+    #         incomes_sankey,
+    #         incomes_values_sankey,
+    #         expenses_sankey,
+    #         expenses_values_sankey,
+    #         safes_sankey,
+    #         safes_percentages,
+    #     )
+    #     st.plotly_chart(fig)
+

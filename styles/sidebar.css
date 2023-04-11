@@ -11,8 +11,15 @@ div[data-testid='stSidebarNav'] {
     color: #818181,;
     transition: .3s;
     white-space: nowrap;
-    text-transform: uppercase
-    
+    text-transform: uppercase;    
+}
+
+.e1fqkh3o10{
+    height: max-content;
+    list-style: none;
+    margin: 0px;
+    padding-bottom: 1rem;
+    max-height: 60vh;
 }
 
 .css-wjbhl0{
@@ -82,19 +89,19 @@ button[kind="header"] {
     }
 
     /* The navigation menu open and close on hover and size */
-    /* section[data-testid='stSidebar'] > div {
+     /* section[data-testid='stSidebar'] > div {
     height: 100%;
     width: 75px; /* Put some width to hover on. */
-    /* } 
+     /* }  */ 
     /* ON HOVER */
     section[data-testid='stSidebar'] > div:hover{
     width: 300px;
     }
 
     /* The button on the streamlit navigation menu - hidden */
-    button[kind="header"] {
+    /* button[kind="header"] {
         display: none;
-    }
+    } */
 }
      
 @media(max-width: 272px){

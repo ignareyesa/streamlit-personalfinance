@@ -2,11 +2,11 @@ from gen_functions import (load_css_file, multile_button_inline, logged_in,
                            check_columns, check_data_types, verify_column_values,
                            progressbar)
 from db_functions import create_temporary_token, check_temporary_token
+from init_exceptions import if_reconnect
 from styles.aggrid_styles import posneg_cellstyle, euro_cellstyle, date_cellstyle
 from mappers import incomes_subcategories, expenses_subcategories
 import streamlit as st
 
-st.set_page_config(page_title="Finanzas Personales", page_icon="🐍", layout="wide")
 
 load_css_file("styles/add_movements.css")
 load_css_file("styles/sidebar.css")
@@ -18,15 +18,16 @@ import pandas as pd
 import datetime
 
 from st_aggrid import AgGrid, GridOptionsBuilder, JsCode
-from main import db, authenticator
 
 from streamlit_extras.mandatory_date_range import date_range_picker
 from streamlit_extras.switch_page_button import switch_page
-from streamlit_extras.stoggle import stoggle
+from streamlit_toggle import st_toggle_switch
 from streamlit_extras.no_default_selectbox import selectbox
 from streamlit_option_menu import option_menu
 from st_pages import add_indentation
 
+with open('error.txt', 'r') as error_file:
+    error_text = error_file.read()
 add_indentation()
 
 try:
@@ -35,33 +36,43 @@ try:
 except:
     page = None
 
-if page!="modify_movement":
-    if not logged_in():
+if page!="modify_movement" and not logged_in():
         switch_page("Mi perfil")
 
+elif page!="modify_movement":
+    authenticator = st.session_state["authenticator"]
+    db = st.session_state["db"]
     authenticator.logout("Salir", "sidebar")
+    @st.cache_data
+    def fetchone(query, params):
+        return db.fetchone(query, params)
 
     # Get the user's ID from the database
     username = st.session_state["username"]
     query_id = "SELECT id from users where username=%s"
-    user_id = db.fetchone(query_id, (username,))[0]
+    try:
+        user_id = fetchone(query_id, (username,))[0]
+    except:
+        st.markdown("Ha habido un error durante el proceso, porfavor vuelva al inicio.")
+        multile_button_inline(["Volver a Inicio"],["Inicio"])
+        st.stop()
 
     selected = option_menu(None, ["Consultar", "Añadir"], 
-        icons=['cash', 'house'], 
+        icons=['arrow-left-right', 'bookmark-plus'], 
         menu_icon="cast", default_index=1, orientation="horizontal",
         styles={
-        "container": {"width":"40%"},
-        "nav": {"margin-left": "1rem", "margin-right": "1rem"}})
-
+        "container": {"width":"30%"},
+        "nav": {"margin-left": "1rem", "margin-right": "1rem"},
+        "nav-link-selected": {"background-color": "#8041f5"}})
 
     if selected == "Consultar":
         # Get the user's income movements from the database
-        query = """SELECT "incomes" AS movement,
+        query = """SELECT 'incomes' AS movement,
                                 incomes.*
                             FROM incomes_movements AS incomes
                             WHERE user_id=%s
                             UNION ALL
-                            SELECT "expenses" AS movement,
+                            SELECT 'expenses' AS movement,
                                 expenses.id,
                                 expenses.user_id,
                                 expenses.date,
@@ -153,6 +164,7 @@ if page!="modify_movement":
         # Build the grid
         # Define a cell style function to change the color of the quantity cells based on their value
         gb = GridOptionsBuilder.from_dataframe(df_selection)
+        gb.configure_default_column(filterable=False, sortable=False)
         gb.configure_selection("multiple", use_checkbox=True, header_checkbox=True, suppressRowClickSelection=True)
         gb.configure_pagination(paginationAutoPageSize=False, paginationPageSize=15)
         gb.configure_column("date",header_name="Fecha", cellRenderer=JsCode(date_cellstyle),width=300)
@@ -208,7 +220,7 @@ if page!="modify_movement":
                 token = create_temporary_token(table="modify_movement_tokens")
                 nav_script = """
                     <meta http-equiv="refresh" content="0; url='%s'">
-                    """ % (f"""/Mis movimientos?page=modify_movement&token={token}-{movement_id}&username={username}&option={option}&date={str(df.iloc[selected_row]["date"])}&quantity={str(abs(df.iloc[selected_row]["quantity"]))}&concept={df.iloc[selected_row]["concept"]}""")
+                    """ % (f"""/Movimientos?page=modify_movement&token={token}-{movement_id}&username={username}&option={option}&date={str(df.iloc[selected_row]["date"])}&quantity={str(abs(df.iloc[selected_row]["quantity"]))}&concept={df.iloc[selected_row]["concept"]}""")
                 st.write(nav_script, unsafe_allow_html=True)
 
         else:
@@ -329,7 +341,7 @@ if page!="modify_movement":
                     else:
                         pass
                 except Exception as e: 
-                    st.write(e)
+                    st.write(error_text, unsafe_allow_html=True)
                 
             
             elif option == "Archivo":
@@ -344,29 +356,32 @@ if page!="modify_movement":
                 movement_type = selectbox("Elija el tipo de movimiento",["Ingresos", "Gastos"])
 
 
-                
-                expected_columns = ['date', 'category', 'subcategory', 'concept', 'quantity']
+                expected_columns_es = ['Fecha', 'Categoría', 'Subcategoría', 'Concepto', 'Cantidad']
+                expected_columns_en = ['date', 'category', 'subcategory', 'concept', 'quantity']
                 expected_types = ['datetime64[ns]', 'object', 'object', 'object', 'float64']
 
                 # Display income or expense form according to user's choice
                 # Incomes form
                 if movement_type == "Ingresos":
-                    stoggle(
-                        "Categorías aceptadas para ingresos (pulsar)",
-                        """Ingresos: Salario, Venta, Inversión, Intereses de ahorros, Dividendos, 
-                        Ganancias de juegos de azar, Pensiones """
-                    )
                     table_name = "incomes_movements"
                     subcategories = incomes_subcategories
                 if movement_type == "Gastos":
-                    stoggle(
-                        "Categorías aceptadas para gastos (pulsar)",
-                        """GASTOS: Vivienda, Facturas, Supermercado, Transporte, Seguros, Ocio, 
-                        Hijos, Educación, Compras, Viajes, Salud y bienestar, Deporte, Regalos, Mascotas, 
-                        Deudas, Bancos y finanzas, Impuestos, Inversiones, Perdidas de juegos de azar, Otros"""
-                    )
                     table_name = "expenses_movements"
                     subcategories = expenses_subcategories
+                show_movement_subcat = st_toggle_switch(
+                    label=f"Mostrar las categorías y subcategorías",
+                    key="switch_1",
+                    default_value=False,
+                    label_after=True,
+                    inactive_color="#D3D3D3",  
+                    active_color="#6630cc",
+                    track_color="#6630cc",
+                )
+                if show_movement_subcat:
+                    try:
+                        st.json(subcategories, expanded=False)
+                    except:
+                        st.warning("No ha seleccionado el tipo de movimiento.")
 
                 if movement_type:
                     file = st.file_uploader("Subir el archivo", type="xlsx")
@@ -378,51 +393,53 @@ if page!="modify_movement":
                         if "subcategory" in existing_columns:
                             try:
                                 df["subcategory"] = df["subcategory"].fillna("Otros")
-                                check_columns(df, expected_columns)
+                                check_columns(df, expected_columns_es)
                             except Exception as e:
                                 st.error(e)
                                 st.stop()
                         else: 
                             try:
                                 df["subcategory"] = "Otros"
-                                check_columns(df, expected_columns)
+                                check_columns(df, expected_columns_es)
                             except Exception as e:
                                 st.error(e)
                                 st.stop()
+                        df = df.rename(columns=dict(zip(expected_columns_es, expected_columns_en)))
                         
                         try:
                             verify_column_values(df, "category", list(subcategories))
                         except Exception as e:
-                            st.error("Algunos de las categorías que intenta introducir no son válidas. Por favor, comprueba la lista de categorías aceptadas para ingresos.")
+                            st.error("Algunos de las categorías que intenta introducir no son válidas.")
                             st.stop()
                     
 
                         for cat in list(subcategories):
                             mask = (df["category"]==cat)
                             if not df[mask]["subcategory"].isin(subcategories[cat]).all():
-                                st.error("Hay subcategorias que no están dentro de las del sistema")
+                                df.loc[mask & ~df["subcategory"].isin(subcategories[cat]), "subcategory"] = "Otros"
+                                not_in_subcategories = True
+                        if not_in_subcategories:
+                            st.error("Hay subcategorias que no están dentro de las del sistema")
 
                         try:
                             df['date'] = pd.to_datetime(df['date'])
                         except Exception as e:
                             st.error("La columna `date` no se ha podido convetir a formato fecha. Asegurese de que sigue el siguiente formato DD/MM/YYYY.")
-                            raise e
+                            
                         try:
                             df['quantity'] = df['quantity'].astype(float)
                         except Exception as e:
                             st.error("La columna `quantity` no es del tipo númerico. Por favor, revísela.")
-                            raise e
 
                         try: 
-                            check_data_types(df, expected_columns, expected_types)
+                            check_data_types(df, expected_columns_en, expected_types)
                         except Exception as e:
-                            st.error(e)
-                            raise e
+                            st.error("Algunas columnas no son del tipo adecuado.")
 
                         
                         try:
                             df["user_id"] = user_id
-                            df = df[["user_id"] + expected_columns]
+                            df = df[["user_id"] + expected_columns_en]
                             df['date'] = df['date'].astype(str)
                             
                             column_names = ",".join(df.columns)
@@ -434,7 +451,6 @@ if page!="modify_movement":
                             st.success('Archivo cargado correctamente en el sistema.')
 
                         except Exception as e:
-                            st.exception(e)
                             st.error("Ha habido un error al cargar su archivo en el sistema. Por favor, inténtelo de nuevo")
                 else:
                     movement_type = None
@@ -443,6 +459,12 @@ if page!="modify_movement":
 
 
 else:
+    if_reconnect()
+    authenticator = st.session_state["authenticator"]
+    db = st.session_state["db"]
+    @st.cache_data
+    def fetchone(query, params):
+        return db.fetchone(query, params)
     try:
         token, movement_id = search_params.get("token")[0].split("-")
         username = search_params.get("username")[0]
@@ -451,7 +473,7 @@ else:
         date_placeholder = datetime.datetime.strptime(search_params.get("date")[0], "%Y-%m-%d").date()
         quantity_placeholder = float(search_params.get("quantity")[0])
         # Get id from database
-        user_id, user_name = db.fetchone("SELECT id, name from users where username=%s", (username,))
+        user_id, user_name = fetchone("SELECT id, name from users where username=%s", (username,))
     except:
         st.warning("El enlace proporcionado no es válido.")
         multile_button_inline(["Volver a iniciar sesión"],["Mi perfil"], css=css_style)
@@ -471,10 +493,10 @@ else:
 
     authenticator.logout("Salir", "sidebar")
     st.subheader(f"Rellene el formulario para modificar el {movement_type[:-1].lower()} seleccionado")
-    # Disable the submit button after it is clicked
-    def disable():
-        st.session_state.disabled = True
 
+    def disable(boolean = False):
+        if boolean:
+            st.session_state.disabled = True
     # Initialize disabled for form_submit_button to False
     if "disabled" not in st.session_state:
         st.session_state.disabled = False
@@ -504,17 +526,19 @@ else:
         movement_form = st.form("add-movement")
         form_response = movement_form.form_submit_button("Modificar movimiento", on_click=disable, disabled=st.session_state.disabled)
 
-    multile_button_inline(["Pulsar para volver"],["Mis movimientos"], css=css_style)
+
+    multile_button_inline(["Pulsar para volver"],["Seguimiento"], css=css_style)
 
     try:
         if form_response and len(category)>0 and len(subcategory)>0 and len(concept)>0 and quantity is not None:
             query = f"UPDATE {table_name} SET date=%s,category=%s,subcategory=%s,concept=%s,quantity=%s WHERE id=%s"
             db.commit(query,(date, category, subcategory, concept, quantity, movement_id))
             st.success(f"Movimiento actualizado correctamente, pulse el botón para volver.")
+            disable(True)
         
         elif form_response and (len(category)<=0 or len(subcategory)<=0 or len(concept)<=0 or quantity is None):
             st.error("Rellene todos los campos del formulario.")
         else:
             pass
     except Exception as e: 
-        st.write(e)
+        st.write(error_text, unsafe_allow_html=True)

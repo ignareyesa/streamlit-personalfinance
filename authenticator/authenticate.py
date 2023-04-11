@@ -545,17 +545,18 @@ class Authenticate:
         new_password_repeat = reset_password_form.text_input(
             "Repetir contreseña", type="password"
         )
+        self.password = new_password        
 
         if reset_password_form.form_submit_button("Cambiar contreseña"):
             if self._check_username():
                 if len(new_password) > 0:
                     if new_password == new_password_repeat:
-                        if self.password != new_password:
+                        if not self._check_pw():#self.password != new_password:
                             self._update_password(self.username, new_password)
                             return True
                         else:
                             raise ResetError(
-                                "La contraseña actual y la nueva son las mismas"
+                                "La contraseña actual y la nueva son la misma"
                             )
                     else:
                         raise ResetError("Las contraseñas no coinciden")
@@ -753,3 +754,61 @@ class Authenticate:
                     )
             else:
                 raise CredentialsError
+            
+    def reset_user_details(self, disable: bool = False) -> bool:
+        """
+        Creates a data reset widget.
+
+        Parameters
+        ----------
+        form_name: str
+            The rendered name of the password reset form.
+        location: str
+            The location of the password reset form i.e. main or sidebar.
+        Returns
+        -------
+        str
+            The new username.
+        """
+        current_username = st.session_state["username"]
+        current_name = self.credentials["usernames"][st.session_state["username"]]["name"]
+        current_email = self.credentials["usernames"][st.session_state["username"]]["email"]
+
+
+        new_name = st.text_input("Nombre", current_name , disabled = not disable)
+        new_username = st.text_input("Nombre de usuario", current_username, disabled = not disable).lower()
+        new_email = st.text_input("Correo electrónico", current_email, disabled = not disable)
+
+        if new_username != current_username or new_name != current_name or new_email != current_email:
+            final_but_dis = False
+        else: 
+            final_but_dis = True    
+        safe_changes = st.button("Guardar cambios", disabled = final_but_dis)
+        if safe_changes:
+                if len(new_username) > 0 and len(new_name)>0 and len(new_email)>0:
+                    if check_email(new_email):
+                        if new_name != current_name:
+                            self._update_entry(username=current_username, key="name", value=new_name)
+                            st.session_state["name"] = new_name
+
+                        if new_email != current_email:
+                            self._update_entry(username=current_username, key="email", value=new_email)
+                        if new_username != current_username:
+                            if new_username not in self.credentials["usernames"]:
+                                self._update_username(current_username, new_username)
+                                st.session_state["username"] = new_username
+                            else:
+                                raise ResetError("El nombre de usuario ya está en uso")
+                        
+                        return new_username, new_name, new_email
+
+                    else:
+                        raise ResetError("El email no es correcto")
+            
+                
+                else:
+                    raise ResetError("No se ha proporcionado un nuevo nombre de usuario"
+                )
+        else:
+            return None, None, None
+

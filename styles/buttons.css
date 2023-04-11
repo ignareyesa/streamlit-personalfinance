@@ -7,7 +7,7 @@
     color: rgb(78, 60, 107);
     padding: 0.25rem 0.75rem;
     border-radius: 0.25rem;
-    margin: 0px 1rem 0px 0px;
+    margin: 4px 1rem 0px 0px;
     line-height: 1.6;
     width: auto;
     user-select: none;
@@ -62,66 +62,23 @@ div{
   background-color: rgba(255, 255, 255, 0);
 }
 
-/* CSS */
-.button-65 {
-  appearance: none;
-  backface-visibility: hidden;
-  background-color: #2f80ed;
-  border-radius: 9px;
-  border-style: none;
-  box-shadow: none;
-  box-sizing: border-box;
-  color: rgba(255, 255, 255, 0.418);
+.error_button {
+  display: table-cell;
+  font-size: 1.2rem;
+  font-weight: bold;
+  color: white;
+  background-color: #8041f5;
+  padding: 10px 20px;
+  border: none;
+  border-radius: 2px;
+  text-decoration: none;
   cursor: pointer;
-  display: inline-block;
-  font-family: Inter,-apple-system,system-ui,"Segoe UI",Helvetica,Arial,sans-serif;
-  font-size: 15px;
-  font-weight: 500;
-  letter-spacing: normal;
-  line-height: 1.5;
-  outline: none;
-  overflow: hidden;
-  padding: 7px 35px;
-  position: relative;
-  text-align: center;
+  transition: background-color 0.3s ease;
+}
+
+.error_button:hover {
+  background-color: #6630cc;
   text-decoration: none;
-  vertical-align: center;
-  transform: translate3d(0, 0, 0);
-  transition: all .3s;
-  user-select: none;
-  -webkit-user-select: none;
-  touch-action: manipulation;
-  vertical-align: top;
-  white-space: nowrap;
-  margin-left: 20%;
-}
+  color: white;
 
-.button-65:hover {
-  background-color: #1366d6;
-  color: #fff;
-  opacity: 1;
-  transform: translateY(0);
-  transition-duration: .35s;
-  text-decoration: none;
-}
-
-.button-65:hover:after {
-  opacity: .5;
-}
-
-.button-65:active {
-  transform: translateY(2px);
-  transition-duration: .35s;
-}
-
-.button-65:active::after {
-    color: #fff;
-  }
-
-
-@media (min-width: 768px) {
-  .button-65 {
-    padding: 14px 5px;
-    width: 176px;
-  }
 }

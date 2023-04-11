@@ -6,27 +6,40 @@ st.set_page_config(page_title="Finanzas Personales", page_icon="🐍", layout="w
 from streamlit_toggle import st_toggle_switch
 import numpy as np
 from streamlit_extras.stoggle import stoggle
-from main import db, authenticator
 import pandas as pd
-import plotly.express as px
 import datetime
-from plots import bar_plot_unifiedhover
+from plots import bar_plot_unifiedhover, pie_plot
+from mappers import safes_categories_colors
 from streamlit_extras.switch_page_button import switch_page
 from st_pages import add_indentation
 
+with open('error.txt', 'r') as error_file:
+    error_text = error_file.read()
 add_indentation()
-load_css_file("styles/sidebar.css")
-
 
 if not logged_in():
     switch_page("Mi perfil")
+try:
 
-authenticator.logout("Salir", "sidebar")
+    authenticator = st.session_state["authenticator"]
+    db = st.session_state["db"]
+    load_css_file("styles/sidebar.css")
+    @st.cache_data
+    def fetchone(query, params):
+        return db.fetchone(query, params)
 
-# Get the user's ID from the database
-username = st.session_state["username"]
-query_id = "SELECT id from users where username=%s"
-user_id = db.fetchone(query_id, (username,))[0]
+
+
+
+    authenticator.logout("Salir", "sidebar")
+
+    # Get the user's ID from the database
+    username = st.session_state["username"]
+    query_id = "SELECT id from users where username=%s"
+    user_id = fetchone(query_id, (username,))[0]
+except:
+    st.write(error_text, unsafe_allow_html=True)
+    st.stop()
 
 with st.container():
     st.markdown("""<style>
@@ -39,12 +52,17 @@ with st.container():
         st.write("""<h1 style='text-align: left;'>Mis ahorros</h1>""", unsafe_allow_html=True)
     with col2:
         st.markdown("""
-                <button class="search-button" title="La información mostrada es para los meses ya terminados.">
+                <button class="search-button" title="La información mostrada es para los meses ya acabados.">
                     <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon"><circle cx="12" cy="12" r="10"></circle><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"></path><line x1="12" y1="17" x2="12.01" y2="17"></line></svg>
                 </button>""", unsafe_allow_html=True)
 
+try:
+    retry = st.session_state["retry_movements"]
+except:
+    st.session_state["retry_movements"] = True
+
 with st.container():
-    query = """SELECT LAST_DAY(CONCAT(year,"-",month,"-01")) as date, safes FROM ( 
+    query = """SELECT LAST_DAY(CONCAT(year,'-',month,'-01')) as date, safes FROM ( 
         SELECT COALESCE(exp.month, inc.month) AS month, COALESCE(exp.year, inc.year) AS year, exp.expenses, inc.incomes,
         COALESCE(inc.incomes, 0) - COALESCE(exp.expenses, 0) AS safes
     FROM
@@ -110,8 +128,8 @@ with st.container():
         tick0="2000-01-31",
         dtick="M1",
         tickformat="%b\n%Y") 
-    fig.update_traces(textfont_size=13, textangle=0, texttemplate = '%{y:.0f}€', textposition="inside", cliponaxis=False,)
-    fig.update_traces(hovertemplate= 'Ahorros: %{y:.1f}€<extra></extra>')
+    fig.update_traces(textfont_size=13, textangle=0, texttemplate = '%{y:.0f}€', textposition="outside", cliponaxis=False,)
+    fig.update_layout(yaxis=dict(showgrid=False))
 
     st.plotly_chart(fig, use_container_width=True)
     
@@ -144,7 +162,7 @@ with st.container():
 with st.container():
     col1, col2 = st.columns([1,1])
     query = "select sum(quantity) from {} where user_id=%s and month(date)=%s and year(date)=%s"
-    incomes = db.fetchone(query.format("incomes_movements"), (user_id, month, year))[0]
+    incomes = fetchone(query.format("incomes_movements"), (user_id, month, year))[0]
     
     # Check if current month
     now = datetime.datetime.now()
@@ -154,7 +172,7 @@ with st.container():
     if not incomes: 
         incomes = 0
     query = "select sum(quantity) from {} where user_id=%s and month(date)=%s and YEAR(date)=%s"
-    expenses = db.fetchone(query.format("expenses_movements"), (user_id, month, year))[0]
+    expenses = fetchone(query.format("expenses_movements"), (user_id, month, year))[0]
     if not expenses:
         expenses = 0
     safes = float(incomes - expenses)
@@ -233,18 +251,11 @@ with st.container():
                 labels = ["Efectivo"]
             sizes = [safes*perc for perc in safes_percentages]
             df = pd.DataFrame([labels,sizes], index=["safes_cat","values"]).T
-            fig = px.pie(df, values='values', names='safes_cat',
-                        height=350)
-            fig.update_traces(textinfo='percent+label', hole=.3, textfont_size=17, marker=dict(colors=colors, line=dict(color='#000000', width=.5)),
-                hovertemplate = "%{label}: <br>Cantidad: %{value:.1f}€ </br>Porcentaje: %{percent}")
-            fig.update_layout(margin=dict(t=10, b=30, l=50, r=50))
-            fig.update_layout(
-                paper_bgcolor='rgba(0,0,0,0)',
-                plot_bgcolor='rgba(0,0,0,0)',
-                showlegend = False,
-                title=None
-            )
-            fig.update_layout(hovermode="x unified", hoverlabel=dict(bgcolor='rgba(255,255,255,0.95)'))
+            
+            fig = pie_plot(df, "values","safes_cat", "safes_cat", safes_categories_colors, hole=0.3, textfont_size=17,
+                hovertemplate="%{label}: <br>Cantidad: %{value:.1f}€ </br>Porcentaje: %{percent}")
+            fig.update_layout(margin=dict(t=40, b=00, l=50, r=50))
+
             st.plotly_chart(fig, use_container_width=True) 
 
         with col2:
@@ -298,11 +309,14 @@ with st.container():
             )
             st.info(f"Total: {round(safes*(donate + investment + cash),1)}/{round(safes,1)}€")
             if (cash + investment + donate) != 1:
-                st.button("Actualizar", disabled = True)
+                button_dis = True
             else:
-                if st.button("Actualizar"):
+                button_dis = False
+            safes_but = st.button("Actualizar", disabled = button_dis)
+            try:
+                if safes_but:
                     query = "SELECT id from safes_distribution WHERE user_id =%s and month=%s and year=%s"
-                    safes_id = db.fetchone(query, (user_id, month, year))
+                    safes_id = fetchone(query, (user_id, month, year))
                     if safes_id:
                         query = """UPDATE safes_distribution SET cash = %s, investment=%s, donation=%s WHERE ID=%s"""
                         db.commit(query, (cash, investment, donate, safes_id[0]))
@@ -310,4 +324,6 @@ with st.container():
                     else:
                         query = """INSERT INTO safes_distribution (user_id, month, year, cash, investment, donation) VALUES (%s, %s, %s, %s, %s, %s);"""
                         db.commit(query, (user_id, month, year, cash, investment, donate))
-                        st.experimental_rerun()
+                    st.experimental_rerun()
+            except: 
+                st.warning("Los datos no se han registrado. Porfavor, pulse de nuevo el botón")

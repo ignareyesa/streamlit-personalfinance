@@ -12,43 +12,53 @@ import datetime
 
 # Import the necessary libraries
 from st_aggrid import AgGrid, GridOptionsBuilder, JsCode
-from main import db, authenticator
-
 from streamlit_extras.mandatory_date_range import date_range_picker
 from streamlit_extras.switch_page_button import switch_page
 from streamlit_option_menu import option_menu
 from st_pages import add_indentation
 
-
+with open('error.txt', 'r') as error_file:
+    error_text = error_file.read()
 add_indentation()
 st.experimental_set_query_params()
-css_style = "styles/buttons.css"
 
 if not logged_in():
     switch_page("Mi perfil")
+
+authenticator = st.session_state["authenticator"]
+db = st.session_state["db"]
+
+css_style = "styles/buttons.css"
+
 
 authenticator.logout("Salir", "sidebar")
 
 # Get the user's ID from the database
 username = st.session_state["username"]
 query_id = "SELECT id from users where username=%s"
-user_id = db.fetchone(query_id, (username,))[0]
+try:
+    user_id = db.fetchone(query_id, (username,))[0]
+except:
+    st.markdown("Ha habido un error durante el proceso, porfavor vuelva al inicio.")
+    multile_button_inline(["Volver a Inicio"],["Inicio"])
+    st.stop()
 
 selected = option_menu(None, ["Consultar", "Añadir"], 
-    icons=['cash', 'house'], 
+    icons=['arrow-left-right', 'bookmark-plus'], 
     menu_icon="cast", default_index=1, orientation="horizontal",
     styles={
-    "container": {"width":"40%"},
-    "nav": {"margin-left": "1rem", "margin-right": "1rem"}})
+    "container": {"width":"30%"},
+    "nav": {"margin-left": "1rem", "margin-right": "1rem"},
+    "nav-link-selected": {"background-color": "#8041f5"}})
 
 
 if selected == "Consultar":
-    query = """SELECT "actives" AS movement,
+    query = """SELECT 'actives' AS movement,
                             actives.*
                         FROM actives_movements AS actives
                         WHERE user_id=%s
                         UNION ALL
-                        SELECT "pasives" AS movement,
+                        SELECT 'pasives' AS movement,
                             pasives.id,
                             pasives.user_id,
                             pasives.date,
@@ -284,4 +294,4 @@ if selected == "Añadir":
             else:
                 pass
         except Exception as e: 
-            st.write(e)
+            st.write(error_text, unsafe_allow_html=True)

@@ -61,3 +61,27 @@ income_subcategories_colors = {
 "Ganancias de juegos de azar": "#b3ff99",
 "Pensiones": "#ffb3cc"
 }
+
+safes_categories_colors = {
+    "Inversión":"#9accff",
+    "Donación":"#ffcc9a",
+    "Efectivo":"#ffffcc"
+}
+
+active_categories = ['Propiedad', 'Cuenta bancaria', 'Inversiones', 'Vehículo', 'Ahorros']
+pasive_categories = ['Deuda', 'Préstamo', 'Tarjeta de crédito', 'Hipoteca']
+
+actives_categories_colors = {
+    "Propiedad":"#1058ae",
+    "Cuenta bancaria":"#c23c4f",
+    "Inversiones":"#76138e",
+    "Vehículo": "#02983e",
+    "Ahorros":"#f94f6a"
+}
+
+pasives_categories_colors = {
+    "Deuda":"#1058ae",
+    "Préstamo":"#c23c4f",
+    "Tarjeta de crédito":"#76138e",
+    "Hipoteca": "#02983e"
+}

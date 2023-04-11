@@ -1,7 +1,7 @@
 cookie:
-  expiry_days: 30
-  key: some_signature_key
-  name: some_cookie_name
+  expiry_days: 0
+  key: auth
+  name: auth_name
 preauthorized:
   emails:
   

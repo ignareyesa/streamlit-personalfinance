@@ -245,6 +245,17 @@ def prev_date(month, year, abbreviate = False):
         year = year
     return spanish_month_name(month_number=month, abbreviate=abbreviate).capitalize() + " " + str(year)
 
+def stateful_button(*args, key=None, **kwargs):
+    if key is None:
+        raise ValueError("Must pass key")
+
+    if key not in st.session_state:
+        st.session_state[key] = False
+
+    if st.button(*args, **kwargs):
+        st.session_state[key] = not st.session_state[key]
+
+    return st.session_state[key]
 
 def progressbar():
     my_bar = st.progress(0)

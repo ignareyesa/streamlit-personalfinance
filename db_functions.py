@@ -1,6 +1,11 @@
-from main import db
+import streamlit as st
 import datetime
 import secrets
+from init_exceptions import if_reconnect
+
+if_reconnect()
+
+db = st.session_state["db"]
 
 def create_temporary_token(table: str):
     """Generates a random token and inserts it into the specified table
