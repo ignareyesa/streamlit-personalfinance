@@ -30,13 +30,7 @@ with open('error.txt', 'r') as error_file:
     error_text = error_file.read()
 add_indentation()
 
-try:
-    if st.session_state["retry_movements"]:
-        st.session_state["retry_movements"] = False
-    else:
-        st.session_state["retry_movements"] = True
-except:
-    st.session_state["retry_movements"] = False
+st.session_state["retry_movements"] = True
 
 st.write(st.session_state["retry_movements"])
 
